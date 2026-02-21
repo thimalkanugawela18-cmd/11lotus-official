@@ -6,54 +6,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>11LOTUS | The Silent Companion</title>
 <style>
-body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; }
-header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
-
-/* Premium Logo Styling */
-.main-logo { width: 350px; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4)); }
-
-.tagline { font-size: 14px; letter-spacing: 8px; text-transform: uppercase; color: #d4af37; font-weight: bold; margin-top: 10px; }
-
-.mystery-section { padding: 120px 20px; background-color: #080808; }
-
-.box-card { border: 1px solid rgba(212, 175, 55, 0.25); max-width: 550px; margin: 0 auto; padding: 80px 40px; background: linear-gradient(145deg, #111, #050505); box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
-
-.headline { color: #d4af37; font-size: 38px; letter-spacing: 5px; margin-bottom: 25px; text-transform: uppercase; }
-
-/* Oya kiyapu target market ekata galapena wadan */
-.copy-text { color: #aaaaaa; font-style: italic; line-height: 2; margin-bottom: 40px; font-weight: 200; font-size: 16px; }
-
-.price { font-size: 50px; margin: 30px 0; font-weight: 100; letter-spacing: 3px; }
-
-.btn-premium { display: inline-block; padding: 22px 65px; border: 1px solid #d4af37; text-decoration: none; color: #d4af37; letter-spacing: 4px; text-transform: uppercase; transition: 0.6s; font-size: 13px; }
-
-.btn-premium:hover { background-color: #d4af37; color: #000; box-shadow: 0 0 40px rgba(212, 175, 55, 0.5); transform: translateY(-5px); }
-
-footer { padding: 100px; font-size: 11px; color: #333; letter-spacing: 3px; text-transform: uppercase; border-top: 1px solid #111; }
+body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; scroll-behavior: smooth; }
+header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); }
+.main-logo { width: 320px; margin-bottom: 25px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3)); }
+.hero-tagline { font-size: 14px; letter-spacing: 8px; text-transform: uppercase; color: #d4af37; margin-top: 10px; }
+section { padding: 100px 20px; border-top: 1px solid #111; }
+.box-card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 550px; margin: 0 auto; padding: 70px 40px; background: #0d0d0d; box-shadow: 0 40px 100px rgba(0,0,0,0.9); }
+.headline { color: #d4af37; font-size: 32px; letter-spacing: 3px; margin-bottom: 25px; }
+.copy-text { color: #888; font-style: italic; line-height: 1.8; margin-bottom: 40px; font-weight: 200; }
+input[type="password"] { background: transparent; border: 1px solid #333; color: #fff; padding: 18px; width: 80%; margin-bottom: 25px; text-align: center; letter-spacing: 5px; }
+.btn-premium { display: inline-block; padding: 20px 60px; border: 1px solid #d4af37; text-decoration: none; color: #d4af37; letter-spacing: 4px; text-transform: uppercase; transition: 0.5s; cursor: pointer; background: transparent; }
+.btn-premium:hover { background-color: #d4af37; color: #000; box-shadow: 0 0 40px rgba(212, 175, 55, 0.3); }
+.price { font-size: 45px; margin: 30px 0; font-weight: 200; }
+footer { padding: 80px; font-size: 12px; color: #333; letter-spacing: 3px; }
 </style>
-
 </head>
 <body>
-
 <header>
-<img src="logo.png" alt="11Lotus Logo" class="main-logo">
-<div class="tagline">The Silent Companion</div>
+<img src="" alt="11Lotus Logo" class="main-logo">
+<div class="hero-tagline">The Silent Companion</div>
 </header>
-
-<section class="mystery-section">
+<section>
 <div class="box-card">
 <h2 class="headline">The Noir Edition</h2>
-<p class="copy-text">
-Crafted for the dreamers, the lovers, and those who find solace in solitude.
-In a world full of noise, 11Lotus is your sanctuary of softness—a silent
-companion designed to soothe the stressed mind and hold your deepest secrets.
-</p>
+<p class="copy-text">Specifically curated for the dreamers, the lovers, and those seeking refuge from the chaos. A sanctuary of softness to soothe the stressed mind.</p>
 <div class="price">$23.00</div>
-<a href="" class="btn-premium">Reserve Your Mystery</a>
+<a href="" class="btn-premium">Reserve Now</a>
 </div>
 </section>
+<section id="scan" style="background-color: #080808;">
+<div class="box-card">
+<h2 class="headline">Scan Your Soul</h2>
+<p class="copy-text">Enter the secret key found on your 11Lotus companion to unlock your private sanctuary and personal diary.</p>
+<input type="password" placeholder="••••••••">
 
-<footer> &copy; 2026 11LOTUS OFFICIAL | ELEGANCE IN EVERY HUG </footer>
 
+
+<button class="btn-premium">Unlock Sanctuary</button>
+</div>
+</section>
+<section id="community">
+<div class="box-card">
+<h2 class="headline">The Circle</h2>
+<p class="copy-text">Join an exclusive community of like-minded souls. Share messages, find comfort, and connect anonymously.</p>
+<a href="" class="btn-premium">Join The Circle</a>
+</div>
+</section>
+<footer> &copy; 2026 11LOTUS OFFICIAL | CRAFTED FOR THE EXTRAORDINARY </footer>
 </body>
 </html>
