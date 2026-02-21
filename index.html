@@ -9,12 +9,11 @@
 body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; scroll-behavior: smooth; }
 header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%); }
 .main-logo { width: 320px; margin-bottom: 25px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3)); }
-.hero-tagline { font-size: 14px; letter-spacing: 8px; text-transform: uppercase; color: #d4af37; margin-top: 10px; font-weight: bold; }
+.tagline { font-size: 14px; letter-spacing: 8px; text-transform: uppercase; color: #d4af37; font-weight: bold; margin-top: 10px; }
 section { padding: 100px 20px; border-top: 1px solid #111; }
 .box-card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 550px; margin: 0 auto; padding: 70px 40px; background: #0d0d0d; box-shadow: 0 40px 100px rgba(0,0,0,0.9); }
-.headline { color: #d4af37; font-size: 32px; letter-spacing: 3px; margin-bottom: 25px; font-family: serif; }
+.headline { color: #d4af37; font-size: 32px; letter-spacing: 3px; margin-bottom: 25px; }
 .copy-text { color: #888; font-style: italic; line-height: 1.8; margin-bottom: 40px; font-weight: 200; }
-input[type="password"] { background: transparent; border: 1px solid #333; color: #fff; padding: 18px; width: 80%; margin-bottom: 25px; text-align: center; letter-spacing: 5px; }
 .btn-premium { display: inline-block; padding: 20px 60px; border: 1px solid #d4af37; text-decoration: none; color: #d4af37; letter-spacing: 4px; text-transform: uppercase; transition: 0.5s; cursor: pointer; background: transparent; }
 .btn-premium:hover { background-color: #d4af37; color: #000; box-shadow: 0 0 40px rgba(212, 175, 55, 0.3); }
 .price { font-size: 45px; margin: 30px 0; font-weight: 200; }
@@ -23,8 +22,8 @@ footer { padding: 80px; font-size: 12px; color: #333; letter-spacing: 3px; }
 </head>
 <body>
 <header>
-<img src="" alt="11Lotus Logo" class="main-logo">
-<div class="hero-tagline">The Silent Companion</div>
+<img src="logo.png" alt="11Lotus Logo" class="main-logo">
+<div class="tagline">The Silent Companion</div>
 </header>
 <section>
 <div class="box-card">
@@ -37,21 +36,10 @@ footer { padding: 80px; font-size: 12px; color: #333; letter-spacing: 3px; }
 <section id="scan" style="background-color: #080808;">
 <div class="box-card">
 <h2 class="headline">Scan Your Soul</h2>
-<p class="copy-text">Enter the secret key found on your 11Lotus companion to unlock your private sanctuary and personal diary.</p>
-<input type="password" placeholder="••••••••">
-
-
-
-<button class="btn-premium" onclick="alert('Preparing your sanctuary...')">Unlock Sanctuary</button>
+<p class="copy-text">Unlock your private sanctuary and personal diary with your secret key.</p>
+<button class="btn-premium">Unlock Sanctuary</button>
 </div>
 </section>
-<section id="community">
-<div class="box-card">
-<h2 class="headline">The Circle</h2>
-<p class="copy-text">Join an exclusive community of like-minded souls. Share messages, find comfort, and connect anonymously.</p>
-<a href="" class="btn-premium">Join The Circle</a>
-</div>
-</section>
-<footer> &copy; 2026 11LOTUS OFFICIAL | CRAFTED FOR THE EXTRAORDINARY </footer>
+<footer> &copy; 2026 11LOTUS OFFICIAL </footer>
 </body>
 </html>
