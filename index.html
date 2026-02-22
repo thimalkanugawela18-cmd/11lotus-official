@@ -3,66 +3,77 @@
 <html>
 <head>
 <title>11LOTUS | Souls</title>
+<script src=""></script>
 <style>
-body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; }
-.card { border:1px solid #d4af37; max-width:400px; margin:50px auto; padding:30px; background:#0d0d0d; border-radius:15px; box-shadow: 0 0 20px rgba(212,175,55,0.2); }
+body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; }
+header { padding:20px; background:#111; border-bottom:1px solid #d4af37; }
+.card { border:1px solid #d4af37; max-width:400px; margin:20px auto; padding:20px; background:#0d0d0d; border-radius:15px; }
 input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:85%; margin-bottom:15px; text-align:center; border-radius:5px; }
 .btn { padding:14px; width:92%; border:1px solid #d4af37; color:#d4af37; background:transparent; cursor:pointer; text-transform:uppercase; font-weight:bold; }
-.btn:hover { background:#d4af37; color:#000; }
-#chat { display:none; text-align:left; }
-.msgs { height:300px; overflow-y:auto; border:1px solid #222; padding:10px; background:#080808; margin-bottom:10px; font-size:13px; border-radius:5px; }
-.msg { margin-bottom:8px; border-left:3px solid #d4af37; padding-left:10px; padding-top:5px; }
-.msg b { color:#d4af37; font-size:10px; display:block; }
+#interface { display:none; }
+.msgs { height:300px; overflow-y:auto; border:1px solid #222; padding:10px; background:#080808; margin-bottom:10px; text-align:left; font-size:13px; }
+.msg { margin-bottom:8px; border-left:3px solid #d4af37; padding-left:10px; }
+.msg b { color:#d4af37; font-size:10px; display:block; text-transform:uppercase; }
+.tabs { display:flex; gap:5px; margin-bottom:15px; }
+.tab { flex:1; padding:10px; border:1px solid #333; cursor:pointer; font-size:12px; }
+.active { border-color:#d4af37; color:#d4af37; }
+#reader { width:100%; border-radius:10px; margin-bottom:15px; background:#1a1a1a; }
 </style>
 </head>
 <body>
-
+<header>
+<h1 style="color:#d4af37; letter-spacing:5px; font-size:20px;">11LOTUS</h1>
+</header>
 <div class="card" id="login">
-<img src="logo.png" style="width:150px; margin-bottom:20px;">
-<h2 style="color:#d4af37; font-size:18px; letter-spacing:2px;">CONNECTED SOULS</h2>
+<h2 style="color:#d4af37; font-size:18px;">SCAN & UNLOCK</h2>
+<div id="reader"></div>
+<p style="font-size:11px; color:#666">Scan Rabbit QR or Enter Partner ID</p>
 <input type="text" id="pid" placeholder="Partner ID (e.g. 11L-8)">
-<input type="password" id="pass" placeholder="Set Your Password">
-<button class="btn" onclick="go()">Unlock Sanctuary</button>
+<input type="password" id="pass" placeholder="Set Private Password">
+<button class="btn" onclick="start()">Enter Sanctuary</button>
 </div>
-
-<div class="card" id="chat">
-<div id="id-tag" style="color:#d4af37; margin-bottom:15px; font-size:12px; font-weight:bold; letter-spacing:1px; text-align:center;"></div>
+<div class="card" id="interface">
+<div class="tabs">
+<div id="t1" class="tab active" onclick="tab('private')">PRIVATE</div>
+<div id="t2" class="tab" onclick="tab('global')">COMMUNITY</div>
+</div>
+<div id="myname" style="color:#888; font-size:11px; margin-bottom:10px"></div>
 <div class="msgs" id="win"></div>
-<div style="display:flex; gap:5px;">
-<input type="text" id="m" placeholder="Whisper..." style="width:75%; margin-bottom:0;">
+<div style="display:flex; gap:5px">
+<input type="text" id="m" placeholder="Whisper your soul..." style="width:75%; margin-bottom:0">
 <button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">></button>
 </div>
 </div>
-
 <script>
 const names = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
-let myName = "";
-
-function go() {
+let userNick = ""; let mode = "private";
+function onScanSuccess(txt) { document.getElementById('pid').value = txt; }
+let scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+scanner.render(onScanSuccess);
+function start() {
 let id = document.getElementById('pid').value;
 let p = document.getElementById('pass').value;
 if(id && p) {
-// Logic: Mix ID and Pass to give A and B different mystical names
-let index = (id.length + p.length) % names.length;
-myName = names[index];
+userNick = names[(id.length + p.length) % names.length];
 document.getElementById('login').style.display='none';
-document.getElementById('chat').style.display='block';
-document.getElementById('id-tag').innerText = "YOUR IDENTITY: " + myName;
-} else {
-alert("Please enter ID and Password.");
+document.getElementById('interface').style.display='block';
+document.getElementById('myname').innerText = "YOUR IDENTITY: " + userNick;
+} else { alert("ID and Password Required"); }
 }
+function tab(m) {
+mode = m;
+document.getElementById('t1').className = m=='private' ? 'tab active' : 'tab';
+document.getElementById('t2').className = m=='global' ? 'tab active' : 'tab';
+document.getElementById('win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;System:&lt;/b&gt; Switched to ${m} void.&lt;/div&gt;;
 }
-
 function send() {
 let i = document.getElementById('m');
-let win = document.getElementById('win');
-if(i.value.trim() !== "") {
-win.innerHTML += &lt;div class=&quot;msg&quot;&gt;&lt;b&gt;${myName}&lt;/b&gt; ${i.value}&lt;/div&gt;;
+if(i.value) {
+document.getElementById('win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;${userNick}:&lt;/b&gt; ${i.value}&lt;/div&gt;;
 i.value = "";
-win.scrollTop = win.scrollHeight;
+document.getElementById('win').scrollTop = 9999;
 }
 }
 </script>
-
 </body>
 </html>
