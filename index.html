@@ -2,76 +2,78 @@
 
 <html>
 <head>
-<title>11LOTUS | Souls</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11LOTUS | The Circle</title>
 <script src=""></script>
 <style>
-body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; }
-header { padding:20px; background:#111; border-bottom:1px solid #d4af37; }
-.card { border:1px solid #d4af37; max-width:400px; margin:20px auto; padding:20px; background:#0d0d0d; border-radius:15px; }
-input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:85%; margin-bottom:15px; text-align:center; border-radius:5px; }
-.btn { padding:14px; width:92%; border:1px solid #d4af37; color:#d4af37; background:transparent; cursor:pointer; text-transform:uppercase; font-weight:bold; }
-#interface { display:none; }
-.msgs { height:300px; overflow-y:auto; border:1px solid #222; padding:10px; background:#080808; margin-bottom:10px; text-align:left; font-size:13px; }
-.msg { margin-bottom:8px; border-left:3px solid #d4af37; padding-left:10px; }
-.msg b { color:#d4af37; font-size:10px; display:block; text-transform:uppercase; }
-.tabs { display:flex; gap:5px; margin-bottom:15px; }
-.tab { flex:1; padding:10px; border:1px solid #333; cursor:pointer; font-size:12px; }
-.active { border-color:#d4af37; color:#d4af37; }
-#reader { width:100%; border-radius:10px; margin-bottom:15px; background:#1a1a1a; }
+body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; }
+header { padding: 30px; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
+.box-card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 420px; margin: 20px auto; padding: 25px; background: #0d0d0d; border-radius: 15px; }
+input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; width: 85%; margin-bottom: 12px; text-align: center; border-radius: 5px; }
+.btn-gold { display: block; width: 92%; padding: 14px; border: 1px solid #d4af37; color: #d4af37; text-transform: uppercase; cursor: pointer; background: transparent; transition: 0.4s; margin: 10px auto; font-weight: bold; }
+#main-interface { display: none; }
+.tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+.tab { flex: 1; padding: 10px; border: 1px solid #222; cursor: pointer; font-size: 11px; background: #111; color: #666; }
+.active { border-color: #d4af37; color: #d4af37; background: #0d0d0d; }
+.messages { height: 280px; overflow-y: auto; border: 1px solid #222; padding: 10px; background: #080808; margin-bottom: 10px; text-align: left; font-size: 13px; }
+.msg { margin-bottom: 8px; border-left: 3px solid #d4af37; padding-left: 8px; }
+.msg b { color: #d4af37; font-size: 10px; display: block; }
+#reader { width: 100%; border-radius: 10px; margin-bottom: 15px; background: #1a1a1a; }
 </style>
 </head>
 <body>
 <header>
-<h1 style="color:#d4af37; letter-spacing:5px; font-size:20px;">11LOTUS</h1>
+<h1 style="color:#d4af37; letter-spacing:5px;">11LOTUS</h1>
 </header>
-<div class="card" id="login">
-<h2 style="color:#d4af37; font-size:18px;">SCAN & UNLOCK</h2>
+<div class="box-card" id="login-box">
+<h2 style="color:#d4af37; font-size: 18px;">SCAN & UNLOCK</h2>
 <div id="reader"></div>
-<p style="font-size:11px; color:#666">Scan Rabbit QR or Enter Partner ID</p>
-<input type="text" id="pid" placeholder="Partner ID (e.g. 11L-8)">
-<input type="password" id="pass" placeholder="Set Private Password">
-<button class="btn" onclick="start()">Enter Sanctuary</button>
+<p style="color:#666; font-size: 11px;">Scan partner's QR or enter ID below.</p>
+<input type="text" id="partner-id" placeholder="Partner QR ID">
+<input type="password" id="personal-pass" placeholder="Set Your Secret Password">
+<button class="btn-gold" onclick="enter()">Enter The Circle</button>
 </div>
-<div class="card" id="interface">
+<div class="box-card" id="main-interface">
 <div class="tabs">
-<div id="t1" class="tab active" onclick="tab('private')">PRIVATE</div>
-<div id="t2" class="tab" onclick="tab('global')">COMMUNITY</div>
+<div id="t1" class="tab active" onclick="switchTab('private')">PRIVATE ROOM</div>
+<div id="t2" class="tab" onclick="switchTab('global')">COMMUNITY CIRCLE</div>
 </div>
-<div id="myname" style="color:#888; font-size:11px; margin-bottom:10px"></div>
-<div class="msgs" id="win"></div>
-<div style="display:flex; gap:5px">
-<input type="text" id="m" placeholder="Whisper your soul..." style="width:75%; margin-bottom:0">
-<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">></button>
+<div id="id-display" style="color:#888; font-size: 11px; margin-bottom: 10px;"></div>
+<div class="messages" id="chat-win"></div>
+<div style="display:flex; gap:5px;">
+<input type="text" id="msg-input" placeholder="Whisper..." style="width: 75%; margin-bottom:0;">
+<button onclick="send()" style="width: 20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">></button>
 </div>
 </div>
 <script>
-const names = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
-let userNick = ""; let mode = "private";
-function onScanSuccess(txt) { document.getElementById('pid').value = txt; }
+const names = ["Obsidian Rabbit", "Moon Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
+let myName = ""; let mode = "private";
+function onScanSuccess(txt) { document.getElementById('partner-id').value = txt; }
 let scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
 scanner.render(onScanSuccess);
-function start() {
-let id = document.getElementById('pid').value;
-let p = document.getElementById('pass').value;
-if(id && p) {
-userNick = names[(id.length + p.length) % names.length];
-document.getElementById('login').style.display='none';
-document.getElementById('interface').style.display='block';
-document.getElementById('myname').innerText = "YOUR IDENTITY: " + userNick;
-} else { alert("ID and Password Required"); }
+function enter() {
+let id = document.getElementById('partner-id').value;
+let pass = document.getElementById('personal-pass').value;
+if(id && pass) {
+myName = names[(id.length + pass.length) % names.length];
+document.getElementById('login-box').style.display = 'none';
+document.getElementById('main-interface').style.display = 'block';
+document.getElementById('id-display').innerText = "YOUR SOUL: " + myName;
+} else { alert("ID and Password required."); }
 }
-function tab(m) {
+function switchTab(m) {
 mode = m;
 document.getElementById('t1').className = m=='private' ? 'tab active' : 'tab';
 document.getElementById('t2').className = m=='global' ? 'tab active' : 'tab';
-document.getElementById('win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;System:&lt;/b&gt; Switched to ${m} void.&lt;/div&gt;;
+document.getElementById('chat-win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;System:&lt;/b&gt; Switched to ${m} mode.&lt;/div&gt;;
 }
 function send() {
-let i = document.getElementById('m');
-if(i.value) {
-document.getElementById('win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;${userNick}:&lt;/b&gt; ${i.value}&lt;/div&gt;;
-i.value = "";
-document.getElementById('win').scrollTop = 9999;
+let input = document.getElementById('msg-input');
+if(input.value) {
+document.getElementById('chat-win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;${myName}:&lt;/b&gt; ${input.value}&lt;/div&gt;;
+input.value = "";
+document.getElementById('chat-win').scrollTop = 9999;
 }
 }
 </script>
