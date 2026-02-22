@@ -1,84 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>11LOTUS | The Circle</title>
-<style>
-  body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; }
-  header { padding: 50px 20px; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
-  .main-logo { width: 250px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3)); }
-  
-  .box-card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 450px; margin: 40px auto; padding: 40px; background: #0d0d0d; box-shadow: 0 40px 100px rgba(0,0,0,0.9); border-radius: 15px; }
-  .headline { color: #d4af37; font-size: 24px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
-  
-  input { background: #111; border: 1px solid #333; color: #fff; padding: 15px; width: 85%; margin-bottom: 15px; text-align: center; border-radius: 5px; }
-  input:focus { border-color: #d4af37; outline: none; }
-  
-  .btn-premium { display: block; width: 92%; padding: 15px; border: 1px solid #d4af37; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; background: transparent; transition: 0.5s; margin: 0 auto; }
-  .btn-premium:hover { background: #d4af37; color: #000; }
 
-  /* Chat Box Styling */
-  #chat-section { display: none; text-align: left; }
-  #messages { height: 300px; overflow-y: auto; border: 1px solid #222; padding: 15px; margin-bottom: 15px; background: #080808; border-radius: 10px; font-size: 14px; }
-  .msg { margin-bottom: 10px; padding: 8px; border-bottom: 1px solid #111; }
-  .msg b { color: #d4af37; }
+<html>
+<head>
+<title>11LOTUS | Souls</title>
+<style>
+body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; }
+.card { border:1px solid #d4af37; max-width:400px; margin:50px auto; padding:30px; background:#0d0d0d; border-radius:15px; box-shadow: 0 0 20px rgba(212,175,55,0.2); }
+input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:85%; margin-bottom:15px; text-align:center; border-radius:5px; }
+.btn { padding:14px; width:92%; border:1px solid #d4af37; color:#d4af37; background:transparent; cursor:pointer; text-transform:uppercase; font-weight:bold; }
+.btn:hover { background:#d4af37; color:#000; }
+#chat { display:none; text-align:left; }
+.msgs { height:300px; overflow-y:auto; border:1px solid #222; padding:10px; background:#080808; margin-bottom:10px; font-size:13px; border-radius:5px; }
+.msg { margin-bottom:8px; border-left:3px solid #d4af37; padding-left:10px; padding-top:5px; }
+.msg b { color:#d4af37; font-size:10px; display:block; }
 </style>
 </head>
 <body>
 
-<header>
-  <img src="logo.png" alt="11Lotus Logo" class="main-logo">
-</header>
+<div class="card" id="login">
+<img src="logo.png" style="width:150px; margin-bottom:20px;">
+<h2 style="color:#d4af37; font-size:18px; letter-spacing:2px;">CONNECTED SOULS</h2>
+<input type="text" id="pid" placeholder="Partner ID (e.g. 11L-8)">
+<input type="password" id="pass" placeholder="Set Your Password">
+<button class="btn" onclick="go()">Unlock Sanctuary</button>
+</div>
 
-<div class="box-card">
-  <div id="auth-section">
-    <h2 class="headline">Scan Your Soul</h2>
-    <p style="color:#666; font-size: 13px;">Create or enter your Rabbit's Secret Key to enter the circle.</p>
-    <input type="text" id="username" placeholder="Your Name (e.g., Soul 01)">
-    <input type="password" id="soul-key" placeholder="Set Your Secret Key">
-    <button class="btn-premium" onclick="enterCircle()">Enter The Circle</button>
-  </div>
-
-  <div id="chat-section">
-    <h2 class="headline">The Circle</h2>
-    <div id="messages">
-      <div class="msg"><b>System:</b> Welcome to the 11Lotus sanctuary. Share your soul...</div>
-    </div>
-    <input type="text" id="user-msg" placeholder="Type a message..." style="width: 70%; margin-bottom: 0;">
-    <button onclick="sendMsg()" style="padding: 14px; background: #d4af37; border: none; cursor: pointer; border-radius: 5px; width: 20%;">Send</button>
-  </div>
+<div class="card" id="chat">
+<div id="id-tag" style="color:#d4af37; margin-bottom:15px; font-size:12px; font-weight:bold; letter-spacing:1px; text-align:center;"></div>
+<div class="msgs" id="win"></div>
+<div style="display:flex; gap:5px;">
+<input type="text" id="m" placeholder="Whisper..." style="width:75%; margin-bottom:0;">
+<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">></button>
+</div>
 </div>
 
 <script>
-  function enterCircle() {
-    var name = document.getElementById("username").value;
-    var key = document.getElementById("soul-key").value;
+const names = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
+let myName = "";
 
-    if(name && key) {
-      // Meke 'key' eka save karanna database ekak ona. Danata api login wenna puluwan hadamu.
-      document.getElementById("auth-section").style.display = "none";
-      document.getElementById("chat-section").style.display = "block";
-    } else {
-      alert("Please enter both Name and Secret Key.");
-    }
-  }
+function go() {
+let id = document.getElementById('pid').value;
+let p = document.getElementById('pass').value;
+if(id && p) {
+// Logic: Mix ID and Pass to give A and B different mystical names
+let index = (id.length + p.length) % names.length;
+myName = names[index];
+document.getElementById('login').style.display='none';
+document.getElementById('chat').style.display='block';
+document.getElementById('id-tag').innerText = "YOUR IDENTITY: " + myName;
+} else {
+alert("Please enter ID and Password.");
+}
+}
 
-  function sendMsg() {
-    var msgInput = document.getElementById("user-msg");
-    var name = document.getElementById("username").value;
-    if(msgInput.value) {
-      var msgBox = document.getElementById("messages");
-      msgBox.innerHTML += `<div class="msg"><b>${name}:</b> ${msgInput.value}</div>`;
-      msgInput.value = "";
-      msgBox.scrollTop = msgBox.scrollHeight;
-    }
-  }
+function send() {
+let i = document.getElementById('m');
+let win = document.getElementById('win');
+if(i.value.trim() !== "") {
+win.innerHTML += &lt;div class=&quot;msg&quot;&gt;&lt;b&gt;${myName}&lt;/b&gt; ${i.value}&lt;/div&gt;;
+i.value = "";
+win.scrollTop = win.scrollHeight;
+}
+}
 </script>
-
-<footer>
-  <p style="padding: 30px; color: #333; font-size: 10px; letter-spacing: 2px;">&copy; 2026 11LOTUS | FOR THE DREAMERS</p>
-</footer>
 
 </body>
 </html>
