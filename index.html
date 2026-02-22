@@ -27,7 +27,7 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 <div id="reader"></div>
 <p style="font-size:11px; color:#666">Scan Rabbit QR to Unlock Private Sanctuary</p>
 <input type="text" id="pid" placeholder="Partner QR ID">
-<input type="password" id="pass" placeholder="Your Secret Key">
+<input type="password" id="pass" placeholder="Your Secret Password">
 <button class="btn" onclick="start()">Enter The Void</button>
 </div>
 <div class="card" id="interface">
@@ -49,7 +49,7 @@ function onScanSuccess(txt) { document.getElementById('pid').value = txt; alert(
 let scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
 scanner.render(onScanSuccess);
 function start() {
-let id = document.getElementById('pid').value;
+let id = document.getElementById('partner-id').value;
 let p = document.getElementById('pass').value;
 if(id && p) {
 nick = names[(id.length + p.length) % names.length];
