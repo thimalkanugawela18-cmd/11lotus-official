@@ -1,45 +1,84 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>11LOTUS | The Silent Companion</title>
+<title>11LOTUS | The Circle</title>
 <style>
-body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; scroll-behavior: smooth; }
-header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
-.main-logo { width: 320px; margin-bottom: 25px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3)); }
-.tagline { font-size: 14px; letter-spacing: 8px; text-transform: uppercase; color: #d4af37; font-weight: bold; margin-top: 10px; }
-section { padding: 100px 20px; border-top: 1px solid #111; }
-.box-card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 500px; margin: 0 auto; padding: 70px 40px; background: #0d0d0d; box-shadow: 0 40px 100px rgba(0,0,0,0.9); }
-.headline { color: #d4af37; font-size: 32px; letter-spacing: 3px; margin-bottom: 25px; }
-.copy-text { color: #888; font-style: italic; line-height: 1.8; margin-bottom: 40px; font-weight: 200; }
-.price { font-size: 45px; margin: 30px 0; font-weight: 200; }
-.btn-premium { display: inline-block; padding: 20px 60px; border: 1px solid #d4af37; text-decoration: none; color: #d4af37; letter-spacing: 4px; text-transform: uppercase; transition: 0.5s; cursor: pointer; background: transparent; }
-.btn-premium:hover { background-color: #d4af37; color: #000; box-shadow: 0 0 40px rgba(212, 175, 55, 0.3); }
-footer { padding: 80px; font-size: 12px; color: #333; letter-spacing: 3px; }
+  body { margin: 0; background-color: #050505; color: #ffffff; font-family: sans-serif; text-align: center; }
+  header { padding: 50px 20px; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
+  .main-logo { width: 250px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3)); }
+  
+  .box-card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 450px; margin: 40px auto; padding: 40px; background: #0d0d0d; box-shadow: 0 40px 100px rgba(0,0,0,0.9); border-radius: 15px; }
+  .headline { color: #d4af37; font-size: 24px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+  
+  input { background: #111; border: 1px solid #333; color: #fff; padding: 15px; width: 85%; margin-bottom: 15px; text-align: center; border-radius: 5px; }
+  input:focus { border-color: #d4af37; outline: none; }
+  
+  .btn-premium { display: block; width: 92%; padding: 15px; border: 1px solid #d4af37; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; background: transparent; transition: 0.5s; margin: 0 auto; }
+  .btn-premium:hover { background: #d4af37; color: #000; }
+
+  /* Chat Box Styling */
+  #chat-section { display: none; text-align: left; }
+  #messages { height: 300px; overflow-y: auto; border: 1px solid #222; padding: 15px; margin-bottom: 15px; background: #080808; border-radius: 10px; font-size: 14px; }
+  .msg { margin-bottom: 10px; padding: 8px; border-bottom: 1px solid #111; }
+  .msg b { color: #d4af37; }
 </style>
 </head>
 <body>
+
 <header>
-<img src="logo.jpg" alt="11Lotus Logo" class="main-logo">
-<div class="tagline">The Silent Companion</div>
+  <img src="logo.png" alt="11Lotus Logo" class="main-logo">
 </header>
-<section>
+
 <div class="box-card">
-<h2 class="headline">The Noir Edition</h2>
-<p class="copy-text">Specifically curated for the dreamers, the lovers, and those seeking refuge from the chaos. A sanctuary of softness to soothe the stressed mind.</p>
-<div class="price">$23.00</div>
-<a href="" class="btn-premium">Reserve Now</a>
+  <div id="auth-section">
+    <h2 class="headline">Scan Your Soul</h2>
+    <p style="color:#666; font-size: 13px;">Create or enter your Rabbit's Secret Key to enter the circle.</p>
+    <input type="text" id="username" placeholder="Your Name (e.g., Soul 01)">
+    <input type="password" id="soul-key" placeholder="Set Your Secret Key">
+    <button class="btn-premium" onclick="enterCircle()">Enter The Circle</button>
+  </div>
+
+  <div id="chat-section">
+    <h2 class="headline">The Circle</h2>
+    <div id="messages">
+      <div class="msg"><b>System:</b> Welcome to the 11Lotus sanctuary. Share your soul...</div>
+    </div>
+    <input type="text" id="user-msg" placeholder="Type a message..." style="width: 70%; margin-bottom: 0;">
+    <button onclick="sendMsg()" style="padding: 14px; background: #d4af37; border: none; cursor: pointer; border-radius: 5px; width: 20%;">Send</button>
+  </div>
 </div>
-</section>
-<section id="scan" style="background-color: #080808;">
-<div class="box-card">
-<h2 class="headline">Scan Your Soul</h2>
-<p class="copy-text">Enter your secret key to unlock your private sanctuary and personal diary.</p>
-<button class="btn-premium">Unlock Sanctuary</button>
-</div>
-</section>
-<footer> &copy; 2026 11LOTUS OFFICIAL | CRAFTED FOR THE EXTRAORDINARY </footer>
+
+<script>
+  function enterCircle() {
+    var name = document.getElementById("username").value;
+    var key = document.getElementById("soul-key").value;
+
+    if(name && key) {
+      // Meke 'key' eka save karanna database ekak ona. Danata api login wenna puluwan hadamu.
+      document.getElementById("auth-section").style.display = "none";
+      document.getElementById("chat-section").style.display = "block";
+    } else {
+      alert("Please enter both Name and Secret Key.");
+    }
+  }
+
+  function sendMsg() {
+    var msgInput = document.getElementById("user-msg");
+    var name = document.getElementById("username").value;
+    if(msgInput.value) {
+      var msgBox = document.getElementById("messages");
+      msgBox.innerHTML += `<div class="msg"><b>${name}:</b> ${msgInput.value}</div>`;
+      msgInput.value = "";
+      msgBox.scrollTop = msgBox.scrollHeight;
+    }
+  }
+</script>
+
+<footer>
+  <p style="padding: 30px; color: #333; font-size: 10px; letter-spacing: 2px;">&copy; 2026 11LOTUS | FOR THE DREAMERS</p>
+</footer>
+
 </body>
 </html>
