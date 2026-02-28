@@ -7,47 +7,63 @@
 <title>11LOTUS | Official</title>
 <script src=""></script>
 <style>
-body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; text-align: center; }
-.logo { font-size: 40px; color: #d4af37; margin-top: 50px; letter-spacing: 10px; text-transform: uppercase; }
-.main-btn { padding: 15px 30px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 20px; transition: 0.3s; }
-.main-btn:active { transform: scale(0.95); background: #d4af37; color: #000; }
-#reader { width: 100%; max-width: 400px; margin: 20px auto; min-height: 250px; border: 1px dashed #444; display: none; }
-#login-area { display: none; padding: 20px; }
-input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; width: 80%; margin: 10px 0; text-align: center; border-radius: 5px; }
+body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; text-align: center; overflow-x: hidden; }
+.logo { font-size: 40px; color: #d4af37; margin-top: 50px; letter-spacing: 10px; text-transform: uppercase; text-shadow: 0 0 15px rgba(212,175,55,0.4); }
+.container { padding: 20px; max-width: 450px; margin: 0 auto; }
+#reader { width: 100%; min-height: 250px; background: #000; border: 1px dashed #d4af37; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+.btn { padding: 15px 30px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; width: 100%; margin-top: 10px; }
+.btn:hover { background: #d4af37; color: #000; }
+input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 92%; margin: 10px 0; text-align: center; border-radius: 5px; font-size: 14px; }
+#home-screen, #scan-screen, #chat-screen { display: none; }
+#home-screen { display: block; }
 </style>
 </head>
 <body>
 
-<div id="home">
+<div id="home-screen" class="container">
 <div class="logo">11LOTUS</div>
-<p style="color:#666; letter-spacing: 2px;">WHERE SOULS CONNECT</p>
-<button class="main-btn" id="start-btn">Unlock Your Soul</button>
+<p style="color:#666; margin-bottom: 40px; font-size: 12px; letter-spacing: 2px;">WHERE SOULS CONNECT</p>
+<button class="btn" onclick="goToScan()">Unlock Your Soul</button>
 </div>
 
-<div id="login-area">
-<h2 style="color:#d4af37;">SCAN RABBIT KEY</h2>
+<div id="scan-screen" class="container">
+<h2 style="color:#d4af37; font-size: 18px; margin-bottom: 20px;">SCAN YOUR KEY</h2>
 <div id="reader"></div>
 <input type="text" id="pid" placeholder="Partner QR ID">
 <input type="password" id="pass" placeholder="Secret Password">
-<button class="main-btn" onclick="startChat()" style="width:85%">Enter Sanctuary</button>
+<button class="btn" onclick="goToChat()">Enter Sanctuary</button>
+<p style="color:#444; font-size: 10px; margin-top: 20px; cursor:pointer;" onclick="location.reload()">Back to Home</p>
+</div>
+
+<div id="chat-screen" class="container">
+<div id="id-tag" style="color:#d4af37; font-size: 12px; margin-bottom: 20px; letter-spacing: 2px;"></div>
+<div id="win" style="height: 350px; border: 1px solid #222; background: #080808; text-align: left; padding: 15px; overflow-y: auto; font-size: 13px; border-radius: 10px;">
+<div style="color: #444; font-style: italic;">Connecting secure bridge...</div>
+</div>
 </div>
 
 <script>
-// Button eka click wena eka track karanna
-document.getElementById('start-btn').addEventListener('click', function() {
-console.log("Button Clicked Successfully");
-openScanner();
-});
+let html5QrCode;
 
-function openScanner() {
-document.getElementById('home').style.display = 'none';
-document.getElementById('login-area').style.display = 'block';
-document.getElementById('reader').style.display = 'block';
+function goToScan() {
+document.getElementById('home-screen').style.display = 'none';
+document.getElementById('scan-screen').style.display = 'block';
 
 }
 
-function startChat() {
-alert("System Connecting...");
+function goToChat() {
+const id = document.getElementById('pid').value;
+const p = document.getElementById('pass').value;
+if(id && p) {
+document.getElementById('scan-screen').style.display = 'none';
+document.getElementById('chat-screen').style.display = 'block';
+const names = ["Obsidian Rabbit", "Moon Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
+const myNick = names[(id.length + p.length) % names.length];
+document.getElementById('id-tag').innerText = "IDENTITY: " + myNick;
+document.getElementById('win').innerHTML += &lt;div style=&quot;margin-top:10px; color:#d4af37;&quot;&gt;&lt;b&gt;System:&lt;/b&gt; Secure channel open for ${myNick}.&lt;/div&gt;;
+} else {
+alert("Please scan QR and set a password.");
+}
 }
 </script>
 
