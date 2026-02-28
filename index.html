@@ -5,8 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>11LOTUS | Souls Sanctuary</title>
-<script src=""></script>
-<script src=""></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 <style>
 body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; overflow-x:hidden; }
 .logo { font-size: 35px; color: #d4af37; letter-spacing: 8px; margin: 50px 0; text-transform: uppercase; text-shadow: 0 0 15px rgba(212,175,55,0.4); }
@@ -29,6 +29,12 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 <video id="video" autoplay playsinline></video>
 <button id="cam-btn" class="btn" onclick="openCam()">Scan Rabbit Key</button>
 
+<div id="form" style="margin-top:20px;">
+    <input type="text" id="roomID" placeholder="Partner QR ID">
+    <input type="password" id="pass" placeholder="Enter Secret Password">
+    <button class="btn" onclick="connect()">Unlock Sanctuary</button>
+</div>
+<p style="font-size: 10px; color: #444; margin-top: 20px;">Use the matching ID & Password from your soul card.</p>
 </div>
 
 <div id="chat-room" class="container">
@@ -43,11 +49,81 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 <script>
 // Firebase Configuration
 const firebaseConfig = {
-databaseURL: ""
+databaseURL: "https://lotus-chat-default-rtdb.firebaseio.com/"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+let currentRoom = &quot;&quot;;
+let myName = &quot;&quot;;
+
+// 1. Auto-fill ID from URL (QR කේතය ස්කෑන් කර පැමිණි විට)
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idFromQR = urlParams.get(&#39;id&#39;);
+    if (idFromQR) {
+        document.getElementById(&#39;roomID&#39;).value = idFromQR;
+        console.log(&quot;QR ID Recognized: &quot; + idFromQR);
+    }
+};
+
+async function openCam() {
+    const video = document.getElementById(&#39;video&#39;);
+    video.style.display = &#39;block&#39;;
+    document.getElementById(&#39;cam-btn&#39;).style.display = &#39;none&#39;;
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: &quot;environment&quot; } });
+        video.srcObject = stream;
+    } catch (err) {
+        alert(&quot;Camera Access Denied.&quot;);
+    }
+}
+
+function connect() {
+    const id = document.getElementById(&#39;roomID&#39;).value;
+    const p = document.getElementById(&#39;pass&#39;).value;
+    if(!id || !p) return alert(&quot;Please enter ID and Password&quot;);
+
+    currentRoom = id.trim();
+    const names = [&quot;Obsidian&quot;, &quot;Moonlight&quot;, &quot;Velvet&quot;, &quot;Silent&quot;, &quot;Astral&quot;, &quot;Golden&quot;];
+    // නම තීරණය වන්නේ පාස්වර්ඩ් එක සහ ID එක අනුවයි
+    myName = names[(id.length + p.length) % names.length] + &quot; Soul&quot;;
+
+    document.getElementById(&#39;login-ui&#39;).style.display = &#39;none&#39;;
+    document.getElementById(&#39;chat-room&#39;).style.display = &#39;block&#39;;
+    document.getElementById(&#39;status&#39;).innerText = &quot;CONNECTED AS: &quot; + myName;
+
+    // පරණ මැසේජ් පිරිසිදු කිරීම
+    document.getElementById(&#39;messages&#39;).innerHTML = &quot;&quot;;
+
+    // Listen for Messages
+    db.ref(&quot;rooms/&quot; + currentRoom).on(&quot;child_added&quot;, (snap) =&gt; {
+        const data = snap.val();
+        const div = document.createElement(&quot;div&quot;);
+        div.className = &quot;msg&quot;;
+        div.innerHTML = `&lt;b&gt;${data.user}&lt;/b&gt;${data.text}`;
+        document.getElementById(&#39;messages&#39;).appendChild(div);
+        document.getElementById(&#39;messages&#39;).scrollTop = 99999;
+    });
+}
+
+function send() {
+    const input = document.getElementById(&#39;msg-input&#39;);
+    if(input.value.trim()) {
+        db.ref(&quot;rooms/&quot; + currentRoom).push({
+            user: myName,
+            text: input.value
+        });
+        input.value = &quot;&quot;;
+    }
+}
+
+// Enter key එකෙන් මැසේජ් යැවීමට
+document.getElementById(&quot;msg-input&quot;).addEventListener(&quot;keyup&quot;, function(event) {
+    if (event.key === &quot;Enter&quot;) {
+        send();
+    }
+});
 </script>
 
 </body>
