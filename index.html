@@ -5,12 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>11LOTUS | Official</title>
-<script src=""></script>
 <style>
 body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; padding-top:50px; margin:0; }
 .logo { font-size: 35px; color: #d4af37; letter-spacing: 8px; margin-bottom: 40px; }
-.btn { padding:18px; width:80%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; letter-spacing:2px; }
-#reader { width:100%; max-width:350px; margin:20px auto; background:#111; display:none; border:1px dashed #444; min-height:250px; }
+.btn { padding:18px; width:80%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; }
+#video { width:100%; max-width:350px; background:#111; border:2px solid #d4af37; display:none; margin:20px auto; border-radius:10px; }
 #interface { display:none; padding:20px; }
 input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:85%; margin:10px; text-align:center; border-radius:5px; }
 </style>
@@ -19,35 +18,39 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 
 <div id="home">
 <div class="logo">11LOTUS</div>
-<button class="btn" onclick="openCameraNow()">Unlock Your Soul</button>
+<button class="btn" onclick="openDirectCam()">Unlock Your Soul</button>
 </div>
 
 <div id="interface">
-<div id="reader"></div>
+<video id="video" autoplay playsinline></video>
+<p id="status" style="font-size:12px; color:#666;">Align Rabbit QR in front of camera</p>
 <input type="text" id="pid" placeholder="Partner QR ID">
 <input type="password" id="pass" placeholder="Secret Password">
-<button class="btn" onclick="alert('Firebase Connecting...')">Enter Sanctuary</button>
+<button class="btn" onclick="alert('Connecting to Sanctuary...')">Enter Sanctuary</button>
 </div>
 
 <script>
-function openCameraNow() {
-console.log("Button clicked");
+async function openDirectCam() {
 document.getElementById('home').style.display = 'none';
 document.getElementById('interface').style.display = 'block';
-document.getElementById('reader').style.display = 'block';
+const video = document.getElementById('video');
+video.style.display = 'block';
 
-const html5QrCode = new Html5Qrcode("reader");
-const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-html5QrCode.start({ facingMode: "environment" }, config,
-(decodedText) => {
-document.getElementById('pid').value = decodedText;
-html5QrCode.stop();
-alert("QR Scanned Successfully!");
-}
-).catch(err => {
-alert("Camera Access Error: " + err);
+try {
+const stream = await navigator.mediaDevices.getUserMedia({
+video: { facingMode: "environment" }
 });
+video.srcObject = stream;
+} catch (err) {
+alert("Camera Error: " + err.message);
+// ෆ්‍රන්ට් කැමරාවෙන් ට්‍රයි එකක් දෙමු
+try {
+const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+video.srcObject = stream;
+} catch (e) {
+alert("Still failing. Please check phone settings.");
+}
+}
 }
 </script>
 
