@@ -26,11 +26,12 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 <div id="reader"></div>
 <input type="text" id="pid" placeholder="Partner QR ID">
 <input type="password" id="pass" placeholder="Secret Password">
-<button class="btn" onclick="alert('System Connecting to Firebase...')">Enter Sanctuary</button>
+<button class="btn" onclick="alert('Firebase Connecting...')">Enter Sanctuary</button>
 </div>
 
 <script>
 function openCameraNow() {
+console.log("Button clicked");
 document.getElementById('home').style.display = 'none';
 document.getElementById('interface').style.display = 'block';
 document.getElementById('reader').style.display = 'block';
@@ -45,7 +46,7 @@ html5QrCode.stop();
 alert("QR Scanned Successfully!");
 }
 ).catch(err => {
-alert("Camera Access Denied. Please Allow Permissions.");
+alert("Camera Access Error: " + err);
 });
 }
 </script>
