@@ -1,117 +1,124 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>11LOTUS | Souls Sanctuary</title>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-<style>
-body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; overflow-x:hidden; }
-.logo { font-size: 35px; color: #d4af37; letter-spacing: 8px; margin: 50px 0; text-transform: uppercase; }
-.container { padding: 20px; max-width: 400px; margin: 0 auto; }
-#video { width: 100%; border: 2px solid #d4af37; border-radius: 10px; display: none; margin-bottom: 20px; background: #000; }
-.btn { padding:15px; width:100%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; margin-top: 10px; }
-input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:92%; margin:10px 0; text-align:center; border-radius:5px; }
-#chat-room { display: none; }
-#messages { height: 380px; border: 1px solid #222; background: #080808; overflow-y: auto; padding: 15px; text-align: left; border-radius: 10px; margin-bottom: 10px; }
-.msg { margin-bottom: 12px; border-left: 2px solid #d4af37; padding-left: 10px; font-size: 14px; }
-.msg b { color: #d4af37; font-size: 10px; display: block; text-transform: uppercase; margin-bottom: 3px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11LOTUS | Souls Sanctuary</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; overflow-x:hidden; }
+        .logo { font-size: 40px; color: #d4af37; letter-spacing: 12px; margin: 60px 0; text-transform: uppercase; text-shadow: 0 0 20px rgba(212,175,55,0.4); }
+        .container { padding: 20px; max-width: 400px; margin: 0 auto; }
+        #video { width: 100%; border: 2px solid #d4af37; border-radius: 10px; display: none; margin-bottom: 20px; background: #000; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+        .btn { padding:18px; width:100%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; margin-top: 10px; transition: 0.3s; letter-spacing: 2px; }
+        .btn:hover { background: #d4af37; color: #000; }
+        input { background:#111; border:1px solid #333; color:#fff; padding:15px; width:92%; margin:10px 0; text-align:center; border-radius:5px; font-size: 14px; }
+        #chat-room { display: none; }
+        #messages { height: 380px; border: 1px solid #222; background: #080808; overflow-y: auto; padding: 15px; text-align: left; border-radius: 10px; margin-bottom: 15px; }
+        .msg { margin-bottom: 12px; border-left: 2px solid #d4af37; padding-left: 10px; font-size: 14px; animation: fadeIn 0.3s ease; }
+        .msg b { color: #d4af37; font-size: 10px; display: block; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body>
 
 <div id="login-ui" class="container">
-<div class="logo">11LOTUS</div>
-<video id="video" autoplay playsinline></video>
-<button id="cam-btn" class="btn" onclick="openCam()">Scan Rabbit Key</button>
-
-<div id="form" style="margin-top:20px;">
-    <input type="text" id="roomID" placeholder="Partner QR ID">
-    <input type="password" id="pass" placeholder="Enter Secret Password">
-    <button class="btn" onclick="connect()">Unlock Sanctuary</button>
-</div>
+    <div class="logo">11LOTUS</div>
+    <video id="video" autoplay playsinline></video>
+    <button id="cam-btn" class="btn" onclick="openCam()">Scan Rabbit Key</button>
+    
+    <div id="form" style="margin-top:20px;">
+        <input type="text" id="roomID" placeholder="Partner QR ID">
+        <input type="password" id="pass" placeholder="Enter Secret Password">
+        <button class="btn" onclick="connect()">Unlock Sanctuary</button>
+    </div>
 </div>
 
 <div id="chat-room" class="container">
-<div id="status" style="color:#d4af37; font-size:10px; margin-bottom:15px; letter-spacing:2px; text-transform:uppercase;"></div>
-<div id="messages"></div>
-<div style="display:flex; gap:5px;">
-<input type="text" id="msg-input" placeholder="Whisper..." style="margin:0; width:75%;">
-<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">></button>
-</div>
+    <div id="status" style="color:#d4af37; font-size:10px; margin-bottom:15px; letter-spacing:2px; text-transform:uppercase;"></div>
+    <div id="messages"></div>
+    <div style="display:flex; gap:8px;">
+        <input type="text" id="msg-input" placeholder="Whisper to your soul..." style="margin:0; width:75%;">
+        <button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer; color:#000;">></button>
+    </div>
 </div>
 
 <script>
-const firebaseConfig = {
-databaseURL: "https://lotus-chat-default-rtdb.firebaseio.com/"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+    // Firebase Configuration - ඔයාගේ අලුත් URL එක මෙතනට දාන්න
+    const firebaseConfig = {
+        databaseURL: "https://lotus-chat-7e5ed-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-let currentRoom = &quot;&quot;;
-let myName = &quot;&quot;;
+    let currentRoom = "";
+    let myName = "";
 
-window.onload = function() {
-    const params = new URLSearchParams(window.location.search);
-    const qid = params.get(&#39;id&#39;);
-    if (qid) {
-        document.getElementById(&#39;roomID&#39;).value = qid;
+    // URL එකෙන් ID එක ගන්න එක (Auto-fill)
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const qid = params.get('id');
+        if (qid) {
+            document.getElementById('roomID').value = qid;
+        }
+    };
+
+    // කැමරාව ඕපන් කරන කොටස (Scan Rabbit Key බටන් එකට අදාළව)
+    async function openCam() {
+        const video = document.getElementById('video');
+        const btn = document.getElementById('cam-btn');
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "environment" } 
+            });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            btn.style.display = 'none';
+        } catch (err) {
+            alert("Camera Error: Please allow camera access.");
+        }
     }
-};
 
-async function openCam() {
-    const video = document.getElementById(&#39;video&#39;);
-    const btn = document.getElementById(&#39;cam-btn&#39;);
-    
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: &quot;environment&quot; } 
+    function connect() {
+        const id = document.getElementById('roomID').value;
+        const p = document.getElementById('pass').value;
+        if(!id || !p) return alert("Please fill all details");
+
+        currentRoom = id.trim();
+        const names = ["Obsidian", "Moonlight", "Velvet", "Silent", "Astral", "Golden"];
+        myName = names[(id.length + p.length) % names.length] + " Soul";
+
+        document.getElementById('login-ui').style.display = 'none';
+        document.getElementById('chat-room').style.display = 'block';
+        document.getElementById('status').innerText = "CONNECTED AS: " + myName;
+
+        // Listen for Messages
+        db.ref("rooms/" + currentRoom).on("child_added", (snap) => {
+            const data = snap.val();
+            const div = document.createElement("div");
+            div.className = "msg";
+            div.innerHTML = "<b>" + data.user + "</b>" + data.text;
+            document.getElementById('messages').appendChild(div);
+            document.getElementById('messages').scrollTop = 99999;
         });
-        video.srcObject = stream;
-        video.style.display = &#39;block&#39;;
-        btn.style.display = &#39;none&#39;;
-    } catch (err) {
-        console.error(err);
-        alert(&quot;Camera Error: පර්මිෂන් ලබා දෙන්න. &quot; + err.message);
     }
-}
 
-function connect() {
-    const id = document.getElementById(&#39;roomID&#39;).value;
-    const p = document.getElementById(&#39;pass&#39;).value;
-    if(!id || !p) return alert(&quot;කරුණාකර සියලු විස්තර පුරවන්න.&quot;);
+    function send() {
+        const input = document.getElementById('msg-input');
+        if(input.value.trim()) {
+            db.ref("rooms/" + currentRoom).push({
+                user: myName,
+                text: input.value
+            });
+            input.value = "";
+        }
+    }
 
-    currentRoom = id.trim();
-    const names = [&quot;Obsidian&quot;, &quot;Moonlight&quot;, &quot;Velvet&quot;, &quot;Silent&quot;, &quot;Astral&quot;, &quot;Golden&quot;];
-    myName = names[(id.length + p.length) % names.length] + &quot; Soul&quot;;
-
-    document.getElementById(&#39;login-ui&#39;).style.display = &#39;none&#39;;
-    document.getElementById(&#39;chat-room&#39;).style.display = &#39;block&#39;;
-    document.getElementById(&#39;status&#39;).innerText = &quot;CONNECTED AS: &quot; + myName;
-
-    db.ref(&quot;rooms/&quot; + currentRoom).on(&quot;child_added&quot;, (snap) =&gt; {
-        const data = snap.val();
-        const div = document.createElement(&quot;div&quot;);
-        div.className = &quot;msg&quot;;
-        div.innerHTML = &quot;&lt;b&gt;&quot; + data.user + &quot;&lt;/b&gt;&quot; + data.text;
-        document.getElementById(&#39;messages&#39;).appendChild(div);
-        document.getElementById(&#39;messages&#39;).scrollTop = 99999;
+    // Enter එක එබුවම මැසේජ් යන්න
+    document.getElementById("msg-input").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") send();
     });
-}
-
-function send() {
-    const input = document.getElementById(&#39;msg-input&#39;);
-    if(input.value.trim()) {
-        db.ref(&quot;rooms/&quot; + currentRoom).push({
-            user: myName,
-            text: input.value
-        });
-        input.value = &quot;&quot;;
-    }
-}
 </script>
-
 </body>
 </html>
