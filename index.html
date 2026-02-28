@@ -9,9 +9,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 <style>
 body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; overflow-x:hidden; }
-.logo { font-size: 35px; color: #d4af37; letter-spacing: 8px; margin: 50px 0; text-transform: uppercase; text-shadow: 0 0 15px rgba(212,175,55,0.4); }
+.logo { font-size: 35px; color: #d4af37; letter-spacing: 8px; margin: 50px 0; text-transform: uppercase; }
 .container { padding: 20px; max-width: 400px; margin: 0 auto; }
-#video { width: 100%; border: 1px solid #d4af37; border-radius: 10px; display: none; margin-bottom: 20px; }
+#video { width: 100%; border: 2px solid #d4af37; border-radius: 10px; display: none; margin-bottom: 20px; background: #000; }
 .btn { padding:15px; width:100%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; margin-top: 10px; }
 input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:92%; margin:10px 0; text-align:center; border-radius:5px; }
 #chat-room { display: none; }
@@ -26,10 +26,11 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 <div class="logo">11LOTUS</div>
 <video id="video" autoplay playsinline></video>
 <button id="cam-btn" class="btn" onclick="openCam()">Scan Rabbit Key</button>
+
 <div id="form" style="margin-top:20px;">
-<input type="text" id="roomID" placeholder="Partner QR ID">
-<input type="password" id="pass" placeholder="Enter Secret Password">
-<button class="btn" onclick="connect()">Unlock Sanctuary</button>
+    <input type="text" id="roomID" placeholder="Partner QR ID">
+    <input type="password" id="pass" placeholder="Enter Secret Password">
+    <button class="btn" onclick="connect()">Unlock Sanctuary</button>
 </div>
 </div>
 
@@ -52,7 +53,6 @@ const db = firebase.database();
 let currentRoom = &quot;&quot;;
 let myName = &quot;&quot;;
 
-// Auto-fill ID from URL
 window.onload = function() {
     const params = new URLSearchParams(window.location.search);
     const qid = params.get(&#39;id&#39;);
@@ -63,22 +63,25 @@ window.onload = function() {
 
 async function openCam() {
     const video = document.getElementById(&#39;video&#39;);
-    video.style.display = &#39;block&#39;;
-    document.getElementById(&#39;cam-btn&#39;).style.display = &#39;none&#39;;
+    const btn = document.getElementById(&#39;cam-btn&#39;);
+    
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
             video: { facingMode: &quot;environment&quot; } 
         });
         video.srcObject = stream;
+        video.style.display = &#39;block&#39;;
+        btn.style.display = &#39;none&#39;;
     } catch (err) {
-        alert(&quot;Camera error. Please allow permission.&quot;);
+        console.error(err);
+        alert(&quot;Camera Error: පර්මිෂන් ලබා දෙන්න. &quot; + err.message);
     }
 }
 
 function connect() {
     const id = document.getElementById(&#39;roomID&#39;).value;
     const p = document.getElementById(&#39;pass&#39;).value;
-    if(!id || !p) return alert(&quot;Fill all details&quot;);
+    if(!id || !p) return alert(&quot;කරුණාකර සියලු විස්තර පුරවන්න.&quot;);
 
     currentRoom = id.trim();
     const names = [&quot;Obsidian&quot;, &quot;Moonlight&quot;, &quot;Velvet&quot;, &quot;Silent&quot;, &quot;Astral&quot;, &quot;Golden&quot;];
