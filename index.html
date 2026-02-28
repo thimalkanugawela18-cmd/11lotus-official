@@ -11,15 +11,13 @@
 body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; overflow-x:hidden; }
 .logo { font-size: 35px; color: #d4af37; letter-spacing: 8px; margin: 50px 0; text-transform: uppercase; text-shadow: 0 0 15px rgba(212,175,55,0.4); }
 .container { padding: 20px; max-width: 400px; margin: 0 auto; }
-#video { width: 100%; border: 1px solid #d4af37; border-radius: 10px; display: none; margin-bottom: 20px; box-shadow: 0 0 15px rgba(212,175,55,0.2); }
-.btn { padding:15px; width:100%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; margin-top: 10px; transition: 0.3s; }
-.btn:hover { background: #d4af37; color: #000; }
-input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:92%; margin:10px 0; text-align:center; border-radius:5px; font-size: 14px; }
+#video { width: 100%; border: 1px solid #d4af37; border-radius: 10px; display: none; margin-bottom: 20px; }
+.btn { padding:15px; width:100%; border:1px solid #d4af37; color:#d4af37; background:none; font-weight:bold; cursor:pointer; text-transform:uppercase; margin-top: 10px; }
+input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:92%; margin:10px 0; text-align:center; border-radius:5px; }
 #chat-room { display: none; }
 #messages { height: 380px; border: 1px solid #222; background: #080808; overflow-y: auto; padding: 15px; text-align: left; border-radius: 10px; margin-bottom: 10px; }
-.msg { margin-bottom: 12px; border-left: 2px solid #d4af37; padding-left: 10px; font-size: 14px; line-height: 1.4; }
-.msg b { color: #d4af37; font-size: 10px; display: block; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 1px; }
-#status { color:#d4af37; font-size:10px; margin-bottom:15px; letter-spacing:2px; text-transform: uppercase; }
+.msg { margin-bottom: 12px; border-left: 2px solid #d4af37; padding-left: 10px; font-size: 14px; }
+.msg b { color: #d4af37; font-size: 10px; display: block; text-transform: uppercase; margin-bottom: 3px; }
 </style>
 </head>
 <body>
@@ -33,15 +31,14 @@ input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:
 <input type="password" id="pass" placeholder="Enter Secret Password">
 <button class="btn" onclick="connect()">Unlock Sanctuary</button>
 </div>
-<p style="font-size: 10px; color: #444; margin-top: 20px;">Use the matching ID & Password from your soul card.</p>
 </div>
 
 <div id="chat-room" class="container">
-<div id="status"></div>
+<div id="status" style="color:#d4af37; font-size:10px; margin-bottom:15px; letter-spacing:2px; text-transform:uppercase;"></div>
 <div id="messages"></div>
 <div style="display:flex; gap:5px;">
-<input type="text" id="msg-input" placeholder="Whisper to your soul..." style="margin:0; width:75%;">
-<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer; color:#000;">></button>
+<input type="text" id="msg-input" placeholder="Whisper..." style="margin:0; width:75%;">
+<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">></button>
 </div>
 </div>
 
@@ -55,11 +52,12 @@ const db = firebase.database();
 let currentRoom = &quot;&quot;;
 let myName = &quot;&quot;;
 
+// Auto-fill ID from URL
 window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const idFromQR = urlParams.get(&#39;id&#39;);
-    if (idFromQR) {
-        document.getElementById(&#39;roomID&#39;).value = idFromQR;
+    const params = new URLSearchParams(window.location.search);
+    const qid = params.get(&#39;id&#39;);
+    if (qid) {
+        document.getElementById(&#39;roomID&#39;).value = qid;
     }
 };
 
@@ -68,17 +66,19 @@ async function openCam() {
     video.style.display = &#39;block&#39;;
     document.getElementById(&#39;cam-btn&#39;).style.display = &#39;none&#39;;
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: &quot;environment&quot; } });
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: &quot;environment&quot; } 
+        });
         video.srcObject = stream;
     } catch (err) {
-        alert(&quot;Camera Access Denied.&quot;);
+        alert(&quot;Camera error. Please allow permission.&quot;);
     }
 }
 
 function connect() {
     const id = document.getElementById(&#39;roomID&#39;).value;
     const p = document.getElementById(&#39;pass&#39;).value;
-    if(!id || !p) return alert(&quot;Please enter ID and Password&quot;);
+    if(!id || !p) return alert(&quot;Fill all details&quot;);
 
     currentRoom = id.trim();
     const names = [&quot;Obsidian&quot;, &quot;Moonlight&quot;, &quot;Velvet&quot;, &quot;Silent&quot;, &quot;Astral&quot;, &quot;Golden&quot;];
@@ -87,7 +87,6 @@ function connect() {
     document.getElementById(&#39;login-ui&#39;).style.display = &#39;none&#39;;
     document.getElementById(&#39;chat-room&#39;).style.display = &#39;block&#39;;
     document.getElementById(&#39;status&#39;).innerText = &quot;CONNECTED AS: &quot; + myName;
-    document.getElementById(&#39;messages&#39;).innerHTML = &quot;&quot;;
 
     db.ref(&quot;rooms/&quot; + currentRoom).on(&quot;child_added&quot;, (snap) =&gt; {
         const data = snap.val();
@@ -109,12 +108,6 @@ function send() {
         input.value = &quot;&quot;;
     }
 }
-
-document.getElementById(&quot;msg-input&quot;).addEventListener(&quot;keyup&quot;, function(event) {
-    if (event.key === &quot;Enter&quot;) {
-        send();
-    }
-});
 </script>
 
 </body>
