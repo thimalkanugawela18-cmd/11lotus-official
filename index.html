@@ -7,62 +7,61 @@
 <title>11LOTUS | Official</title>
 <script src=""></script>
 <style>
-body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; text-align: center; overflow-x: hidden; }
-.logo { font-size: 40px; color: #d4af37; margin-top: 50px; letter-spacing: 10px; text-transform: uppercase; text-shadow: 0 0 15px rgba(212,175,55,0.4); }
-.container { padding: 20px; max-width: 450px; margin: 0 auto; }
-#reader { width: 100%; min-height: 250px; background: #000; border: 1px dashed #d4af37; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
-.btn { padding: 15px 30px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; width: 100%; margin-top: 10px; }
-.btn:hover { background: #d4af37; color: #000; }
-input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 92%; margin: 10px 0; text-align: center; border-radius: 5px; font-size: 14px; }
-#home-screen, #scan-screen, #chat-screen { display: none; }
-#home-screen { display: block; }
+body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; text-align: center; }
+.logo { font-size: 40px; color: #d4af37; margin: 50px 0 10px 0; letter-spacing: 10px; text-transform: uppercase; }
+.container { padding: 20px; max-width: 420px; margin: 0 auto; }
+#reader { width: 100%; min-height: 250px; background: #000; border: 1px dashed #d4af37; border-radius: 10px; margin-bottom: 20px; }
+.btn { padding: 18px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; width: 100%; margin-top: 10px; font-size: 14px; }
+.btn:active { background: #d4af37; color: #000; }
+input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 10px 0; text-align: center; border-radius: 5px; }
+#home-ui { display: block; }
+#scan-ui, #chat-ui { display: none; }
 </style>
 </head>
 <body>
 
-<div id="home-screen" class="container">
+<div id="home-ui" class="container">
 <div class="logo">11LOTUS</div>
-<p style="color:#666; margin-bottom: 40px; font-size: 12px; letter-spacing: 2px;">WHERE SOULS CONNECT</p>
-<button class="btn" onclick="goToScan()">Unlock Your Soul</button>
+<p style="color:#666; font-size: 11px; letter-spacing: 2px; margin-bottom: 40px;">WHERE SOULS CONNECT</p>
+<button class="btn" onclick="openScannerNow()">Unlock Your Soul</button>
 </div>
 
-<div id="scan-screen" class="container">
-<h2 style="color:#d4af37; font-size: 18px; margin-bottom: 20px;">SCAN YOUR KEY</h2>
+<div id="scan-ui" class="container">
+<h2 style="color:#d4af37; font-size: 16px; margin-bottom: 20px;">SCAN RABBIT KEY</h2>
 <div id="reader"></div>
 <input type="text" id="pid" placeholder="Partner QR ID">
 <input type="password" id="pass" placeholder="Secret Password">
-<button class="btn" onclick="goToChat()">Enter Sanctuary</button>
+<button class="btn" onclick="enterSanctuary()">Enter Sanctuary</button>
 <p style="color:#444; font-size: 10px; margin-top: 20px; cursor:pointer;" onclick="location.reload()">Back to Home</p>
 </div>
 
-<div id="chat-screen" class="container">
-<div id="id-tag" style="color:#d4af37; font-size: 12px; margin-bottom: 20px; letter-spacing: 2px;"></div>
-<div id="win" style="height: 350px; border: 1px solid #222; background: #080808; text-align: left; padding: 15px; overflow-y: auto; font-size: 13px; border-radius: 10px;">
-<div style="color: #444; font-style: italic;">Connecting secure bridge...</div>
-</div>
+<div id="chat-ui" class="container">
+<div id="soul-name" style="color:#d4af37; margin-bottom: 15px; letter-spacing: 2px;"></div>
+<div id="display" style="height: 350px; border: 1px solid #222; background: #080808; text-align: left; padding: 15px; overflow-y: auto; font-size: 13px; border-radius: 10px;"></div>
 </div>
 
 <script>
-let html5QrCode;
+let scannerObj;
 
-function goToScan() {
-document.getElementById('home-screen').style.display = 'none';
-document.getElementById('scan-screen').style.display = 'block';
+function openScannerNow() {
+// UI Change
+document.getElementById('home-ui').style.display = 'none';
+document.getElementById('scan-ui').style.display = 'block';
 
 }
 
-function goToChat() {
+function enterSanctuary() {
 const id = document.getElementById('pid').value;
 const p = document.getElementById('pass').value;
 if(id && p) {
-document.getElementById('scan-screen').style.display = 'none';
-document.getElementById('chat-screen').style.display = 'block';
-const names = ["Obsidian Rabbit", "Moon Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
-const myNick = names[(id.length + p.length) % names.length];
-document.getElementById('id-tag').innerText = "IDENTITY: " + myNick;
-document.getElementById('win').innerHTML += &lt;div style=&quot;margin-top:10px; color:#d4af37;&quot;&gt;&lt;b&gt;System:&lt;/b&gt; Secure channel open for ${myNick}.&lt;/div&gt;;
+document.getElementById('scan-ui').style.display = 'none';
+document.getElementById('chat-ui').style.display = 'block';
+const n = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
+const name = n[(id.length + p.length) % n.length];
+document.getElementById('soul-name').innerText = "IDENTITY: " + name;
+document.getElementById('display').innerHTML = &lt;div style=&quot;color:#444&quot;&gt;Welcome, ${name}. Secure bridge active...&lt;/div&gt;;
 } else {
-alert("Please scan QR and set a password.");
+alert("Scan QR and set Password.");
 }
 }
 </script>
