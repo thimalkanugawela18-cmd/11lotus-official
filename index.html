@@ -1,77 +1,113 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>11LOTUS | Souls Sanctuary</title>
+<title>11LOTUS | Official Home</title>
 <script src=""></script>
 <style>
-body { background:#050505; color:#fff; font-family:sans-serif; text-align:center; margin:0; }
-.card { border:1px solid #d4af37; max-width:400px; margin:20px auto; padding:20px; background:#0d0d0d; border-radius:15px; box-shadow: 0 0 20px rgba(212,175,55,0.2); }
-#reader { width:100%; border-radius:10px; background:#111; margin-bottom:15px; border: 1px dashed #444; }
-input { background:#111; border:1px solid #333; color:#fff; padding:12px; width:85%; margin-bottom:10px; text-align:center; border-radius:5px; }
-.btn { padding:14px; width:92%; border:1px solid #d4af37; color:#d4af37; background:transparent; cursor:pointer; font-weight:bold; text-transform:uppercase; }
-#interface { display:none; }
-.tabs { display:flex; gap:5px; margin-bottom:15px; }
-.tab { flex:1; padding:10px; border:1px solid #222; cursor:pointer; font-size:12px; background:#111; color:#666; }
-.active { border-color:#d4af37; color:#d4af37; background:#0d0d0d; }
-.msgs { height:300px; overflow-y:auto; border:1px solid #222; padding:10px; background:#080808; margin-bottom:10px; text-align:left; font-size:13px; border-radius:5px; }
-.msg { margin-bottom:8px; border-left:3px solid #d4af37; padding-left:10px; }
-.msg b { color:#d4af37; font-size:10px; display:block; text-transform:uppercase; }
+body { margin: 0; background: #050505; color: #fff; font-family: 'serif'; text-align: center; }
+
+/* HOMEPAGE SECTION */
+#homepage { padding: 100px 20px; transition: 0.5s; }
+.logo { font-size: 50px; letter-spacing: 15px; color: #d4af37; margin-bottom: 20px; text-shadow: 0 0 20px rgba(212,175,55,0.5); }
+.tagline { font-size: 14px; letter-spacing: 5px; color: #888; text-transform: uppercase; margin-bottom: 50px; }
+.main-btn { padding: 15px 40px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; transition: 0.4s; }
+.main-btn:hover { background: #d4af37; color: #000; box-shadow: 0 0 30px rgba(212,175,55,0.4); }
+
+/* SCANNER & LOGIN SECTION */
+#login-section { display: none; padding: 40px 20px; }
+.card { border: 1px solid rgba(212, 175, 55, 0.2); max-width: 400px; margin: 0 auto; padding: 25px; background: #0d0d0d; border-radius: 15px; }
+#reader { width: 100%; min-height: 250px; background: #111; border-radius: 10px; margin-bottom: 15px; border: 1px dashed #444; }
+input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; width: 85%; margin-bottom: 10px; text-align: center; border-radius: 5px; }
+
+/* CHAT SECTION */
+#chat-ui { display: none; padding: 20px; }
+.tabs { display: flex; gap: 5px; max-width: 400px; margin: 0 auto 15px auto; }
+.tab { flex: 1; padding: 10px; border: 1px solid #222; cursor: pointer; font-size: 11px; color: #666; background: #111; }
+.active { border-color: #d4af37; color: #d4af37; background: #0d0d0d; }
+.msgs { height: 350px; overflow-y: auto; border: 1px solid #222; padding: 10px; background: #080808; text-align: left; font-size: 13px; max-width: 400px; margin: 0 auto; border-radius: 5px; }
+.msg { margin-bottom: 10px; border-left: 3px solid #d4af37; padding-left: 10px; }
+.msg b { color: #d4af37; font-size: 10px; display: block; text-transform: uppercase; }
 </style>
+
 </head>
 <body>
-<div class="card" id="login">
-<h2 style="color:#d4af37; letter-spacing:3px;">11LOTUS</h2>
+
+<div id="homepage">
+<div class="logo">11LOTUS</div>
+<div class="tagline">Where Souls Connect</div>
+<p style="max-width: 500px; margin: 0 auto 40px auto; color: #666; font-size: 14px; line-height: 1.6;">
+Every doll carries a secret. Every secret has a soul. Scan your key to enter the sanctuary.
+</p>
+<button class="main-btn" onclick="showScanner()">Unlock Your Soul</button>
+</div>
+
+<div id="login-section">
+<div class="card">
+<h2 style="color:#d4af37; font-size: 18px; letter-spacing: 2px;">SCAN YOUR KEY</h2>
 <div id="reader"></div>
-<p style="font-size:11px; color:#666">Scan Rabbit QR to Unlock Private Sanctuary</p>
 <input type="text" id="pid" placeholder="Partner QR ID">
-<input type="password" id="pass" placeholder="Your Secret Password">
-<button class="btn" onclick="start()">Enter The Void</button>
+<input type="password" id="pass" placeholder="Your Secret Key">
+<button class="main-btn" style="width: 100%;" onclick="startChat()">Enter Sanctuary</button>
+<p onclick="location.reload()" style="color:#444; font-size: 10px; margin-top: 15px; cursor:pointer;">&larr; Back to Home</p>
 </div>
-<div class="card" id="interface">
+</div>
+
+<div id="chat-ui">
 <div class="tabs">
-<div id="t1" class="tab active" onclick="tab('private')">PRIVATE ROOM</div>
-<div id="t2" class="tab" onclick="tab('global')">COMMUNITY</div>
+<div id="t1" class="tab active" onclick="changeMode('private')">PRIVATE ROOM</div>
+<div id="t2" class="tab" onclick="changeMode('global')">COMMUNITY</div>
 </div>
-<div id="id-tag" style="color:#888; font-size:11px; margin-bottom:10px;"></div>
-<div class="msgs" id="win"></div>
-<div style="display:flex; gap:5px">
-<input type="text" id="m" placeholder="Whisper your soul..." style="width:75%; margin-bottom:0">
-<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">></button>
+<div id="id-tag" style="color:#d4af37; font-size: 11px; margin-bottom:10px; text-transform:uppercase;"></div>
+<div class="msgs" id="window"></div>
+<div style="display:flex; gap:5px; max-width:400px; margin:15px auto 0 auto;">
+<input type="text" id="msg-in" placeholder="Whisper..." style="width:75%; margin:0;">
+<button onclick="postMsg()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">></button>
 </div>
 </div>
+
 <script>
-const names = ["Obsidian Rabbit", "Moon Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
-let nick = ""; let mode = "private";
-function onScanSuccess(txt) { document.getElementById('pid').value = txt; alert("Partner QR Recognized!"); }
-let scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-scanner.render(onScanSuccess);
-function start() {
-let id = document.getElementById('partner-id').value;
+const mysticalNames = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
+let myNick = "";
+
+// 1. Show Scanner Function
+function showScanner() {
+document.getElementById('homepage').style.display = 'none';
+document.getElementById('login-section').style.display = 'block';
+
+}
+
+// 2. Start Chat Function
+function startChat() {
+let id = document.getElementById('partner-id')?.value || document.getElementById('pid').value;
 let p = document.getElementById('pass').value;
 if(id && p) {
-nick = names[(id.length + p.length) % names.length];
-document.getElementById('login').style.display='none';
-document.getElementById('interface').style.display='block';
-document.getElementById('id-tag').innerText = "IDENTITY: " + nick;
-} else { alert("Scan QR or Enter ID/Password"); }
+myNick = mysticalNames[(id.length + p.length) % mysticalNames.length];
+document.getElementById('login-section').style.display = 'none';
+document.getElementById('chat-ui').style.display = 'block';
+document.getElementById('id-tag').innerText = "IDENTITY: " + myNick;
+} else {
+alert("Please scan QR or enter ID/Password.");
 }
-function tab(m) {
-mode = m;
+}
+
+// 3. Simple UI Logic
+function changeMode(m) {
 document.getElementById('t1').className = m=='private' ? 'tab active' : 'tab';
 document.getElementById('t2').className = m=='global' ? 'tab active' : 'tab';
-document.getElementById('win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;System:&lt;/b&gt; Connected to ${m} room.&lt;/div&gt;;
 }
-function send() {
-let i = document.getElementById('m');
+
+function postMsg() {
+let i = document.getElementById('msg-in');
 if(i.value) {
-document.getElementById('win').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;${nick}:&lt;/b&gt; ${i.value}&lt;/div&gt;;
+document.getElementById('window').innerHTML += &lt;div class=&#39;msg&#39;&gt;&lt;b&gt;${myNick}&lt;/b&gt; ${i.value}&lt;/div&gt;;
 i.value = "";
-document.getElementById('win').scrollTop = 9999;
+document.getElementById('window').scrollTop = 9999;
 }
 }
 </script>
+
 </body>
 </html>
