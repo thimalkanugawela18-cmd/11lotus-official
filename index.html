@@ -12,13 +12,10 @@ body { margin: 0; background: #050505; color: #fff; font-family: sans-serif; tex
 .container { padding: 20px; }
 #reader { width: 100%; max-width: 400px; margin: 20px auto; background: #111; border-radius: 10px; display: none; border: 1px dashed #444; }
 .main-btn { padding: 15px 30px; border: 1px solid #d4af37; color: #d4af37; background: transparent; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 20px; letter-spacing: 2px; }
-.main-btn:hover { background: #d4af37; color: #000; }
 input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; width: 80%; margin: 10px 0; text-align: center; border-radius: 5px; }
 #login-area { display: none; }
 #chat-ui { display: none; padding: 20px; }
 .msgs { height: 300px; border: 1px solid #222; overflow-y: auto; text-align: left; padding: 15px; background: #080808; border-radius: 10px; margin-bottom: 10px; }
-.msg { margin-bottom: 10px; border-left: 3px solid #d4af37; padding-left: 10px; }
-.msg b { color: #d4af37; font-size: 10px; display: block; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -38,13 +35,11 @@ input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; wi
 </div>
 
 <div id="chat-ui" class="container">
-<div id="user-tag" style="color:#d4af37; font-size: 12px; margin-bottom: 15px; letter-spacing: 2px;"></div>
-<div class="msgs" id="win">
-<div class="msg"><b>System:</b> Secure bridge active. Whisper to your soul...</div>
-</div>
+<div id="user-tag" style="color:#d4af37; font-size: 12px; margin-bottom: 15px;"></div>
+<div class="msgs" id="win"></div>
 <div style="display:flex; gap:5px;">
 <input type="text" id="msg-in" placeholder="Whisper..." style="width:75%; margin:0;">
-<button onclick="send()" style="width:20%; background:#d4af37; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">></button>
+<button onclick="sendMsg()" style="width:20%; background:#d4af37; border:none; border-radius:5px;">></button>
 </div>
 </div>
 
@@ -64,21 +59,16 @@ const pass = document.getElementById('secret-pass').value;
 if(id && pass) {
 document.getElementById('login-area').style.display = 'none';
 document.getElementById('chat-ui').style.display = 'block';
-const names = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow", "Silent Petal", "Astral Bunny", "Golden Whisper"];
-const myNick = names[(id.length + pass.length) % names.length];
-document.getElementById('user-tag').innerText = "IDENTITY: " + myNick;
-} else {
-alert("Scan QR or enter ID and Password.");
+const names = ["Obsidian Rabbit", "Moonlight Lotus", "Velvet Shadow"];
+document.getElementById('user-tag').innerText = "Soul: " + names[(id.length + pass.length) % 3];
 }
 }
 
-function send() {
+function sendMsg() {
 const i = document.getElementById('msg-in');
-const win = document.getElementById('win');
 if(i.value) {
-win.innerHTML += &lt;div class=&quot;msg&quot;&gt;&lt;b&gt;YOU&lt;/b&gt; ${i.value}&lt;/div&gt;;
+document.getElementById('win').innerHTML += &lt;div&gt;&lt;b&gt;You:&lt;/b&gt; ${i.value}&lt;/div&gt;;
 i.value = "";
-win.scrollTop = win.scrollHeight;
 }
 }
 </script>
