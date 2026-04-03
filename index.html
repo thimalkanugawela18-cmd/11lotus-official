@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>11LOTUS | Souls Sanctuary ULTIMATE</title>
+    <title>11LOTUS | Souls Sanctuary PRO</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -17,38 +17,48 @@
         .screen { display: none; width: 100%; height: 100vh; flex-direction: column; }
         .active { display: flex !important; }
 
-        /* Auth UI */
-        .container { background: rgba(20, 20, 20, 0.85); padding: 35px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; margin: auto; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
+        /* Login & Setup UI */
+        .container { background: rgba(20, 20, 20, 0.9); padding: 35px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; margin: auto; box-shadow: 0 0 30px rgba(212, 175, 55, 0.15); }
         input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; border-radius: 8px; color: #fff; outline: none; box-sizing: border-box; font-size: 16px; }
-        .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: 'Orbitron'; transition: 0.3s; }
-        .btn:hover { background: #fff; }
+        .btn { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: 'Orbitron'; transition: 0.3s; }
 
-        /* Chat UI */
+        /* Chat Layout */
         header { width: 100%; padding: 12px 15px; background: #111; border-bottom: 1px solid rgba(212, 175, 55, 0.3); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: var(--dark); }
         
-        .msg { max-width: 75%; padding: 10px; border-radius: 12px; font-size: 15px; position: relative; cursor: pointer; word-wrap: break-word; line-height: 1.4; }
+        /* Message Bubbles */
+        .msg-container { position: relative; width: 100%; display: flex; flex-direction: column; transition: transform 0.2s; touch-action: pan-y; }
+        .msg { max-width: 75%; padding: 10px; border-radius: 12px; font-size: 15px; position: relative; word-wrap: break-word; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
         @media (min-width: 768px) { .msg { max-width: 35%; } }
         .sent { align-self: flex-end; background: var(--bubble-me); color: #000; border-bottom-right-radius: 2px; }
         .rec { align-self: flex-start; background: var(--bubble-you); color: #fff; border-bottom-left-radius: 2px; }
 
-        /* Care Buttons */
-        .reply-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 6px 12px; border-radius: 15px; font-size: 12px; cursor: pointer; margin: 4px 2px; transition: 0.2s; }
-        .reply-btn:hover { background: var(--gold); color: #000; }
+        /* Reply View inside Message */
+        .reply-in-msg { background: rgba(0,0,0,0.15); border-left: 3px solid var(--gold); padding: 5px 8px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; opacity: 0.8; font-style: italic; }
 
-        img, video { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
-        audio { width: 100%; min-width: 180px; margin-top: 5px; }
+        /* Reply Preview Bar above Input */
+        #reply-preview-bar { display: none; background: #1a1a1a; padding: 8px 15px; border-top: 1px solid var(--gold); align-items: center; gap: 10px; }
+        #reply-preview-bar span { flex: 1; font-size: 12px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Emoji Picker */
+        #emoji-picker { display: none; position: absolute; bottom: 80px; left: 10px; background: #222; border: 1px solid var(--gold); border-radius: 10px; padding: 10px; width: 250px; grid-template-columns: repeat(6, 1fr); gap: 5px; z-index: 100; }
+        .emoji-item { cursor: pointer; font-size: 20px; text-align: center; padding: 5px; }
 
         /* Input Area */
         .input-area { width: 100%; padding: 10px 15px; background: #181818; display: flex; align-items: center; gap: 10px; box-sizing: border-box; }
-        #chat-input { flex: 1; padding: 12px 18px; background: #2a2a2a; border: none; border-radius: 25px; color: #fff; outline: none; font-size: 16px; }
+        #chat-input { flex: 1; padding: 10px 18px; background: #2a2a2a; border: none; border-radius: 25px; color: #fff; outline: none; font-size: 16px; }
         .icon-btn { color: var(--gold); font-size: 24px; cursor: pointer; background:none; border:none; }
 
-        /* Modals */
-        .modal { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; z-index:1000; padding: 20px; }
-        .modal-content { background:#1a1a1a; padding:25px; border-radius:15px; border:1px solid var(--gold); width: 100%; max-width: 300px; text-align: center; }
-        
-        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:300px; z-index:999; pointer-events:none; }
+        /* Context Menu */
+        .msg-menu { display: none; position: absolute; background: #222; border: 1px solid var(--gold); border-radius: 8px; z-index: 2000; padding: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); min-width: 130px; }
+        .menu-item { padding: 10px; font-size: 14px; cursor: pointer; color: white; }
+        .menu-item:hover { background: var(--gold); color: #000; border-radius: 4px; }
+
+        /* Care Buttons */
+        .care-btn { border: 1px solid var(--gold); background: none; color: var(--gold); border-radius: 15px; padding: 5px 12px; font-size: 12px; margin: 5px 2px; cursor: pointer; }
+
+        img, video { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:300px; z-index:999; }
     </style>
 </head>
 <body>
@@ -58,63 +68,64 @@
             <h1 style="font-family:'Orbitron'; color:var(--gold); letter-spacing:5px;">11LOTUS</h1>
             <input type="text" id="partner-id" placeholder="PARTNER ID">
             <input type="password" id="password" placeholder="PASSWORD">
-            <button class="btn" onclick="handleAuth()">UNLOCK SANCTUARY</button>
-            <p onclick="showRecovery()" style="color:var(--gold); font-size:12px; cursor:pointer; margin-top:15px; text-decoration:underline; opacity:0.7;">Forgot Password?</p>
+            <button class="btn" onclick="handleAuth()">UNLOCK</button>
+            <p onclick="showRecovery()" style="color:var(--gold); font-size:12px; cursor:pointer; margin-top:15px; text-decoration:underline;">Forgot Password?</p>
         </div>
     </div>
 
     <div id="setup-screen" class="screen">
         <div class="container">
-            <h2 style="color:var(--gold); font-family:'Orbitron';">INITIALIZE</h2>
-            <p style="font-size:12px; opacity:0.6;">Set up your sanctuary for the first time.</p>
-            <input type="password" id="new-pass" placeholder="Create Password">
-            <input type="text" id="personal-key" placeholder="Recovery Key (Keep it secret!)">
-            <button class="btn" onclick="saveUser()">START JOURNEY</button>
+            <h2 style="color:var(--gold);">INITIALIZE</h2>
+            <input type="password" id="new-pass" placeholder="New Password">
+            <input type="text" id="personal-key" placeholder="Recovery Key (Secret)">
+            <button class="btn" onclick="saveUser()">START</button>
         </div>
     </div>
 
     <div id="chat-screen" class="screen">
         <header>
-            <button class="icon-btn" id="block-btn" onclick="toggleBlock()" style="font-size:11px; border:1px solid var(--gold); padding:4px 10px; border-radius:5px; font-family:'Orbitron';">BLOCK</button>
+            <button class="icon-btn" id="block-btn" onclick="toggleBlock()" style="font-size:11px; border:1px solid var(--gold); padding:4px 8px; border-radius:5px;">BLOCK</button>
             <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px; letter-spacing:2px;">SANCTUARY</div>
-            <button class="icon-btn" onclick="triggerNuclearBomb()" title="Nuke your messages">💣</button>
+            <button class="icon-btn" onclick="triggerNuclearBomb()">💣</button>
         </header>
         
         <div id="chat-window"></div>
-        
-        <div id="block-notice" style="display:none; background:var(--red); text-align:center; padding:6px; font-size:11px; font-weight:bold; letter-spacing:1px;">YOU BLOCKED THIS PARTNER</div>
+
+        <div id="emoji-picker"></div>
+
+        <div id="reply-preview-bar">
+            <span id="reply-preview-text">Replying...</span>
+            <button onclick="cancelReply()" style="background:none; border:none; color:var(--red); font-weight:bold;">X</button>
+        </div>
 
         <div class="input-area" id="input-container">
-            <label class="icon-btn">📎<input type="file" id="file-in" hidden accept="image/*,video/*" onchange="uploadMedia(this)"></label>
+            <span class="icon-btn" onclick="toggleEmojiPicker()">😊</span>
+            <label class="icon-btn">📎<input type="file" id="file-in" hidden onchange="uploadMedia(this)"></label>
             <span class="icon-btn" id="mic-btn" onmousedown="startVoice()" onmouseup="stopVoice()" ontouchstart="startVoice()" ontouchend="stopVoice()">🎙️</span>
-            <input type="text" id="chat-input" placeholder="Whisper your soul..." onkeypress="if(event.key==='Enter') sendMsg()">
-            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:42px; height:42px; border-radius:50%; font-weight:bold; cursor:pointer;">></button>
+            <input type="text" id="chat-input" placeholder="Whisper..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:40px; height:40px; border-radius:50%; font-weight:bold;">></button>
+        </div>
+
+        <div id="msg-menu" class="msg-menu">
+            <div class="menu-item" id="menu-reply-btn">↩️ Reply</div>
+            <div class="menu-item" id="menu-del-everyone" style="color:var(--red);">🗑️ Delete for Everyone</div>
+            <div class="menu-item" id="menu-del-me">🗑️ Delete for Me</div>
         </div>
     </div>
 
-    <div id="recovery-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="color:var(--gold); font-family:'Orbitron';">RECOVERY</h3>
-            <input type="text" id="recover-key-input" placeholder="ENTER SECRET KEY">
+    <div id="recovery-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:5000; align-items:center; justify-content:center;">
+        <div class="container">
+            <h3 style="color:var(--gold);">RECOVERY</h3>
+            <input type="text" id="recover-key-input" placeholder="SECRET KEY">
             <input type="password" id="new-password-input" placeholder="NEW PASSWORD" style="display:none;">
             <button class="btn" id="recovery-btn" onclick="verifyRecoveryKey()">VERIFY KEY</button>
-            <button class="btn" style="background:none; color:#888;" onclick="closeModals()">Cancel</button>
-        </div>
-    </div>
-
-    <div id="delete-modal" class="modal">
-        <div class="modal-content">
-            <h4 style="margin:0 0 15px 0;">Delete Message?</h4>
-            <button class="btn" style="background:var(--red); color:#fff;" id="del-everyone">Delete for Everyone</button>
-            <button class="btn" style="background:#333; color:#fff;" id="del-me">Delete for Me</button>
-            <button class="btn" style="background:none; color:#888;" onclick="closeModals()">Cancel</button>
+            <button class="btn" style="background:none; color:#888;" onclick="this.parentElement.parentElement.style.display='none'">Cancel</button>
         </div>
     </div>
 
     <img id="nuke-gif" src="https://i.ibb.co/L5kR2Q0/explosion.gif">
 
     <script>
-        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
             authDomain: "lotus-official-4c28b.firebaseapp.com",
@@ -129,13 +140,14 @@
         const db = firebase.database();
         const storage = firebase.storage();
         let myPartnerID = "";
+        let replyID = null, replyContent = "";
         let mediaRec, audioChunks = [];
 
-        // Auth Logic
+        // Auth
         function handleAuth() {
             myPartnerID = document.getElementById('partner-id').value.trim();
             const p = document.getElementById('password').value;
-            if(!myPartnerID) return alert("Please enter Partner ID");
+            if(!myPartnerID) return alert("Enter ID");
             db.ref('users/'+myPartnerID).once('value', snap => {
                 const u = snap.val();
                 if(!u) showScreen('setup-screen');
@@ -143,20 +155,14 @@
                 else alert("Incorrect Password");
             });
         }
-
         function saveUser() {
             const p = document.getElementById('new-pass').value;
             const k = document.getElementById('personal-key').value;
-            if(!p || !k) return alert("Fill all fields");
             db.ref('users/'+myPartnerID).set({password:p, key:k}).then(startApp);
         }
+        function startApp() { showScreen('chat-screen'); initEmoji(); loadMessages(); }
 
-        function startApp() {
-            showScreen('chat-screen');
-            loadMessages();
-        }
-
-        // Recovery Logic
+        // Recovery
         function showRecovery() { document.getElementById('recovery-modal').style.display='flex'; }
         function verifyRecoveryKey() {
             const id = document.getElementById('partner-id').value;
@@ -167,63 +173,75 @@
                     document.getElementById('new-password-input').style.display='block';
                     document.getElementById('recovery-btn').innerText="RESET PASSWORD";
                     document.getElementById('recovery-btn').onclick=resetPassword;
-                } else alert("Invalid Recovery Key");
+                } else alert("Invalid Key");
             });
         }
         function resetPassword() {
             const id = document.getElementById('partner-id').value;
             const np = document.getElementById('new-password-input').value;
-            if(np.length < 4) return alert("Too short!");
-            db.ref('users/'+id).update({password:np}).then(() => { alert("Password Changed!"); location.reload(); });
+            db.ref('users/'+id).update({password:np}).then(() => location.reload());
         }
 
-        // Chat & 4-Day Care Logic
+        // Chat & Swipe Logic
         function loadMessages() {
             db.ref('chats/'+myPartnerID).on('value', snap => {
                 const win = document.getElementById('chat-window');
                 win.innerHTML = "";
-                let lastTime = 0;
+                let lastT = 0;
                 snap.forEach(child => {
                     const m = child.val();
                     if(m.status !== 'nuked' && m.status !== 'del_'+myPartnerID) {
+                        const container = document.createElement('div');
+                        container.className = "msg-container";
+                        
+                        // Swipe to Reply (Mobile)
+                        let startX = 0;
+                        container.ontouchstart = e => startX = e.touches[0].clientX;
+                        container.ontouchend = e => { if(e.changedTouches[0].clientX - startX > 70) setReply(m.content, child.key); };
+
+                        // Context Menu (Click)
+                        container.onclick = e => {
+                            e.stopPropagation();
+                            const menu = document.getElementById('msg-menu');
+                            menu.style.display = 'block';
+                            menu.style.left = Math.min(e.pageX, window.innerWidth - 140) + "px";
+                            menu.style.top = e.pageY + "px";
+                            document.getElementById('menu-reply-btn').onclick = () => setReply(m.content, child.key);
+                            document.getElementById('menu-del-me').onclick = () => { db.ref(`chats/${myPartnerID}/${child.key}`).update({status:'del_'+myPartnerID}); menu.style.display='none'; };
+                            const delAll = document.getElementById('menu-del-everyone');
+                            delAll.style.display = (m.sender==='me') ? 'block' : 'none';
+                            delAll.onclick = () => { db.ref(`chats/${myPartnerID}/${child.key}`).update({status:'nuked'}); menu.style.display='none'; };
+                        };
+
                         const div = document.createElement('div');
-                        div.className = "msg " + (m.sender === 'me' ? 'sent' : (m.sender === '11LOTUS' ? 'rec' : 'rec'));
-                        if(m.sender === '11LOTUS') div.style.borderLeft = "3px solid var(--gold)";
+                        div.className = "msg " + (m.sender==='me' ? 'sent' : 'rec');
                         
-                        div.onclick = () => openDelete(child.key, m.sender);
-                        
-                        if(m.type==='text') div.innerText=m.content;
-                        else if(m.type==='img') div.innerHTML=`<img src="${m.content}" onclick="window.open(this.src)">`;
-                        else if(m.type==='vid') div.innerHTML=`<video src="${m.content}" controls></video>`;
-                        else if(m.type==='voice') div.innerHTML=`<audio src="${m.content}" controls></audio>`;
+                        let html = "";
+                        if(m.replyTo) html += `<div class="reply-in-msg">Replied: ${m.replyTo}</div>`;
+                        if(m.type==='text') html += m.content;
+                        else if(m.type==='img') html += `<img src="${m.content}">`;
+                        else if(m.type==='voice') html += `<audio src="${m.content}" controls></audio>`;
                         else if(m.type==='care_check') {
-                            div.innerHTML = `
-                                <div style="font-style:italic; margin-bottom:8px;">${m.content}</div>
-                                <button onclick="replyCare('I am good! 😊')" class="reply-btn">I'm Good</button>
-                                <button onclick="replyCare('I need a hug 🫂')" class="reply-btn">I need a hug</button>
-                                <button onclick="replyCare('Just busy ⚡')" class="reply-btn">Just Busy</button>
-                            `;
+                            html += `<div>${m.content}</div>
+                            <button class="care-btn" onclick="replyCare('I am good! 😊')">I'm Good</button>
+                            <button class="care-btn" onclick="replyCare('I need a hug 🫂')">I need a hug</button>`;
                         }
-                        win.appendChild(div);
-                        lastTime = m.time;
+                        div.innerHTML = html;
+                        container.appendChild(div);
+                        win.appendChild(container);
+                        lastT = m.time;
                     }
                 });
                 win.scrollTop = win.scrollHeight;
-                if(lastTime > 0) checkInactivity(lastTime);
+                if(lastT > 0) checkInactivity(lastT);
             });
-
             db.ref('users/'+myPartnerID+'/blocked').on('value', s => {
-                const b = s.val();
-                document.getElementById('block-btn').innerText = b ? "UNBLOCK" : "BLOCK";
-                document.getElementById('input-container').style.opacity = b ? "0.3" : "1";
-                document.getElementById('input-container').style.pointerEvents = b ? "none" : "all";
-                document.getElementById('block-notice').style.display = b ? "block" : "none";
+                document.getElementById('input-container').style.display = s.val() ? "none" : "flex";
             });
         }
 
-        function checkInactivity(lastTime) {
-            const fourDays = 4 * 24 * 60 * 60 * 1000;
-            if(Date.now() - lastTime > fourDays) {
+        function checkInactivity(lastT) {
+            if(Date.now() - lastT > 4 * 24 * 60 * 60 * 1000) {
                 const msg = "It's been a bit quiet here... Just wanted to check in on you. ❤️";
                 db.ref('chats/'+myPartnerID).limitToLast(1).once('value', s => {
                     let last = ""; s.forEach(c => last = c.val().content);
@@ -232,32 +250,38 @@
             }
         }
 
-        function replyCare(txt) {
-            pushToDB(txt, 'text', 'me');
-            setTimeout(() => {
-                let resp = txt.includes('hug') ? "I'm sending you a big squeeze! Pick me up and hold me tight. ❤️" : "I'm always here for you. 🌿";
-                pushToDB(resp, 'text', '11LOTUS');
-            }, 1000);
+        function setReply(content, key) {
+            replyID = key; replyContent = content;
+            document.getElementById('reply-preview-bar').style.display = 'flex';
+            document.getElementById('reply-preview-text').innerText = "Replying: " + content;
+            document.getElementById('msg-menu').style.display = 'none';
         }
+        function cancelReply() { replyID = null; document.getElementById('reply-preview-bar').style.display = 'none'; }
 
-        // Essential Functions
         function sendMsg() {
             const i = document.getElementById('chat-input');
             if(!i.value) return;
-            pushToDB(i.value, 'text', 'me');
-            i.value="";
+            db.ref('chats/'+myPartnerID).push({content:i.value, type:'text', sender:'me', time:Date.now(), status:'active', replyTo:replyID ? replyContent : null});
+            i.value=""; cancelReply(); document.getElementById('emoji-picker').style.display='none';
         }
+        function replyCare(txt) { pushToDB(txt, 'text', 'me'); setTimeout(()=>pushToDB(txt.includes('hug')?"🫂 Huge hug for you!":"🌿 Glad to hear!", 'text', '11LOTUS'), 1000); }
 
-        function pushToDB(content, type, sender) {
-            db.ref('chats/'+myPartnerID).push({content, type, sender, time:Date.now(), status:'active'});
+        function pushToDB(content, type, sender) { db.ref('chats/'+myPartnerID).push({content, type, sender, time:Date.now(), status:'active'}); }
+
+        // Emoji & Media
+        function initEmoji() {
+            const p = document.getElementById('emoji-picker');
+            ["❤️","👍","😂","😘","🔥","😊","🫂","✨","🙏","🧸"].forEach(e => {
+                const s = document.createElement('span'); s.innerText = e; s.className="emoji-item";
+                s.onclick = () => { document.getElementById('chat-input').value += e; p.style.display='none'; };
+                p.appendChild(s);
+            });
         }
+        function toggleEmojiPicker() { const p = document.getElementById('emoji-picker'); p.style.display = (p.style.display==='grid')?'none':'grid'; }
 
         function uploadMedia(input) {
             const f = input.files[0]; if(!f) return;
-            const ref = storage.ref(`media/${myPartnerID}/${Date.now()}`);
-            ref.put(f).then(s=>s.ref.getDownloadURL()).then(url=>{
-                pushToDB(url, f.type.startsWith('image')?'img':'vid', 'me');
-            });
+            storage.ref(`media/${myPartnerID}/${Date.now()}`).put(f).then(s=>s.ref.getDownloadURL()).then(url=>pushToDB(url, f.type.startsWith('image')?'img':'vid', 'me'));
         }
 
         async function startVoice() {
@@ -266,43 +290,27 @@
             audioChunks=[]; document.getElementById('mic-btn').style.color='red';
             mediaRec.ondataavailable = e => audioChunks.push(e.data);
         }
-
         function stopVoice() {
             if(!mediaRec) return; mediaRec.stop();
             document.getElementById('mic-btn').style.color='var(--gold)';
             mediaRec.onstop = () => {
                 const b = new Blob(audioChunks, {type:'audio/webm'});
-                storage.ref(`voice/${myPartnerID}/${Date.now()}.webm`).put(b).then(s=>s.ref.getDownloadURL()).then(url=>{
-                    pushToDB(url, 'voice', 'me');
-                });
+                storage.ref(`voice/${myPartnerID}/${Date.now()}.webm`).put(b).then(s=>s.ref.getDownloadURL()).then(url=>pushToDB(url, 'voice', 'me'));
             };
         }
 
-        function openDelete(key, sender) {
-            document.getElementById('delete-modal').style.display='flex';
-            document.getElementById('del-everyone').style.display = (sender==='me')?'block':'none';
-            document.getElementById('del-me').onclick = () => { db.ref(`chats/${myPartnerID}/${key}`).update({status:'del_'+myPartnerID}); closeModals(); };
-            document.getElementById('del-everyone').onclick = () => { db.ref(`chats/${myPartnerID}/${key}`).update({status:'nuked'}); closeModals(); };
-        }
-
-        function toggleBlock() {
-            const b = document.getElementById('block-btn').innerText === "BLOCK";
-            db.ref('users/'+myPartnerID).update({blocked: b});
-        }
-
         function triggerNuclearBomb() {
-            if(confirm("💣 NUCLEAR: Hide all YOUR messages for everyone?")) {
-                new Audio('https://www.soundjay.com/explosions/explosion-02.mp3').play();
+            if(confirm("💣 Nuke your messages?")) {
                 document.getElementById('nuke-gif').style.display='block';
-                setTimeout(()=> document.getElementById('nuke-gif').style.display='none', 2500);
+                setTimeout(()=>document.getElementById('nuke-gif').style.display='none', 2000);
                 db.ref('chats/'+myPartnerID).once('value', snap => {
                     snap.forEach(c => { if(c.val().sender==='me') db.ref(`chats/${myPartnerID}/${c.key}`).update({status:'nuked'}); });
                 });
             }
         }
-
+        function toggleBlock() { db.ref('users/'+myPartnerID).update({blocked: document.getElementById('block-btn').innerText==="BLOCK"}); }
         function showScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
+        document.onclick = () => { document.getElementById('msg-menu').style.display='none'; };
     </script>
 </body>
 </html>
