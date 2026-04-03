@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@joypixels/emoji-button@4.6.2/dist/index.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap');
-        :root { --g: #d4af37; --bg: #050505; --m: #d4af37; --y: #1a1a1a; --b: #4fc3f7; }
+        :root { --g: #d4af37; --bg: #050505; --y: #1a1a1a; --b: #4fc3f7; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
         .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex !important; }
@@ -18,10 +18,21 @@
         input { width: 100%; padding: 10px; margin: 8px 0; background: #111; border: 1px solid #333; border-radius: 5px; color: #fff; box-sizing: border-box; }
         .btn { width: 100%; padding: 12px; background: var(--g); color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
         header { padding: 10px 15px; background: #000; border-bottom: 1px solid rgba(212,175,55,0.2); display: flex; justify-content: space-between; align-items: center; }
-        #win { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; background: radial-gradient(circle, #0a0a0a, #000); }
+        #win { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        
+        /* --- PHOTO SIZE 100PX LIMIT FIXED --- */
         .msg { max-width: 70%; padding: 8px 12px; border-radius: 12px; font-size: 14px; position: relative; word-wrap: break-word; }
-        .msg img { max-width: 200px !important; border-radius: 8px; display: block; margin: 4px 0; }
-        .sent { align-self: flex-end; background: var(--m); color: #000; border-bottom-right-radius: 2px; }
+        .msg img { 
+            width: 100px !important; 
+            height: 100px !important; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            display: block; 
+            margin: 4px 0; 
+            border: 1px solid var(--g);
+        }
+
+        .sent { align-self: flex-end; background: var(--g); color: #000; border-bottom-right-radius: 2px; }
         .rec { align-self: flex-start; background: var(--y); color: #fff; border-bottom-left-radius: 2px; }
         .tk { font-size: 10px; margin-left: 5px; float: right; opacity: 0.7; }
         .bl { color: var(--b); opacity: 1; }
@@ -37,7 +48,7 @@
     <div id="l-s" class="screen active">
         <div class="box"><h2 style="font-family:'Orbitron'; color:var(--g);">11LOTUS</h2>
             <input type="text" id="p-id" placeholder="ID"><input type="password" id="p-pw" placeholder="PASSWORD">
-            <button class="btn" onclick="auth()">UNLOCK</button><p onclick="showR()" style="color:var(--g); font-size:11px; cursor:pointer;">Forgot Password?</p>
+            <button class="btn" onclick="auth()">UNLOCK</button><p onclick="sw('r-m')" style="color:var(--g); font-size:11px; cursor:pointer;">Forgot Password?</p>
         </div>
     </div>
     <div id="s-s" class="screen">
@@ -51,27 +62,23 @@
         </div>
     </div>
     <div id="p-m" class="modal"><div id="p-b"></div><div class="bar" style="width:85%;"><input type="text" id="c-i" placeholder="Caption..." style="flex:1; background:none; border:none; color:#fff;"><button onclick="up()" id="u-b" class="i-btn">➤</button><button onclick="cPr()" style="color:red;">X</button></div></div>
-    <div id="ctx" class="menu"><div class="mi" id="d-e">Delete for Everyone</div><div class="mi" id="d-m">Delete for Me</div></div>
-    <div id="r-m" class="modal"><div class="box"><input type="text" id="r-k" placeholder="KEY"><input type="password" id="r-p" placeholder="NEW PW" style="display:none;"><button class="btn" id="r-bt" onclick="vK()">VERIFY</button><button onclick="cR()" style="background:none; border:none; color:#888;">Back</button></div></div>
+    <div id="ctx" class="menu"><div class="mi" id="d-e">Delete Everyone</div><div class="mi" id="d-m">Delete for Me</div></div>
     <script>
         const cfg = { apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ", authDomain: "lotus-official-4c28b.firebaseapp.com", databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "lotus-official-4c28b", storageBucket: "lotus-official-4c28b.firebasestorage.app", messagingSenderId: "584674732018", appId: "1:584674732018:web:b6e5fa13708eac51512d6b" };
         firebase.initializeApp(cfg); const db = firebase.database(), st = firebase.storage(); let pid = "", file = null;
         const pkr = new EmojiButton({ theme: 'dark' }); pkr.on('emoji', e => document.getElementById('in').value += e.emoji);
         document.getElementById('e-btn').onclick = () => pkr.togglePicker(document.getElementById('e-btn'));
         function auth() { pid = document.getElementById('p-id').value.trim(); const pw = document.getElementById('p-pw').value; db.ref('users/'+pid).once('value', s => { const u = s.val(); if(!u) sw('s-s'); else if(u.password === pw) { sw('c-s'); load(); } else alert("Wrong"); }); }
-        function setup() { const pw = document.getElementById('n-pw').value, ky = document.getElementById('n-k').value; db.ref('users/'+pid).set({password:pw, key:ky, blocked:false}).then(() => { sw('c-s'); load(); }); }
+        function setup() { db.ref('users/'+pid).set({password:document.getElementById('n-pw').value, key:document.getElementById('n-k').value, blocked:false}).then(() => { sw('c-s'); load(); }); }
         function load() {
             db.ref('users/'+pid+'/blocked').on('value', s => { document.getElementById('i-bar').style.display = s.val() ? "none" : "flex"; document.getElementById('b-msg').style.display = s.val() ? "block" : "none"; document.getElementById('b-btn').innerText = s.val() ? "UNBLOCK" : "BLOCK"; });
-            db.ref('chats/'+pid).on('value', s => { const w = document.getElementById('win'); w.innerHTML = ""; let lt = 0; s.forEach(c => { const m = c.val(); if(m.sender !== 'me' && !m.seen) db.ref(`chats/${pid}/${c.key}`).update({seen:true}); const d = document.createElement('div'); d.className = "msg " + (m.sender==='me'?'sent':'rec'); d.onclick = (e) => mnu(e, c.key, m.sender); let h = m.type==='img' ? `<img src="${m.content}">${m.caption?`<div style="font-size:12px;">${m.caption}</div>`:''}` : m.content; if(m.sender==='me') h += `<span class="tk ${m.seen?'bl':''}">${m.seen?'✓✓':'✓'}</span>`; d.innerHTML = h; w.appendChild(d); lt = m.time; }); w.scrollTop = w.scrollHeight; if(lt > 0 && (Date.now()-lt > 345600000)) db.ref('chats/'+pid).push({content:"Check-in ❤️", sender:'11LOTUS', time:Date.now()}); });
+            db.ref('chats/'+pid).on('value', s => { const w = document.getElementById('win'); w.innerHTML = ""; let lt = 0; s.forEach(c => { const m = c.val(); if(m.sender !== 'me' && !m.seen) db.ref(`chats/${pid}/${c.key}`).update({seen:true}); const d = document.createElement('div'); d.className = "msg " + (m.sender==='me'?'sent':'rec'); d.onclick = (e) => mnu(e, c.key, m.sender); let h = m.type==='img' ? `<img src="${m.content}">${m.caption?`<div style="font-size:11px;">${m.caption}</div>`:''}` : m.content; if(m.sender==='me') h += `<span class="tk ${m.seen?'bl':''}">${m.seen?'✓✓':'✓'}</span>`; d.innerHTML = h; w.appendChild(d); lt = m.time; }); w.scrollTop = w.scrollHeight; if(lt > 0 && (Date.now()-lt > 345600000)) db.ref('chats/'+pid).push({content:"Check-in ❤️", sender:'11LOTUS', time:Date.now()}); });
         }
         function send() { const i = document.getElementById('in'); if(!i.value) return; db.ref('chats/'+pid).push({content:i.value, type:'text', sender:'me', time:Date.now(), seen:false}); i.value = ""; }
-        function pre(i) { file = i.files[0]; document.getElementById('p-b').innerHTML = `<img src="${URL.createObjectURL(file)}" style="max-width:100%;border-radius:10px;">`; document.getElementById('p-m').style.display="flex"; }
+        function pre(i) { file = i.files[0]; document.getElementById('p-b').innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100px;height:100px;object-fit:cover;">`; document.getElementById('p-m').style.display="flex"; }
         function cPr() { document.getElementById('p-m').style.display="none"; }
-        function up() { const b = document.getElementById('u-b'); b.disabled = true; st.ref().child(`media/${pid}/${Date.now()}`).put(file).then(s => s.ref.getDownloadURL()).then(u => { db.ref('chats/'+pid).push({content:u, caption:document.getElementById('c-i').value, type:'img', sender:'me', time:Date.now(), seen:false}); b.disabled = false; cPr(); }); }
+        function up() { const b = document.getElementById('u-b'); b.disabled = true; st.ref().child(`media/${pid}/${Date.now()}`).put(file).then(s => s.ref.getDownloadURL()).then(u => { db.ref('chats/'+pid).push({content:u, caption:document.getElementById('c-i').value, type:'img', sender:'me', time:Date.now(), seen:false}); b.disabled = false; cPr(); }).catch(e => alert("Storage Error! Check Rules.")); }
         function mnu(e, id, s) { const m = document.getElementById('ctx'); m.style.display='flex'; m.style.top=e.pageY+'px'; m.style.left=e.pageX+'px'; document.getElementById('d-m').onclick = () => { db.ref(`chats/${pid}/${id}`).remove(); m.style.display='none'; }; const de = document.getElementById('d-e'); de.style.display = s==='me'?'block':'none'; de.onclick = () => { db.ref(`chats/${pid}/${id}`).remove(); m.style.display='none'; }; }
-        function showR() { document.getElementById('r-m').style.display='flex'; }
-        function cR() { document.getElementById('r-m').style.display='none'; }
-        function vK() { db.ref('users/'+document.getElementById('p-id').value).once('value', s => { if(s.val() && s.val().key === document.getElementById('r-k').value) { document.getElementById('r-k').style.display='none'; document.getElementById('r-p').style.display='block'; document.getElementById('r-bt').onclick = () => { db.ref('users/'+pid).update({password:document.getElementById('r-p').value}).then(()=>location.reload()); }; } else alert("No"); }); }
         function tBlk() { db.ref('users/'+pid+'/blocked').once('value', s => db.ref('users/'+pid).update({blocked:!s.val()})); }
         function nk() { if(confirm("Nuke?")) db.ref('chats/'+pid).remove(); }
         function sw(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
