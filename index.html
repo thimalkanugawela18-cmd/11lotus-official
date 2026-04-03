@@ -23,15 +23,12 @@
         input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; border-radius: 8px; color: #fff; outline: none; box-sizing: border-box; }
         .btn { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; }
 
-        /* Chat Window */
+        /* Chat Layout */
         header { width: 100%; padding: 12px 15px; background: #111; border-bottom: 1px solid rgba(212, 175, 55, 0.3); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: var(--dark); }
         
-        /* Message Style - IMAGE SIZE FIXED HERE */
-        .msg-container { position: relative; width: 100%; display: flex; flex-direction: column; transition: transform 0.2s; touch-action: pan-y; }
-        .msg { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 15px; position: relative; word-wrap: break-word; line-height: 1.4; cursor: pointer; }
-        
-        /* --- WHATSAPP CHARM IMAGE SIZE FIX --- */
+        /* Image Size Control (WhatsApp Style) */
+        .msg { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 15px; position: relative; word-wrap: break-word; line-height: 1.4; }
         .msg img { 
             max-width: 220px !important; 
             width: 100%; 
@@ -40,26 +37,16 @@
             margin: 5px 0; 
             border: 1px solid rgba(255,255,255,0.1);
         }
-        @media (max-width: 480px) { .msg img { max-width: 180px !important; } }
 
         .sent { align-self: flex-end; background: var(--bubble-me); color: #000; border-bottom-right-radius: 2px; }
         .rec { align-self: flex-start; background: var(--bubble-you); color: #fff; border-bottom-left-radius: 2px; }
         
-        /* Ticks & Reply Context */
-        .status-tick { font-size: 11px; margin-left: 5px; float: right; margin-top: 4px; opacity: 0.6; }
-        .seen-tick { color: var(--blue); opacity: 1; }
-        .reply-ctx { background: rgba(0,0,0,0.1); border-left: 3px solid var(--gold); padding: 4px 8px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; font-style: italic; opacity: 0.8; }
-
-        /* Input Area & Bottom Bars */
-        #reply-bar { display: none; background: #1a1a1a; padding: 8px 15px; border-top: 1px solid var(--gold); align-items: center; gap: 10px; }
+        /* Bottom UI */
         .input-area { width: 100%; padding: 10px 15px; background: #181818; display: flex; align-items: center; gap: 10px; }
         #chat-input { flex: 1; padding: 12px; background: #2a2a2a; border: none; border-radius: 25px; color: #fff; outline: none; }
         .icon-btn { color: var(--gold); font-size: 24px; cursor: pointer; background:none; border:none; }
 
-        /* Modals */
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9000; align-items:center; justify-content:center; }
-        #preview-body img { max-height: 70vh; max-width: 90vw; border-radius: 10px; }
-        .care-btn { border: 1px solid var(--gold); background: none; color: var(--gold); border-radius: 15px; padding: 5px 12px; font-size: 12px; margin: 5px 2px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -74,25 +61,12 @@
         </div>
     </div>
 
-    <div id="setup-screen" class="screen">
-        <div class="container">
-            <h2 style="color:var(--gold);">INITIALIZE</h2>
-            <input type="password" id="new-pass" placeholder="Create Password">
-            <input type="text" id="personal-key" placeholder="Recovery Key (Secret)">
-            <button class="btn" onclick="saveUser()">START</button>
-        </div>
-    </div>
-
     <div id="chat-screen" class="screen" style="display:none; flex-direction:column; width:100%; height:100vh;">
         <header>
             <div style="color:var(--gold); font-family:'Orbitron';">11LOTUS PRO</div>
             <button class="icon-btn" onclick="triggerNuclearBomb()">💣</button>
         </header>
         <div id="chat-window"></div>
-        <div id="reply-bar">
-            <span id="reply-txt" style="flex:1; font-size:12px; color:#aaa;">Replying...</span>
-            <button onclick="cancelReply()" style="background:none; border:none; color:var(--red);">X</button>
-        </div>
         <div class="input-area">
             <button class="icon-btn" id="emoji-btn">😊</button>
             <label class="icon-btn">📎<input type="file" id="file-in" hidden onchange="openPreview(this)"></label>
@@ -110,24 +84,14 @@
         </div>
     </div>
 
-    <div id="recovery-modal" class="modal">
-        <div class="container">
-            <h3 style="color:var(--gold);">RECOVERY</h3>
-            <input type="text" id="recover-key-input" placeholder="SECRET KEY">
-            <input type="password" id="new-password-input" placeholder="NEW PASSWORD" style="display:none;">
-            <button class="btn" id="recovery-btn" onclick="verifyRecoveryKey()">VERIFY KEY</button>
-            <button class="btn" style="background:none; color:#888;" onclick="closeRecovery()">Cancel</button>
-        </div>
-    </div>
-
     <script>
-        // --- Firebase Config ---
+        // --- FIXED FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
             authDomain: "lotus-official-4c28b.firebaseapp.com",
             databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "lotus-official-4c28b",
-            storageBucket: "lotus-official-4c28b.firebasestorage.app", // Fixed Bucket URL
+            storageBucket: "lotus-official-4c28b.firebasestorage.app", // මෙන්න මේක තමයි ඔයාගේ ඇත්තම Bucket එක
             messagingSenderId: "584674732018",
             appId: "1:584674732018:web:b6e5fa13708eac51512d6b"
         };
@@ -136,31 +100,24 @@
         const db = firebase.database();
         const storage = firebase.storage();
         let myPartnerID = "";
-        let rID = null, rTxt = "", selectedFile = null;
+        let selectedFile = null;
 
-        // --- Emoji Picker ---
         const picker = new EmojiButton({ theme: 'dark', position: 'top-start' });
         picker.on('emoji', selection => document.getElementById('chat-input').value += selection.emoji);
         document.getElementById('emoji-btn').onclick = () => picker.togglePicker(document.getElementById('emoji-btn'));
 
-        // --- Auth & Setup ---
         function handleAuth() {
             myPartnerID = document.getElementById('partner-id').value.trim();
             const p = document.getElementById('password').value;
             db.ref('users/'+myPartnerID).once('value', snap => {
-                const u = snap.val();
-                if(!u) showScreen('setup-screen');
-                else if(u.password === p) { showScreen('chat-screen'); loadMessages(); }
-                else alert("Wrong Password");
+                if(snap.exists() && snap.val().password === p) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('chat-screen').style.display = 'flex';
+                    loadMessages();
+                } else alert("Wrong Password or ID");
             });
         }
-        function saveUser() {
-            const p = document.getElementById('new-pass').value;
-            const k = document.getElementById('personal-key').value;
-            db.ref('users/'+myPartnerID).set({password:p, key:k}).then(() => { showScreen('chat-screen'); loadMessages(); });
-        }
 
-        // --- Chat & Care Logic ---
         function loadMessages() {
             db.ref('chats/'+myPartnerID).on('value', snap => {
                 const win = document.getElementById('chat-window');
@@ -169,32 +126,20 @@
                 snap.forEach(child => {
                     const m = child.val();
                     if(m.sender !== 'me' && !m.seen) db.ref(`chats/${myPartnerID}/${child.key}`).update({seen: true});
-                    const container = document.createElement('div');
-                    container.className = "msg-container";
-                    
-                    let sX = 0;
-                    container.ontouchstart = e => sX = e.touches[0].clientX;
-                    container.ontouchend = e => { if(e.changedTouches[0].clientX - sX > 70) setReply(m.content || "Photo", child.key); };
-
                     const div = document.createElement('div');
                     div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
                     div.onclick = () => { if(confirm("Delete message?")) db.ref(`chats/${myPartnerID}/${child.key}`).remove(); };
                     
-                    let html = m.replyTo ? `<div class="reply-ctx">Replied: ${m.replyTo}</div>` : "";
-                    if(m.type==='img') html += `<img src="${m.content}">${m.caption ? `<div style="font-size:13px; margin-top:5px;">${m.caption}</div>` : ''}`;
-                    else if(m.type==='care_check') html += `<div>${m.content}</div><button class="care-btn" onclick="replyCare('I am good! 😊')">I'm Good</button>`;
-                    else html += m.content;
-
-                    if(m.sender === 'me') html += `<span class="status-tick ${m.seen ? 'seen-tick' : ''}">${m.seen ? '✓✓' : '✓'}</span>`;
+                    let html = m.type==='img' ? `<img src="${m.content}">${m.caption ? `<div style="font-size:13px; margin-top:5px;">${m.caption}</div>` : ''}` : m.content;
+                    if(m.sender === 'me') html += `<span style="font-size:11px; margin-left:5px; opacity:0.6; float:right;">${m.seen ? '✓✓' : '✓'}</span>`;
                     
                     div.innerHTML = html;
-                    container.appendChild(div);
-                    win.appendChild(container);
+                    win.appendChild(div);
                     lastT = m.time;
                 });
                 win.scrollTop = win.scrollHeight;
                 if(lastT > 0 && (Date.now() - lastT > 4 * 24 * 60 * 60 * 1000)) {
-                    db.ref('chats/'+myPartnerID).push({content:"It's been a bit quiet here... ❤️", type:'care_check', sender:'11LOTUS', time:Date.now()});
+                    db.ref('chats/'+myPartnerID).push({content:"It's been quiet... ❤️", type:'text', sender:'11LOTUS', time:Date.now()});
                 }
             });
         }
@@ -202,15 +147,14 @@
         function sendMsg() {
             const i = document.getElementById('chat-input');
             if(!i.value) return;
-            db.ref('chats/'+myPartnerID).push({ content: i.value, type: 'text', sender: 'me', time: Date.now(), seen: false, replyTo: rID ? rTxt : null });
-            i.value = ""; cancelReply();
+            db.ref('chats/'+myPartnerID).push({ content: i.value, type: 'text', sender: 'me', time: Date.now(), seen: false });
+            i.value = "";
         }
 
-        // --- Media Preview & Fixed Upload ---
         function openPreview(input) {
             selectedFile = input.files[0];
             const url = URL.createObjectURL(selectedFile);
-            document.getElementById('preview-body').innerHTML = `<img src="${url}">`;
+            document.getElementById('preview-body').innerHTML = `<img src="${url}" style="max-width:100%; border-radius:10px;">`;
             document.getElementById('media-preview').style.display = "flex";
         }
         function closePreview() { document.getElementById('media-preview').style.display = "none"; }
@@ -218,45 +162,33 @@
         function uploadWithCaption() {
             if(!selectedFile) return;
             const btn = document.getElementById('upload-btn');
-            btn.disabled = true; btn.innerText = "...";
             const cap = document.getElementById('caption-input').value;
-            const ref = storage.ref(`media/${myPartnerID}/${Date.now()}`);
+            btn.disabled = true; btn.innerText = "...";
             
-            ref.put(selectedFile).then(s => s.ref.getDownloadURL()).then(url => {
-                db.ref('chats/'+myPartnerID).push({ content: url, caption: cap, type: 'img', sender: 'me', time: Date.now(), seen: false });
+            // Random file name for storage
+            const fileName = Date.now() + "_" + selectedFile.name;
+            const ref = storage.ref().child(`media/${myPartnerID}/${fileName}`);
+            
+            ref.put(selectedFile).then(snapshot => {
+                return snapshot.ref.getDownloadURL();
+            }).then(url => {
+                db.ref('chats/'+myPartnerID).push({
+                    content: url,
+                    caption: cap,
+                    type: 'img',
+                    sender: 'me',
+                    time: Date.now(),
+                    seen: false
+                });
                 btn.disabled = false; btn.innerText = ">";
                 closePreview();
-            }).catch(e => { 
-                alert("Storage Error! Check Rules: " + e.message); 
-                btn.disabled = false; btn.innerText = ">"; 
+            }).catch(e => {
+                alert("Upload failed: " + e.message);
+                btn.disabled = false; btn.innerText = ">";
             });
         }
 
-        // --- Utils ---
-        function showRecovery() { document.getElementById('recovery-modal').style.display = 'flex'; }
-        function closeRecovery() { document.getElementById('recovery-modal').style.display = 'none'; }
-        function verifyRecoveryKey() {
-            const id = document.getElementById('partner-id').value.trim();
-            const key = document.getElementById('recover-key-input').value;
-            db.ref('users/'+id).once('value', s => {
-                if(s.val() && s.val().key === key) {
-                    document.getElementById('recover-key-input').style.display = 'none';
-                    document.getElementById('new-password-input').style.display = 'block';
-                    document.getElementById('recovery-btn').innerText = "RESET PASSWORD";
-                    document.getElementById('recovery-btn').onclick = resetPassword;
-                } else alert("Invalid Key");
-            });
-        }
-        function resetPassword() {
-            const id = document.getElementById('partner-id').value.trim();
-            const np = document.getElementById('new-password-input').value;
-            db.ref('users/'+id).update({password:np}).then(() => location.reload());
-        }
-        function setReply(t, id) { rID=id; rTxt=t; document.getElementById('reply-bar').style.display='flex'; document.getElementById('reply-txt').innerText="Replying: "+t; }
-        function cancelReply() { rID=null; document.getElementById('reply-bar').style.display='none'; }
-        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById(id).style.display = 'flex'; }
         function triggerNuclearBomb() { if(confirm("Nuke chat?")) db.ref('chats/'+myPartnerID).once('value', s => s.forEach(c => { if(c.val().sender==='me') c.ref.remove(); })); }
-        function replyCare(t) { db.ref('chats/'+myPartnerID).push({content:t, type:'text', sender:'me', time:Date.now()}); }
     </script>
 </body>
 </html>
