@@ -3,29 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11LOTUS | Souls Sanctuary</title>
+    <title>11LOTUS | Souls Sanctuary ULTIMATE PRO</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
+        
         :root { --gold: #d4af37; --dark: #050505; --red: #ff4444; }
         body, html { margin: 0; padding: 0; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
-        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .active { display: flex !important; }
-        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; text-align: center; }
-        h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 8px; margin-bottom: 25px; }
+
+        /* Futuristic Container */
+        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 12px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
         input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: #fff; box-sizing: border-box; outline: none; }
         .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        
-        /* Chat UI Improvements */
+
+        /* Chat Layout */
         header { width: 100%; padding: 15px; background: #111; border-bottom: 1px solid var(--gold); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-        #chat-window { flex: 1; width: 100%; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box; }
-        .msg { max-width: 75%; padding: 12px; border-radius: 15px; font-size: 15px; }
-        .sent { align-self: flex-end; background: var(--gold); color: #000; }
-        .rec { align-self: flex-start; background: #222; }
-        .block-btn { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; font-family: 'Orbitron'; }
-        .block-btn.blocked { background: var(--red); color: #fff; }
-        .input-area { width: 100%; padding: 15px; background: #111; display: flex; gap: 10px; box-sizing: border-box; }
+        #chat-window { flex: 1; width: 100%; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; }
+        .msg { max-width: 80%; padding: 12px; border-radius: 15px; position: relative; cursor: pointer; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
+        .sent { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 2px; }
+        .rec { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 2px; }
+        
+        /* Media */
+        img, video { max-width: 100%; border-radius: 10px; margin-top: 5px; cursor: pointer; }
+        audio { width: 220px; height: 35px; margin-top: 5px; }
+
+        /* Reply Preview */
+        .reply-preview { display:none; background:#1a1a1a; padding:10px; border-left:4px solid var(--gold); box-sizing:border-box; width:100%; font-size:12px; }
+
+        /* Input Area */
+        .input-area { width: 100%; padding: 15px; background: #111; display: flex; align-items: center; gap: 12px; box-sizing: border-box; border-top: 1px solid #222; }
+        .icon-btn { cursor: pointer; color: var(--gold); font-size: 20px; transition: 0.2s; }
+        .icon-btn:hover { transform: scale(1.2); }
+
+        /* Delete Modal */
+        .modal { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; z-index:100; }
+        .modal-content { background:#1a1a1a; padding:25px; border-radius:20px; border:1px solid var(--gold); text-align:center; width: 300px; }
+
+        /* Nuke Button (Exploding Bomb) */
+        .nuke-btn { background: none; border: none; font-size: 24px; cursor: pointer; transition: 0.3s; animation: pulse 1.5s infinite; }
+        .nuke-btn:hover { transform: scale(1.2) rotate(10deg); }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 10px red; } 100% { opacity: 0.6; } }
+
+        /* Nuclear Scene Effects */
+        #nuke-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:red; z-index:200; opacity:0; pointer-events:none; }
+        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:300px; height:300px; z-index:201; border-radius:50%; pointer-events:none; }
     </style>
 </head>
 <body>
@@ -39,31 +68,44 @@
         </div>
     </div>
 
-    <div id="setup-screen" class="screen">
-        <div class="container">
-            <h2 style="color:var(--gold);">INITIALIZE</h2>
-            <input type="password" id="new-pass" placeholder="Set Password">
-            <input type="text" id="personal-key" placeholder="Recovery Key">
-            <button class="btn" onclick="saveUser()">SAVE & ENTER</button>
-        </div>
-    </div>
-
     <div id="chat-screen" class="screen" style="justify-content: flex-start;">
         <header>
             <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px; letter-spacing:2px;">SANCTUARY</div>
-            <button id="block-control" class="block-btn" onclick="toggleBlock()">BLOCK</button>
+            <button class="nuke-btn" onclick="triggerNuclearBomb()" title="💣 NUCLEAR: Hide ALL your messages">💣</button>
         </header>
+
         <div id="chat-window"></div>
-        <div class="input-area" id="input-container">
-            <input type="text" id="chat-input" style="margin:0;" placeholder="Whisper something...">
-            <button onclick="sendMessage()" style="width:60px; background:var(--gold); border:none; border-radius:8px; font-weight:bold;">></button>
+
+        <div id="reply-preview" class="reply-preview">
+            <div style="display:flex; justify-content: space-between; color:rgba(255,255,255,0.7);">
+                <span id="reply-text">Replying...</span>
+                <span onclick="cancelReply()" style="cursor:pointer;">✕</span>
+            </div>
         </div>
-        <div id="block-msg" style="display:none; padding:20px; color:var(--red); font-weight:bold;">YOU HAVE BLOCKED THIS PARTNER</div>
+
+        <div class="input-area">
+            <label class="icon-btn">🖼️<input type="file" id="file-in" hidden accept="image/*,video/*" onchange="uploadMedia(this)"></label>
+            <span class="icon-btn" id="mic-btn" onmousedown="startVoice()" onmouseup="stopVoice()" ontouchstart="startVoice()" ontouchend="stopVoice()">🎙️</span>
+            <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendMsg()" placeholder="Whisper something...">
+            <button onclick="sendMsg()" style="background:var(--gold); border:none; padding:10px; border-radius:50%; width:40px; height:40px; font-weight:bold;">></button>
+        </div>
     </div>
 
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <p>Delete this message?</p>
+            <button class="btn" style="background:var(--red); color:#fff; margin-bottom:10px;" id="confirm-del">Delete for Everyone</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:#888; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
+
+    <div id="nuke-overlay"></div>
+    <img id="nuke-gif" src="https://i.ibb.co/L5kR2Q0/explosion.gif" alt="explosion">
+
     <script>
+        // --- FireBase Config (Singapore Region) ---
         const firebaseConfig = {
-            apiKey: "AIzaSyAj1BdBNkVUhW7Cn6muBm6hmGG59l_RsQ",
+            apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
             authDomain: "lotus-official-4c28b.firebaseapp.com",
             databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "lotus-official-4c28b",
@@ -74,85 +116,160 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let currentUserID = "";
+        const storage = firebase.storage();
+        
+        let myPartnerID = "";
+        let replyMsg = null;
+        let mediaRec;
+        let audioChunks = [];
 
-        window.onload = function() {
-            const id = new URLSearchParams(window.location.search).get('id');
-            if(id) document.getElementById('partner-id').value = id;
-        };
-
+        // Auth Logic
         function handleAuth() {
-            currentUserID = document.getElementById('partner-id').value;
-            const pass = document.getElementById('password').value;
-            if(!currentUserID || !pass) return alert("Fill fields!");
-
-            db.ref('users/' + currentUserID).once('value', snap => {
-                const data = snap.val();
-                if(!data) showScreen('setup-screen');
-                else if(data.password === pass) startChat(currentUserID);
-                else alert("Wrong Password!");
+            myPartnerID = document.getElementById('partner-id').value;
+            const p = document.getElementById('password').value;
+            db.ref('users/'+myPartnerID).once('value', snap => {
+                if(snap.val() && snap.val().password === p) {
+                    document.getElementById('login-screen').classList.remove('active');
+                    document.getElementById('chat-screen').classList.add('active');
+                    loadMessages();
+                } else alert("Access Denied!");
             });
         }
 
-        function saveUser() {
-            const pass = document.getElementById('new-pass').value;
-            const pKey = document.getElementById('personal-key').value;
-            db.ref('users/' + currentUserID).set({ password: pass, personalKey: pKey }).then(() => startChat(currentUserID));
-        }
-
-        function startChat(id) {
-            showScreen('chat-screen');
-            
-            // Block කරලද බලනවා
-            db.ref('users/' + id + '/blocked').on('value', snap => {
-                const isBlocked = snap.val();
-                const btn = document.getElementById('block-control');
-                const inputCont = document.getElementById('input-container');
-                const blockMsg = document.getElementById('block-msg');
-
-                if(isBlocked) {
-                    btn.innerText = "UNBLOCK";
-                    btn.classList.add('blocked');
-                    inputCont.style.display = "none";
-                    blockMsg.style.display = "block";
-                } else {
-                    btn.innerText = "BLOCK";
-                    btn.classList.remove('blocked');
-                    inputCont.style.display = "flex";
-                    blockMsg.style.display = "none";
-                }
-            });
-
-            // මැසේජ් ලෝඩ් කරනවා
-            db.ref('chats/' + id).on('child_added', snap => {
-                const m = snap.val();
-                const div = document.createElement('div');
-                div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
-                div.innerText = m.text;
-                document.getElementById('chat-window').appendChild(div);
-                document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
-            });
-        }
-
-        function toggleBlock() {
-            const btn = document.getElementById('block-control');
-            const newState = btn.innerText === "BLOCK";
-            if(confirm(newState ? "Block this partner?" : "Unblock partner?")) {
-                db.ref('users/' + currentUserID).update({ blocked: newState });
+        // --- NUCLEAR BOMB 💣: (Explosion Scene + Voice) ---
+        function triggerNuclearBomb() {
+            // Confirm Box එක (WhatsApp Style)
+            if(confirm("💣 NUCLEAR BOMB: Are you sure you want to hide ALL YOUR messages from this chat?")) {
+                startNuclearScene();
+                db.ref('chats/' + myPartnerID).once('value', snap => {
+                    snap.forEach(child => {
+                        // ඔබන කෙනාගේ (sender: 'me') සියලුම මැසේජ් 'nuked' කරනවා
+                        if(child.val().sender === 'me') {
+                            db.ref(`chats/${myPartnerID}/${child.key}`).update({ status: 'nuked' });
+                        }
+                    });
+                });
             }
         }
 
-        function sendMessage() {
-            const text = document.getElementById('chat-input').value;
-            if(!text) return;
-            db.ref('chats/' + currentUserID).push({ text: text, sender: 'me', time: Date.now() });
-            document.getElementById('chat-input').value = "";
+        function startNuclearScene() {
+            // 1. "Boom" සද්දය
+            new Audio('https://www.soundjay.com/explosions/explosion-02.mp3').play();
+
+            // 2. Red Flash Overlay
+            const overlay = document.getElementById('nuke-overlay');
+            overlay.style.display = 'block';
+            overlay.style.opacity = '1';
+            overlay.style.transition = 'opacity 0.2s';
+            setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 200); }, 500);
+
+            // 3. Explosion GIF
+            const gif = document.getElementById('nuke-gif');
+            gif.style.display = 'block';
+            setTimeout(() => { gif.style.display = 'none'; }, 2000); // 2 seconds delay
         }
 
-        function showScreen(sid) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(sid).classList.add('active');
+        // Send Text & Reply
+        function sendMsg() {
+            const val = document.getElementById('chat-input').value;
+            if(!val) return;
+            pushToDB(val, 'text');
+            document.getElementById('chat-input').value = "";
+            cancelReply();
         }
+
+        function pushToDB(content, type) {
+            db.ref('chats/'+myPartnerID).push({
+                content: content,
+                type: type,
+                sender: 'me',
+                reply: replyMsg,
+                time: Date.now(),
+                status: 'active' // Active තත්වයෙන් යයි
+            });
+        }
+
+        // Media Upload (Image/Video)
+        function uploadMedia(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const ref = storage.ref(`media/${myPartnerID}/${Date.now()}_${file.name}`);
+            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
+                let type = file.type.startsWith('image') ? 'img' : 'vid';
+                pushToDB(url, type);
+            });
+        }
+
+        // Voice Message Recording
+        async function startVoice() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRec = new MediaRecorder(stream);
+            mediaRec.start();
+            audioChunks = [];
+            document.getElementById('mic-btn').style.color = 'red';
+            mediaRec.ondataavailable = e => audioChunks.push(e.data);
+        }
+
+        function stopVoice() {
+            if(!mediaRec) return;
+            mediaRec.stop();
+            document.getElementById('mic-btn').style.color = 'var(--gold)';
+            mediaRec.onstop = () => {
+                const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                const ref = storage.ref(`voice/${myPartnerID}/${Date.now()}.webm`);
+                ref.put(blob).then(s => s.ref.getDownloadURL()).then(url => pushToDB(url, 'voice'));
+            };
+        }
+
+        // Load Messages & Actions (Reply, Delete)
+        function loadMessages() {
+            db.ref('chats/'+myPartnerID).on('value', snap => {
+                const win = document.getElementById('chat-window');
+                win.innerHTML = "";
+                snap.forEach(child => {
+                    const m = child.val();
+                    // 'nuked' වූ මැසේජ් පෙන්වන්නේ නැත
+                    if(m.status !== 'nuked') {
+                        const div = document.createElement('div');
+                        div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
+                        
+                        // Reply on Click
+                        div.onclick = () => {
+                            replyMsg = m.content.substring(0, 25) + "...";
+                            document.getElementById('reply-preview').style.display = 'block';
+                            document.getElementById('reply-text').innerText = "Replying to: " + replyMsg;
+                        };
+                        
+                        // Delete Context Menu (Right Click/Long Press)
+                        div.oncontextmenu = (e) => {
+                            e.preventDefault();
+                            if(m.sender === 'me') { // මගේ මැසේජ් විතරක් delete කරන්න පුළුවන්
+                                document.getElementById('delete-modal').style.display = 'flex';
+                                document.getElementById('confirm-del').onclick = () => {
+                                    db.ref(`chats/${myPartnerID}/${child.key}`).update({ status: 'nuked' });
+                                    closeModal();
+                                };
+                            }
+                        };
+
+                        let html = "";
+                        if(m.reply) html += `<div style="font-size:10px; opacity:0.5; border-left:2px solid gold; padding-left:5px; margin-bottom:5px;">Replying: ${m.reply}</div>`;
+                        
+                        if(m.type === 'text') html += m.content;
+                        else if(m.type === 'img') html += `<img src="${m.content}" onclick="window.open(this.src)">`;
+                        else if(m.type === 'vid') html += `<video src="${m.content}" controls></video>`;
+                        else if(m.type === 'voice') html += `<audio src="${m.content}" controls></audio>`;
+
+                        div.innerHTML = html;
+                        win.appendChild(div);
+                    }
+                });
+                win.scrollTop = win.scrollHeight;
+            });
+        }
+
+        function cancelReply() { replyMsg = null; document.getElementById('reply-preview').style.display = 'none'; }
+        function closeModal() { document.getElementById('delete-modal').style.display = 'none'; }
     </script>
 </body>
 </html>
