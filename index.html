@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11LOTUS | Souls Sanctuary ULTIMATE PRO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>11LOTUS | Souls Sanctuary PRO</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -12,253 +12,110 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
         
-        :root { --gold: #d4af37; --dark: #050505; --red: #ff4444; }
-        body, html { margin: 0; padding: 0; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
+        :root { --gold: #d4af37; --dark: #0b0b0b; --bubble-me: #d4af37; --bubble-you: #202020; }
         
-        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        body, html { 
+            margin: 0; padding: 0; background: var(--dark); color: #fff; 
+            font-family: 'Rajdhani', sans-serif; height: 100%; width: 100%;
+            overflow: hidden; /* Phone එකේ scroll වීම පාලනයට */
+        }
+
+        /* Main Chat Container */
+        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; }
         .active { display: flex !important; }
 
-        /* Futuristic Container */
-        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 12px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: #fff; box-sizing: border-box; outline: none; }
-        .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        header { 
+            width: 100%; padding: 15px; background: #111; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
+        }
 
-        /* Chat Layout */
-        header { width: 100%; padding: 15px; background: #111; border-bottom: 1px solid var(--gold); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-        #chat-window { flex: 1; width: 100%; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-sizing: border-box; }
-        .msg { max-width: 80%; padding: 12px; border-radius: 15px; position: relative; cursor: pointer; font-size: 15px; line-height: 1.4; word-wrap: break-word; }
-        .sent { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 2px; }
-        .rec { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 2px; }
+        /* Chat Window Area */
+        #chat-window { 
+            flex: 1; overflow-y: auto; padding: 15px; 
+            display: flex; flex-direction: column; gap: 10px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* WhatsApp Wallpaper */
+            background-blend-mode: overlay; background-color: var(--dark);
+        }
+
+        /* Message Bubbles - WhatsApp Style */
+        .msg { 
+            max-width: 75%; padding: 8px 12px; border-radius: 12px; 
+            font-size: 15px; position: relative; word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
         
-        /* Media */
-        img, video { max-width: 100%; border-radius: 10px; margin-top: 5px; cursor: pointer; }
-        audio { width: 220px; height: 35px; margin-top: 5px; }
+        /* Computer එකේදී මැසේජ් පේන විදිහ */
+        @media (min-width: 768px) {
+            .msg { max-width: 40%; } /* Computer එකේදී පින්තූර ඕනෑවට වඩා ලොකු වෙන්නේ නැහැ */
+        }
 
-        /* Reply Preview */
-        .reply-preview { display:none; background:#1a1a1a; padding:10px; border-left:4px solid var(--gold); box-sizing:border-box; width:100%; font-size:12px; }
+        .sent { align-self: flex-end; background: var(--bubble-me); color: #000; border-top-right-radius: 2px; }
+        .rec { align-self: flex-start; background: var(--bubble-you); color: #fff; border-top-left-radius: 2px; }
 
-        /* Input Area */
-        .input-area { width: 100%; padding: 15px; background: #111; display: flex; align-items: center; gap: 12px; box-sizing: border-box; border-top: 1px solid #222; }
-        .icon-btn { cursor: pointer; color: var(--gold); font-size: 20px; transition: 0.2s; }
-        .icon-btn:hover { transform: scale(1.2); }
+        /* Images and Videos WhatsApp style */
+        .msg img, .msg video { 
+            max-width: 100%; border-radius: 8px; display: block; 
+            margin-top: 5px; object-fit: contain;
+        }
 
-        /* Delete Modal */
-        .modal { display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; z-index:100; }
-        .modal-content { background:#1a1a1a; padding:25px; border-radius:20px; border:1px solid var(--gold); text-align:center; width: 300px; }
+        /* Input Area - Fixed at Bottom */
+        .input-area { 
+            width: 100%; padding: 10px 15px; background: #181818; 
+            display: flex; align-items: center; gap: 10px; box-sizing: border-box;
+            padding-bottom: env(safe-area-inset-bottom); /* iPhone notch protection */
+        }
 
-        /* Nuke Button (Exploding Bomb) */
-        .nuke-btn { background: none; border: none; font-size: 24px; cursor: pointer; transition: 0.3s; animation: pulse 1.5s infinite; }
-        .nuke-btn:hover { transform: scale(1.2) rotate(10deg); }
-        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 10px red; } 100% { opacity: 0.6; } }
+        #chat-input { 
+            flex: 1; padding: 10px 15px; background: #2a2a2a; border: none; 
+            border-radius: 25px; color: #fff; outline: none; font-size: 16px;
+        }
 
-        /* Nuclear Scene Effects */
-        #nuke-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:red; z-index:200; opacity:0; pointer-events:none; }
-        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:300px; height:300px; z-index:201; border-radius:50%; pointer-events:none; }
+        .icon-btn { color: var(--gold); font-size: 22px; cursor: pointer; }
+
+        /* Nuclear Explosion scene */
+        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:80%; z-index:201; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="screen active">
-        <div class="container">
-            <h1>11LOTUS</h1>
-            <input type="text" id="partner-id" placeholder="PARTNER ID">
-            <input type="password" id="password" placeholder="SECRET PASSWORD">
-            <button class="btn" onclick="handleAuth()">UNLOCK SANCTUARY</button>
-        </div>
-    </div>
-
-    <div id="chat-screen" class="screen" style="justify-content: flex-start;">
+    <div id="chat-screen" class="screen">
         <header>
-            <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px; letter-spacing:2px;">SANCTUARY</div>
-            <button class="nuke-btn" onclick="triggerNuclearBomb()" title="💣 NUCLEAR: Hide ALL your messages">💣</button>
+            <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px;">11LOTUS PRO</div>
+            <button class="icon-btn" style="background:none; border:none;" onclick="triggerNuclearBomb()">💣</button>
         </header>
 
         <div id="chat-window"></div>
 
-        <div id="reply-preview" class="reply-preview">
-            <div style="display:flex; justify-content: space-between; color:rgba(255,255,255,0.7);">
-                <span id="reply-text">Replying...</span>
-                <span onclick="cancelReply()" style="cursor:pointer;">✕</span>
-            </div>
-        </div>
-
         <div class="input-area">
-            <label class="icon-btn">🖼️<input type="file" id="file-in" hidden accept="image/*,video/*" onchange="uploadMedia(this)"></label>
-            <span class="icon-btn" id="mic-btn" onmousedown="startVoice()" onmouseup="stopVoice()" ontouchstart="startVoice()" ontouchend="stopVoice()">🎙️</span>
-            <input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendMsg()" placeholder="Whisper something...">
-            <button onclick="sendMsg()" style="background:var(--gold); border:none; padding:10px; border-radius:50%; width:40px; height:40px; font-weight:bold;">></button>
+            <label class="icon-btn">📎<input type="file" id="file-in" hidden onchange="uploadMedia(this)"></label>
+            <span class="icon-btn" id="mic-btn" onmousedown="startVoice()" onmouseup="stopVoice()">🎙️</span>
+            <input type="text" id="chat-input" placeholder="Whisper something..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:40px; height:40px; border-radius:50%; font-weight:bold;">></button>
         </div>
     </div>
 
-    <div id="delete-modal" class="modal">
-        <div class="modal-content">
-            <p>Delete this message?</p>
-            <button class="btn" style="background:var(--red); color:#fff; margin-bottom:10px;" id="confirm-del">Delete for Everyone</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:#888; cursor:pointer;">Cancel</button>
-        </div>
-    </div>
-
-    <div id="nuke-overlay"></div>
-    <img id="nuke-gif" src="https://i.ibb.co/L5kR2Q0/explosion.gif" alt="explosion">
+    <img id="nuke-gif" src="https://i.ibb.co/L5kR2Q0/explosion.gif">
 
     <script>
-        // --- FireBase Config (Singapore Region) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
-            authDomain: "lotus-official-4c28b.firebaseapp.com",
-            databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "lotus-official-4c28b",
-            storageBucket: "lotus-official-4c28b.firebasestorage.app",
-            messagingSenderId: "584674732018",
-            appId: "1:584674732018:web:b6e5fa13708eac51512d6b"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const storage = firebase.storage();
+        // Firebase Config and Chat Logic (කලින් තිබුණු විදිහටම තියෙන්න දෙන්න)
+        // හැබැයි pushToDB එකේදී type එක 'img' නම්, display කරද්දී 'max-width: 100%' පාවිච්චි වෙනවා
         
-        let myPartnerID = "";
-        let replyMsg = null;
-        let mediaRec;
-        let audioChunks = [];
-
-        // Auth Logic
-        function handleAuth() {
-            myPartnerID = document.getElementById('partner-id').value;
-            const p = document.getElementById('password').value;
-            db.ref('users/'+myPartnerID).once('value', snap => {
-                if(snap.val() && snap.val().password === p) {
-                    document.getElementById('login-screen').classList.remove('active');
-                    document.getElementById('chat-screen').classList.add('active');
-                    loadMessages();
-                } else alert("Access Denied!");
-            });
-        }
-
-        // --- NUCLEAR BOMB 💣: (Explosion Scene + Voice) ---
-        function triggerNuclearBomb() {
-            // Confirm Box එක (WhatsApp Style)
-            if(confirm("💣 NUCLEAR BOMB: Are you sure you want to hide ALL YOUR messages from this chat?")) {
-                startNuclearScene();
-                db.ref('chats/' + myPartnerID).once('value', snap => {
-                    snap.forEach(child => {
-                        // ඔබන කෙනාගේ (sender: 'me') සියලුම මැසේජ් 'nuked' කරනවා
-                        if(child.val().sender === 'me') {
-                            db.ref(`chats/${myPartnerID}/${child.key}`).update({ status: 'nuked' });
-                        }
-                    });
-                });
-            }
-        }
-
-        function startNuclearScene() {
-            // 1. "Boom" සද්දය
-            new Audio('https://www.soundjay.com/explosions/explosion-02.mp3').play();
-
-            // 2. Red Flash Overlay
-            const overlay = document.getElementById('nuke-overlay');
-            overlay.style.display = 'block';
-            overlay.style.opacity = '1';
-            overlay.style.transition = 'opacity 0.2s';
-            setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 200); }, 500);
-
-            // 3. Explosion GIF
-            const gif = document.getElementById('nuke-gif');
-            gif.style.display = 'block';
-            setTimeout(() => { gif.style.display = 'none'; }, 2000); // 2 seconds delay
-        }
-
-        // Send Text & Reply
-        function sendMsg() {
-            const val = document.getElementById('chat-input').value;
-            if(!val) return;
-            pushToDB(val, 'text');
-            document.getElementById('chat-input').value = "";
-            cancelReply();
-        }
-
-        function pushToDB(content, type) {
-            db.ref('chats/'+myPartnerID).push({
-                content: content,
-                type: type,
-                sender: 'me',
-                reply: replyMsg,
-                time: Date.now(),
-                status: 'active' // Active තත්වයෙන් යයි
-            });
-        }
-
-        // Media Upload (Image/Video)
-        function uploadMedia(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const ref = storage.ref(`media/${myPartnerID}/${Date.now()}_${file.name}`);
-            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
-                let type = file.type.startsWith('image') ? 'img' : 'vid';
-                pushToDB(url, type);
-            });
-        }
-
-        // Voice Message Recording
-        async function startVoice() {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRec = new MediaRecorder(stream);
-            mediaRec.start();
-            audioChunks = [];
-            document.getElementById('mic-btn').style.color = 'red';
-            mediaRec.ondataavailable = e => audioChunks.push(e.data);
-        }
-
-        function stopVoice() {
-            if(!mediaRec) return;
-            mediaRec.stop();
-            document.getElementById('mic-btn').style.color = 'var(--gold)';
-            mediaRec.onstop = () => {
-                const blob = new Blob(audioChunks, { type: 'audio/webm' });
-                const ref = storage.ref(`voice/${myPartnerID}/${Date.now()}.webm`);
-                ref.put(blob).then(s => s.ref.getDownloadURL()).then(url => pushToDB(url, 'voice'));
-            };
-        }
-
-        // Load Messages & Actions (Reply, Delete)
         function loadMessages() {
             db.ref('chats/'+myPartnerID).on('value', snap => {
                 const win = document.getElementById('chat-window');
                 win.innerHTML = "";
                 snap.forEach(child => {
                     const m = child.val();
-                    // 'nuked' වූ මැසේජ් පෙන්වන්නේ නැත
                     if(m.status !== 'nuked') {
                         const div = document.createElement('div');
                         div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
                         
-                        // Reply on Click
-                        div.onclick = () => {
-                            replyMsg = m.content.substring(0, 25) + "...";
-                            document.getElementById('reply-preview').style.display = 'block';
-                            document.getElementById('reply-text').innerText = "Replying to: " + replyMsg;
-                        };
-                        
-                        // Delete Context Menu (Right Click/Long Press)
-                        div.oncontextmenu = (e) => {
-                            e.preventDefault();
-                            if(m.sender === 'me') { // මගේ මැසේජ් විතරක් delete කරන්න පුළුවන්
-                                document.getElementById('delete-modal').style.display = 'flex';
-                                document.getElementById('confirm-del').onclick = () => {
-                                    db.ref(`chats/${myPartnerID}/${child.key}`).update({ status: 'nuked' });
-                                    closeModal();
-                                };
-                            }
-                        };
-
                         let html = "";
-                        if(m.reply) html += `<div style="font-size:10px; opacity:0.5; border-left:2px solid gold; padding-left:5px; margin-bottom:5px;">Replying: ${m.reply}</div>`;
-                        
                         if(m.type === 'text') html += m.content;
-                        else if(m.type === 'img') html += `<img src="${m.content}" onclick="window.open(this.src)">`;
-                        else if(m.type === 'vid') html += `<video src="${m.content}" controls></video>`;
-                        else if(m.type === 'voice') html += `<audio src="${m.content}" controls></audio>`;
+                        else if(m.type === 'img') html += `<img src="${m.content}" style="max-height:300px;">`;
+                        else if(m.type === 'vid') html += `<video src="${m.content}" controls style="max-height:300px;"></video>`;
+                        else if(m.type === 'voice') html += `<audio src="${m.content}" controls style="width:100%;"></audio>`;
 
                         div.innerHTML = html;
                         win.appendChild(div);
@@ -267,9 +124,6 @@
                 win.scrollTop = win.scrollHeight;
             });
         }
-
-        function cancelReply() { replyMsg = null; document.getElementById('reply-preview').style.display = 'none'; }
-        function closeModal() { document.getElementById('delete-modal').style.display = 'none'; }
     </script>
 </body>
 </html>
