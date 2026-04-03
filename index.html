@@ -12,70 +12,101 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
-        :root { --gold: #d4af37; --dark: #0b0b0b; --bubble-me: #d4af37; --bubble-you: #202020; --blue: #4fc3f7; }
+        :root { --gold: #d4af37; --dark: #0b0b0b; --bubble-me: #d4af37; --bubble-you: #202020; --blue: #4fc3f7; --red: #ff4444; }
         
         body, html { margin: 0; padding: 0; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; width: 100vw; overflow: hidden; }
-        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; }
+        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; justify-content: center; align-items: center; }
         .active { display: flex !important; }
 
+        /* Auth UI */
+        .container { background: rgba(20, 20, 20, 0.95); padding: 35px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 350px; text-align: center; box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; border-radius: 8px; color: #fff; outline: none; box-sizing: border-box; font-size: 16px; }
+        .btn { width: 100%; padding: 14px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; }
+
         /* Chat Layout */
+        #chat-screen { justify-content: flex-start; align-items: stretch; }
         header { width: 100%; padding: 12px 15px; background: #111; border-bottom: 1px solid rgba(212, 175, 55, 0.3); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
         #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; background-color: var(--dark); }
         
-        /* Messages & Swipe */
-        .msg-container { position: relative; width: 100%; display: flex; flex-direction: column; transition: transform 0.2s; }
+        /* Message Bubbles & Swipe */
+        .msg-container { position: relative; width: 100%; display: flex; flex-direction: column; transition: transform 0.2s; touch-action: pan-y; }
         .msg { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 15px; position: relative; word-wrap: break-word; line-height: 1.4; }
-        @media (min-width: 768px) { .msg { max-width: 35%; } }
         .sent { align-self: flex-end; background: var(--bubble-me); color: #000; border-bottom-right-radius: 2px; }
         .rec { align-self: flex-start; background: var(--bubble-you); color: #fff; border-bottom-left-radius: 2px; }
-
-        /* Ticks (✓✓) */
+        
         .status-tick { font-size: 11px; margin-left: 5px; float: right; margin-top: 4px; opacity: 0.6; font-weight: bold; }
         .seen-tick { color: var(--blue); opacity: 1; }
+        .reply-ctx { background: rgba(0,0,0,0.1); border-left: 3px solid var(--gold); padding: 4px 8px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; font-style: italic; opacity: 0.8; }
 
-        /* Media Preview Modal */
-        #media-preview { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:5000; flex-direction:column; }
-        #preview-body { flex:1; display:flex; align-items:center; justify-content:center; padding:20px; }
-        #preview-body img, #preview-body video { max-height:75vh; max-width:100%; border-radius:10px; }
-        .preview-footer { padding:20px; background:rgba(0,0,0,0.8); display:flex; gap:10px; align-items:center; }
-
-        /* Input Area */
+        /* Bottom Bars */
+        #reply-bar { display: none; background: #1a1a1a; padding: 8px 15px; border-top: 1px solid var(--gold); align-items: center; gap: 10px; }
         .input-area { width: 100%; padding: 10px 15px; background: #181818; display: flex; align-items: center; gap: 10px; }
-        #chat-input { flex: 1; padding: 12px 18px; background: #2a2a2a; border: none; border-radius: 25px; color: #fff; outline: none; font-size: 16px; }
+        #chat-input { flex: 1; padding: 12px; background: #2a2a2a; border: none; border-radius: 25px; color: #fff; outline: none; }
         .icon-btn { color: var(--gold); font-size: 24px; cursor: pointer; background:none; border:none; }
 
-        .reply-ctx { background: rgba(0,0,0,0.1); border-left: 3px solid var(--gold); padding: 4px 8px; margin-bottom: 5px; border-radius: 4px; font-size: 12px; font-style: italic; opacity: 0.8; }
-        #reply-bar { display: none; background: #1a1a1a; padding: 8px 15px; border-top: 1px solid var(--gold); align-items: center; gap: 10px; }
+        /* Modals */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9000; align-items:center; justify-content:center; }
+        #media-preview { flex-direction:column; background: #000; }
+        img, video { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+        .care-btn { border: 1px solid var(--gold); background: none; color: var(--gold); border-radius: 15px; padding: 5px 12px; font-size: 12px; margin: 5px 2px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="chat-screen" class="screen active">
+    <div id="login-screen" class="screen active">
+        <div class="container">
+            <h1 style="font-family:'Orbitron'; color:var(--gold); letter-spacing:5px;">11LOTUS</h1>
+            <input type="text" id="partner-id" placeholder="PARTNER ID">
+            <input type="password" id="password" placeholder="PASSWORD">
+            <button class="btn" onclick="handleAuth()">UNLOCK SANCTUARY</button>
+            <p onclick="showRecovery()" style="color:var(--gold); font-size:12px; cursor:pointer; margin-top:15px; text-decoration:underline;">Forgot Password?</p>
+        </div>
+    </div>
+
+    <div id="setup-screen" class="screen">
+        <div class="container">
+            <h2 style="color:var(--gold);">INITIALIZE</h2>
+            <input type="password" id="new-pass" placeholder="Create Password">
+            <input type="text" id="personal-key" placeholder="Recovery Key (Secret)">
+            <button class="btn" onclick="saveUser()">START JOURNEY</button>
+        </div>
+    </div>
+
+    <div id="chat-screen" class="screen">
         <header>
-            <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px; letter-spacing:2px;">11LOTUS SANCTUARY</div>
+            <button class="icon-btn" id="block-btn" onclick="toggleBlock()" style="font-size:11px; border:1px solid var(--gold); padding:4px 8px; border-radius:4px;">BLOCK</button>
+            <div style="color:var(--gold); font-family:'Orbitron';">11LOTUS PRO</div>
             <button class="icon-btn" onclick="triggerNuclearBomb()">💣</button>
         </header>
-        
         <div id="chat-window"></div>
 
         <div id="reply-bar">
             <span id="reply-txt" style="flex:1; font-size:12px; color:#aaa;">Replying...</span>
-            <button onclick="cancelReply()" style="background:none; border:none; color:var(--red);">X</button>
+            <button onclick="cancelReply()" style="background:none; border:none; color:var(--red); font-weight:bold;">X</button>
         </div>
 
         <div class="input-area">
             <button class="icon-btn" id="emoji-btn">😊</button>
             <label class="icon-btn">📎<input type="file" id="file-in" hidden onchange="openPreview(this)"></label>
-            <span class="icon-btn" id="mic-btn" onmousedown="startVoice()" onmouseup="stopVoice()" ontouchstart="startVoice()" ontouchend="stopVoice()">🎙️</span>
             <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMsg()">
-            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:45px; height:45px; border-radius:50%; font-weight:bold; cursor:pointer;">></button>
+            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:45px; height:45px; border-radius:50%; font-weight:bold;">></button>
         </div>
     </div>
 
-    <div id="media-preview">
-        <div style="padding:15px;"><button onclick="closePreview()" style="color:#fff; background:none; border:none; font-size:24px;">X</button></div>
-        <div id="preview-body"></div>
-        <div class="preview-footer">
+    <div id="recovery-modal" class="modal">
+        <div class="container">
+            <h3 style="color:var(--gold);">RECOVERY</h3>
+            <input type="text" id="recover-key-input" placeholder="ENTER SECRET KEY">
+            <input type="password" id="new-password-input" placeholder="NEW PASSWORD" style="display:none;">
+            <button class="btn" id="recovery-btn" onclick="verifyRecoveryKey()">VERIFY KEY</button>
+            <button class="btn" style="background:none; color:#888;" onclick="closeRecovery()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="media-preview" class="modal">
+        <div style="position:absolute; top:20px; left:20px;"><button onclick="closePreview()" style="color:#fff; background:none; border:none; font-size:24px;">X</button></div>
+        <div id="preview-body" style="flex:1; display:flex; align-items:center; justify-content:center; padding:20px;"></div>
+        <div style="width:100%; padding:20px; background:rgba(0,0,0,0.8); display:flex; gap:10px;">
             <input type="text" id="caption-input" style="flex:1; padding:12px; border-radius:25px; border:none; background:#333; color:#fff;" placeholder="Add a caption...">
             <button onclick="uploadWithCaption()" style="background:var(--gold); border:none; width:50px; height:50px; border-radius:50%; font-weight:bold;">></button>
         </div>
@@ -95,122 +126,146 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const storage = firebase.storage();
-        let myPartnerID = "LOTUS-01"; // ඔයාගේ ID එක මෙතනට එයි
+        let myPartnerID = "";
         let rID = null, rTxt = "", selectedFile = null;
 
-        // Emoji Picker
+        // Emoji Button
         const picker = new EmojiButton({ theme: 'dark', position: 'top-start' });
         picker.on('emoji', selection => document.getElementById('chat-input').value += selection.emoji);
         document.getElementById('emoji-btn').onclick = () => picker.togglePicker(document.getElementById('emoji-btn'));
 
-        // Load Messages & Delivery Status
+        // --- Auth & Setup ---
+        function handleAuth() {
+            myPartnerID = document.getElementById('partner-id').value.trim();
+            const p = document.getElementById('password').value;
+            if(!myPartnerID) return alert("Enter ID");
+            db.ref('users/'+myPartnerID).once('value', snap => {
+                const u = snap.val();
+                if(!u) showScreen('setup-screen');
+                else if(u.password === p) { showScreen('chat-screen'); loadMessages(); }
+                else alert("Wrong Password");
+            });
+        }
+        function saveUser() {
+            const p = document.getElementById('new-pass').value;
+            const k = document.getElementById('personal-key').value;
+            db.ref('users/'+myPartnerID).set({password:p, key:k}).then(() => { showScreen('chat-screen'); loadMessages(); });
+        }
+
+        // --- Forgot Password ---
+        function showRecovery() { document.getElementById('recovery-modal').style.display = 'flex'; }
+        function closeRecovery() { document.getElementById('recovery-modal').style.display = 'none'; }
+        function verifyRecoveryKey() {
+            const id = document.getElementById('partner-id').value.trim();
+            const key = document.getElementById('recover-key-input').value;
+            db.ref('users/'+id).once('value', s => {
+                if(s.val() && s.val().key === key) {
+                    document.getElementById('recover-key-input').style.display = 'none';
+                    document.getElementById('new-password-input').style.display = 'block';
+                    document.getElementById('recovery-btn').innerText = "RESET PASSWORD";
+                    document.getElementById('recovery-btn').onclick = resetPassword;
+                } else alert("Invalid Key");
+            });
+        }
+        function resetPassword() {
+            const id = document.getElementById('partner-id').value.trim();
+            const np = document.getElementById('new-password-input').value;
+            db.ref('users/'+id).update({password:np}).then(() => location.reload());
+        }
+
+        // --- Chat & Care Logic ---
         function loadMessages() {
             db.ref('chats/'+myPartnerID).on('value', snap => {
                 const win = document.getElementById('chat-window');
                 win.innerHTML = "";
+                let lastT = 0;
                 snap.forEach(child => {
                     const m = child.val();
-                    if(m.status !== 'nuked') {
-                        // Deliver Status (අනිත් කෙනා චැට් එක බලද්දී✓✓ වැටෙනවා)
-                        if(m.sender !== 'me' && !m.seen) db.ref(`chats/${myPartnerID}/${child.key}`).update({seen: true});
+                    if(m.sender !== 'me' && !m.seen) db.ref(`chats/${myPartnerID}/${child.key}`).update({seen: true});
+                    
+                    const container = document.createElement('div');
+                    container.className = "msg-container";
+                    
+                    // Swipe to Reply
+                    let sX = 0;
+                    container.ontouchstart = e => sX = e.touches[0].clientX;
+                    container.ontouchend = e => { if(e.changedTouches[0].clientX - sX > 70) setReply(m.content || "Media", child.key); };
 
-                        const container = document.createElement('div');
-                        container.className = "msg-container";
-                        
-                        // Swipe to Reply
-                        let sX = 0;
-                        container.ontouchstart = e => sX = e.touches[0].clientX;
-                        container.ontouchend = e => { if(e.changedTouches[0].clientX - sX > 70) setReply(m.content || "Media", child.key); };
-
-                        const div = document.createElement('div');
-                        div.className = "msg " + (m.sender==='me' ? 'sent' : 'rec');
-                        
-                        let html = "";
-                        if(m.replyTo) html += `<div class="reply-ctx">Replied: ${m.replyTo}</div>`;
-                        
-                        if(m.type==='text') html += m.content;
-                        else if(m.type==='img') html += `<img src="${m.content}">${m.caption ? `<div style="font-size:13px; margin-top:5px;">${m.caption}</div>` : ''}`;
-                        else if(m.type==='vid') html += `<video src="${m.content}" controls></video>${m.caption ? `<div style="font-size:13px; margin-top:5px;">${m.caption}</div>` : ''}`;
-                        else if(m.type==='voice') html += `<audio src="${m.content}" controls></audio>`;
-                        
-                        // Ticks Logic
-                        if(m.sender === 'me') {
-                            let tickClass = m.seen ? "seen-tick" : "";
-                            html += `<span class="status-tick ${tickClass}">${m.seen ? '✓✓' : '✓'}</span>`;
-                        }
-
-                        div.innerHTML = html;
-                        container.appendChild(div);
-                        win.appendChild(container);
+                    const div = document.createElement('div');
+                    div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
+                    
+                    let html = "";
+                    if(m.replyTo) html += `<div class="reply-ctx">Replied: ${m.replyTo}</div>`;
+                    if(m.type==='text') html += m.content;
+                    else if(m.type==='img') html += `<img src="${m.content}">${m.caption ? `<div style="font-size:13px; margin-top:5px;">${m.caption}</div>` : ''}`;
+                    else if(m.type==='care_check') {
+                        html += `<div>${m.content}</div><button class="care-btn" onclick="replyCare('I am good! 😊')">I'm Good</button>
+                                 <button class="care-btn" onclick="replyCare('I need a hug 🫂')">I need a hug</button>`;
                     }
+                    
+                    if(m.sender === 'me') html += `<span class="status-tick ${m.seen ? 'seen-tick' : ''}">${m.seen ? '✓✓' : '✓'}</span>`;
+                    
+                    div.innerHTML = html;
+                    container.appendChild(div);
+                    win.appendChild(container);
+                    lastT = m.time;
                 });
                 win.scrollTop = win.scrollHeight;
+                if(lastT > 0 && (Date.now() - lastT > 4 * 24 * 60 * 60 * 1000)) {
+                    const care = "It's been a bit quiet here... Just wanted to check in on you. ❤️";
+                    db.ref('chats/'+myPartnerID).limitToLast(1).once('value', s => {
+                        let l = ""; s.forEach(c => l = c.val().content);
+                        if(l !== care) db.ref('chats/'+myPartnerID).push({content:care, type:'care_check', sender:'11LOTUS', time:Date.now()});
+                    });
+                }
+            });
+            db.ref('users/'+myPartnerID+'/blocked').on('value', s => {
+                document.getElementById('input-container').style.display = s.val() ? "none" : "flex";
+                document.getElementById('block-btn').innerText = s.val() ? "UNBLOCK" : "BLOCK";
             });
         }
 
-        // Media Preview & Caption
-        function openPreview(input) {
-            selectedFile = input.files[0]; if(!selectedFile) return;
-            const modal = document.getElementById('media-preview');
-            const body = document.getElementById('preview-body');
-            body.innerHTML = ""; modal.style.display = "flex";
-            const url = URL.createObjectURL(selectedFile);
-            body.innerHTML = selectedFile.type.startsWith('image') ? `<img src="${url}">` : `<video src="${url}" controls></video>`;
+        // --- Actions ---
+        function sendMsg() {
+            const i = document.getElementById('chat-input');
+            if(!i.value) return;
+            db.ref('chats/'+myPartnerID).push({content:i.value, type:'text', sender:'me', time:Date.now(), seen:false, replyTo: rID?rTxt:null});
+            i.value=""; cancelReply();
         }
-        function closePreview() { document.getElementById('media-preview').style.display="none"; selectedFile=null; }
+        function setReply(t, id) { rID=id; rTxt=t; document.getElementById('reply-bar').style.display='flex'; document.getElementById('reply-txt').innerText="Replying: "+t; }
+        function cancelReply() { rID=null; document.getElementById('reply-bar').style.display='none'; }
+        function replyCare(t) { db.ref('chats/'+myPartnerID).push({content:t, type:'text', sender:'me', time:Date.now()}); }
 
+        // --- Media Preview ---
+        function openPreview(input) {
+            selectedFile = input.files[0];
+            const url = URL.createObjectURL(selectedFile);
+            document.getElementById('preview-body').innerHTML = `<img src="${url}">`;
+            document.getElementById('media-preview').style.display = "flex";
+        }
+        function closePreview() { document.getElementById('media-preview').style.display = "none"; selectedFile=null; }
         function uploadWithCaption() {
             const cap = document.getElementById('caption-input').value;
             const ref = storage.ref(`media/${myPartnerID}/${Date.now()}`);
             ref.put(selectedFile).then(s => s.ref.getDownloadURL()).then(url => {
-                db.ref('chats/'+myPartnerID).push({
-                    content: url, caption: cap, type: selectedFile.type.startsWith('image')?'img':'vid',
-                    sender: 'me', time: Date.now(), status: 'active', seen: false
-                });
+                db.ref('chats/'+myPartnerID).push({content:url, caption:cap, type:'img', sender:'me', time:Date.now(), seen:false});
                 closePreview();
             });
         }
 
-        function sendMsg() {
-            const i = document.getElementById('chat-input'); if(!i.value) return;
-            db.ref('chats/'+myPartnerID).push({
-                content: i.value, type: 'text', sender: 'me', time: Date.now(), status: 'active', 
-                seen: false, replyTo: rID ? rTxt : null
-            });
-            i.value = ""; cancelReply();
-        }
-
-        function setReply(t, id) { rID=id; rTxt=t; document.getElementById('reply-bar').style.display='flex'; document.getElementById('reply-txt').innerText="Replying: "+t; }
-        function cancelReply() { rID=null; document.getElementById('reply-bar').style.display='none'; }
-
-        // Voice
-        let mediaRec, audioChunks = [];
-        async function startVoice() {
-            const s = await navigator.mediaDevices.getUserMedia({audio:true});
-            mediaRec = new MediaRecorder(s); mediaRec.start();
-            audioChunks=[]; document.getElementById('mic-btn').style.color='red';
-            mediaRec.ondataavailable = e => audioChunks.push(e.data);
-        }
-        function stopVoice() {
-            if(!mediaRec) return; mediaRec.stop();
-            document.getElementById('mic-btn').style.color='var(--gold)';
-            mediaRec.onstop = () => {
-                const b = new Blob(audioChunks, {type:'audio/webm'});
-                storage.ref(`voice/${myPartnerID}/${Date.now()}`).put(b).then(s=>s.ref.getDownloadURL()).then(url=>{
-                    db.ref('chats/'+myPartnerID).push({content:url, type:'voice', sender:'me', time:Date.now(), status:'active', seen:false});
-                });
-            };
-        }
-
         function triggerNuclearBomb() {
-            if(confirm("💣 Nuke your chat?")) {
-                db.ref('chats/'+myPartnerID).once('value', snap => {
-                    snap.forEach(c => { if(c.val().sender==='me') db.ref(`chats/${myPartnerID}/${c.key}`).update({status:'nuked'}); });
-                });
-            }
+            if(confirm("💣 Nuke your chat?")) db.ref('chats/'+myPartnerID).once('value', snap => {
+                snap.forEach(c => { if(c.val().sender==='me') db.ref(`chats/${myPartnerID}/${c.key}`).remove(); });
+            });
         }
-
-        window.onload = loadMessages;
+        function toggleBlock() { 
+            const b = document.getElementById('block-btn').innerText === "BLOCK";
+            db.ref('users/'+myPartnerID).update({blocked: b}); 
+        }
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
     </script>
 </body>
 </html>
