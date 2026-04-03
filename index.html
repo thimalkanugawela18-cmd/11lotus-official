@@ -5,179 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>11LOTUS | Digital Sanctuary</title>
     <style>
-        :root { --gold: #d4af37; --dark: #0a0a0a; --gray: #1a1a1a; --red: #ff4444; }
-        body { background: var(--dark); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
-        
-        /* Utility Classes */
-        .hidden { display: none !important; }
-        .flex-center { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px; }
-        
-        /* Screens */
-        .screen { width: 100%; height: 100vh; }
-        .logo-lg { font-size: 40px; color: var(--gold); letter-spacing: 10px; margin-bottom: 20px; text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
-        
-        /* Inputs & Buttons */
-        input { width: 80%; max-width: 300px; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #333; color: #fff; border-radius: 5px; outline: none; }
-        input:focus { border-color: var(--gold); }
-        .btn { width: 85%; max-width: 320px; padding: 15px; margin-top: 15px; background: none; border: 1px solid var(--gold); color: var(--gold); cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: var(--gold); color: #000; }
-        .link-text { color: #888; font-size: 12px; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
 
-        /* Country Selector */
-        #country-list { width: 85%; max-width: 350px; height: 50vh; overflow-y: auto; border: 1px solid #222; margin-top: 15px; }
-        .c-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.2s; }
-        .c-item:hover { background: #1a1a1a; color: var(--gold); }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
 
-        /* Main Chat Layout */
-        header { background: #111; padding: 15px; border-bottom: 1px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .tabs { display: flex; background: var(--gray); }
-        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: #666; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
-        .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-        #chat-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 80%; padding: 12px; border-radius: 15px; font-size: 14px; line-height: 1.4; }
-        .rec { background: #222; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .sen { background: var(--gold); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
+        /* පසුබිම් සජීවීකරණය */
+        .bg-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            filter: blur(50px);
+            animation: move 10s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-50%, -50%); }
+            to { transform: translate(50%, 50%); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: #d4af37;
+            letter-spacing: 12px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            font-size: 28px;
+        }
+
+        .id-display {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            border: 2px dashed rgba(212, 175, 55, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .id-display::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1px solid #d4af37;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #d4af37;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: #d4af37;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn:hover {
+            background: #fff;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .forgot {
+            display: block;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.4);
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .forgot:hover { color: #d4af37; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="screen flex-center">
-        <div class="logo-lg">11LOTUS</div>
-        <div style="width: 150px; height: 150px; border: 1px solid var(--gold); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #444;">ID SCANNED AREA</div>
-        <input type="text" id="login-id" placeholder="Partner QR ID (e.g. LOTUS-01)">
-        <input type="password" id="login-pass" placeholder="Enter Password">
-        <button class="btn" onclick="handleLogin()">UNLOCK SANCTUARY</button>
-        <p class="link-text" onclick="showScreen('recovery-screen')">Forgot Password?</p>
-    </div>
+    <div class="bg-glow"></div>
 
-    <div id="recovery-screen" class="screen flex-center hidden">
-        <h2 style="color:var(--gold)">RECOVER ACCESS</h2>
-        <p style="font-size:12px; color:#888;">Enter Personal Key or Master Key from the Box</p>
-        <input type="password" id="recovery-key-input" placeholder="Enter Recovery Key">
-        <button class="btn" onclick="processRecovery()">VERIFY KEY</button>
-        <p class="link-text" onclick="showScreen('login-screen')">Back to Login</p>
-    </div>
-
-    <div id="country-screen" class="screen flex-center hidden">
-        <h2 style="color:var(--gold)">SELECT YOUR COUNTRY</h2>
-        <input type="text" id="c-search" placeholder="Search Country..." onkeyup="filterC()">
-        <div id="country-list"></div>
-    </div>
-
-    <div id="main-chat" class="screen hidden" style="display: flex; flex-direction: column;">
-        <header>
-            <div style="color:var(--gold); font-weight: bold; letter-spacing: 2px;">11LOTUS</div>
-            <button onclick="toggleBlock()" id="block-status" style="background:#411; color:var(--red); border:1px solid var(--red); padding:5px 10px; border-radius:5px; font-size:10px; cursor:pointer;">BLOCK PARTNER</button>
-        </header>
-        <div class="tabs">
-            <button id="tab-soul" class="tab-btn active" onclick="switchTab('soul')">Soulmate</button>
-            <button id="tab-group" class="tab-btn" onclick="switchTab('group')">Country Group</button>
+    <div class="container">
+        <h1>11LOTUS</h1>
+        
+        <div class="id-display">
+            <span style="font-size: 10px; color: #d4af37; letter-spacing: 2px;">SCANNING</span>
         </div>
-        <div id="chat-area"></div>
-        <div style="padding:15px; background:#111; display:flex; gap:10px; border-top:1px solid #222;">
-            <input type="text" id="chat-input" style="flex:1; margin:0;" placeholder="Write a message...">
-            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:50px; border-radius:5px; cursor:pointer; font-weight:bold;">></button>
-        </div>
+
+        <input type="text" id="partner-id" placeholder="PARTNER ID">
+        <input type="password" id="password" placeholder="SECRET PASSWORD">
+
+        <button class="btn">Unlock Sanctuary</button>
+
+        <a href="#" class="forgot">Lost access to your sanctuary?</a>
     </div>
 
-    <script>
-        // Temporary Data (Later linked to Firebase)
-        const mockData = {
-            id: "LOTUS-01",
-            pass: "1234",
-            personalKey: "mysecret",
-            masterBoxKey: "BOX-9988-LTS",
-            country: ""
-        };
-
-        const countries = ["Sri Lanka", "India", "United Kingdom", "USA", "Canada", "Australia", "Japan", "Germany", "France", "UAE"];
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
-        }
-
-        function handleLogin() {
-            const id = document.getElementById('login-id').value;
-            const pass = document.getElementById('login-pass').value;
-
-            if(id === mockData.id && pass === mockData.pass) {
-                showScreen('country-screen');
-                renderCountries();
-            } else {
-                alert("Invalid Credentials! If it's your first time, we will setup your account.");
-                // For demo: if first time, just go to country
-                showScreen('country-screen');
-                renderCountries();
-            }
-        }
-
-        function processRecovery() {
-            const key = document.getElementById('recovery-key-input').value;
-            if(key === mockData.personalKey || key === mockData.masterBoxKey) {
-                const newPass = prompt("Key Verified! Enter New Password:");
-                if(newPass) {
-                    mockData.pass = newPass;
-                    alert("Password Updated Successfully!");
-                    showScreen('login-screen');
-                }
-            } else {
-                alert("Invalid Recovery Key. Please check the 11LOTUS box.");
-            }
-        }
-
-        function renderCountries(query = "") {
-            const list = document.getElementById('country-list');
-            list.innerHTML = "";
-            countries.filter(c => c.toLowerCase().includes(query.toLowerCase())).forEach(c => {
-                const div = document.createElement('div');
-                div.className = "c-item";
-                div.innerText = c;
-                div.onclick = () => selectCountry(c);
-                list.appendChild(div);
-            });
-        }
-
-        function filterC() { renderCountries(document.getElementById('c-search').value); }
-
-        function selectCountry(c) {
-            mockData.country = c;
-            document.getElementById('tab-group').innerText = c + " Circle";
-            showScreen('main-chat');
-            switchTab('soul');
-        }
-
-        function switchTab(type) {
-            const area = document.getElementById('chat-area');
-            document.getElementById('tab-soul').classList.toggle('active', type === 'soul');
-            document.getElementById('tab-group').classList.toggle('active', type === 'group');
-            
-            area.innerHTML = `<div class="msg rec">Welcome to the ${type === 'soul' ? 'Private Soulmate Sanctuary' : mockData.country + ' Circle'}. Messages are encrypted.</div>`;
-        }
-
-        function sendMsg() {
-            const input = document.getElementById('chat-input');
-            if(!input.value) return;
-            const msg = document.createElement('div');
-            msg.className = "msg sen";
-            msg.innerText = input.value;
-            document.getElementById('chat-area').appendChild(msg);
-            input.value = "";
-            document.getElementById('chat-area').scrollTop = document.getElementById('chat-area').scrollHeight;
-        }
-
-        function toggleBlock() {
-            const btn = document.getElementById('block-status');
-            if(btn.innerText === "BLOCK PARTNER") {
-                if(confirm("Block this partner? They won't be able to message you.")) {
-                    btn.innerText = "UNBLOCK";
-                    btn.style.background = "#141"; btn.style.color = "#4f4"; btn.style.borderColor = "#4f4";
-                }
-            } else {
-                btn.innerText = "BLOCK PARTNER";
-                btn.style.background = "#411"; btn.style.color = "var(--red)"; btn.style.borderColor = "var(--red)";
-            }
-        }
-    </script>
 </body>
 </html>
