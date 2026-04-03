@@ -10,15 +10,29 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
+        
         :root { --gold: #d4af37; --dark: #050505; }
         body, html { margin: 0; padding: 0; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
-        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        
+        .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
         .active { display: flex !important; }
-        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; box-shadow: 0 0 20px rgba(212,175,55,0.2); }
-        h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 8px; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: #fff; box-sizing: border-box; outline: none; }
-        .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        .btn:active { transform: scale(0.98); }
+
+        /* Glassmorphism Design */
+        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; text-align: center; box-shadow: 0 0 25px rgba(212, 175, 55, 0.1); }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 8px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+        
+        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: #fff; box-sizing: border-box; outline: none; font-family: 'Rajdhani'; font-size: 16px; }
+        input:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
+        
+        .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn:hover { box-shadow: 0 0 20px var(--gold); transform: translateY(-2px); }
+
+        /* Chat UI */
+        #chat-window { flex: 1; width: 100%; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
+        .msg { max-width: 75%; padding: 12px; border-radius: 18px; font-size: 15px; line-height: 1.4; }
+        .sent { align-self: flex-end; background: var(--gold); color: #000; border-bottom-right-radius: 2px; }
+        .rec { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 2px; }
+        .input-area { width: 100%; padding: 15px; background: #111; display: flex; gap: 10px; box-sizing: border-box; border-top: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -26,101 +40,111 @@
     <div id="login-screen" class="screen active">
         <div class="container">
             <h1>11LOTUS</h1>
-            <input type="text" id="partner-id" placeholder="PARTNER ID">
+            <div id="status" style="font-size: 10px; color: var(--gold); margin-bottom: 10px;">SECURE LINK IDLE</div>
+            <input type="text" id="partner-id" placeholder="PARTNER ID (e.g. LOTUS-01)">
             <input type="password" id="password" placeholder="SECRET PASSWORD">
-            <button class="btn" onclick="authAction()">UNLOCK SANCTUARY</button>
+            <button class="btn" onclick="handleAuth()">Unlock Sanctuary</button>
         </div>
     </div>
 
     <div id="setup-screen" class="screen">
         <div class="container">
-            <h2 style="color:var(--gold);">INITIALIZE</h2>
-            <input type="password" id="new-pass" placeholder="Set New Password">
-            <input type="text" id="personal-key" placeholder="Recovery Key">
-            <button class="btn" onclick="saveUserSetup()">SAVE & ENTER</button>
+            <h2 style="color:var(--gold); font-family:'Orbitron';">INITIALIZE</h2>
+            <p style="font-size:12px; color:#888;">Create your password and recovery key.</p>
+            <input type="password" id="new-pass" placeholder="Create Password">
+            <input type="text" id="personal-key" placeholder="Recovery Key (Secret word)">
+            <button class="btn" onclick="saveUser()">Save & Enter</button>
         </div>
     </div>
 
-    <div id="chat-screen" class="screen">
-        <h2 style="color:var(--gold);">SANCTUARY ACTIVE</h2>
-        <p>ඔබ සාර්ථකව සම්බන්ධ විය.</p>
-        <button class="btn" onclick="location.reload()">LOGOUT</button>
+    <div id="chat-screen" class="screen" style="justify-content: flex-start;">
+        <header style="width:100%; padding:15px; background:#111; border-bottom:1px solid var(--gold); text-align:center;">
+            <div style="color:var(--gold); font-family:'Orbitron'; letter-spacing:4px; font-size:18px;">SANCTUARY</div>
+        </header>
+        <div id="chat-window"></div>
+        <div class="input-area">
+            <input type="text" id="chat-input" style="margin:0;" placeholder="Whisper something...">
+            <button onclick="sendMessage()" style="width:60px; background:var(--gold); border:none; border-radius:8px; font-weight:bold;">></button>
+        </div>
     </div>
 
     <script>
-        // ඔයාගේම Firebase Config එක
+        // --- නිවැරදි කරන ලද Firebase Config (Singapore Region) ---
         const firebaseConfig = {
             apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
             authDomain: "lotus-official-4c28b.firebaseapp.com",
+            databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "lotus-official-4c28b",
             storageBucket: "lotus-official-4c28b.firebasestorage.app",
             messagingSenderId: "584674732018",
             appId: "1:584674732018:web:b6e5fa13708eac51512d6b"
         };
 
-        // Firebase එක ලෝඩ් වුණාද කියලා චෙක් කරනවා
-        let db;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-            console.log("Firebase initialized.");
-        } catch (e) {
-            console.error("Firebase error:", e);
-        }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // URL එකෙන් ID එක ගන්නවා
+        // URL එකෙන් ID එක auto-fill කිරීම
         window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            if(id) document.getElementById('partner-id').value = id;
+            const id = new URLSearchParams(window.location.search).get('id');
+            if(id) {
+                document.getElementById('partner-id').value = id;
+                document.getElementById('status').innerText = "PARTNER RECOGNIZED: " + id;
+            }
         };
 
-        function authAction() {
+        function handleAuth() {
             const id = document.getElementById('partner-id').value;
             const pass = document.getElementById('password').value;
+            if(!id || !pass) return alert("Please fill all fields!");
 
-            if(!id || !pass) {
-                alert("ID සහ Password ඇතුළත් කරන්න.");
-                return;
-            }
-
-            if(!db) {
-                alert("Firebase තවමත් සම්බන්ධ වෙමින් පවතී. තත්පරයකින් නැවත උත්සාහ කරන්න.");
-                return;
-            }
-
-            // Database එකෙන් දත්ත සොයනවා
-            db.ref('users/' + id).once('value').then(snapshot => {
-                const data = snapshot.val();
+            db.ref('users/' + id).once('value', snap => {
+                const data = snap.val();
                 if(!data) {
-                    // ID එක පද්ධතියේ නැත්නම් Setup එකට යනවා
-                    showScreen('setup-screen');
+                    showScreen('setup-screen'); // පළමු වතාව නම් Setup එක පෙන්වයි
                 } else if(data.password === pass) {
-                    // පාස්වර්ඩ් එක හරි නම් චැට් එකට යනවා
-                    showScreen('chat-screen');
+                    startChat(id); // පාස්වර්ඩ් හරි නම් චැට් එකට යයි
                 } else {
-                    alert("වැරදි මුරපදයක්! (Incorrect Password)");
+                    alert("Wrong Password!");
                 }
-            }).catch(error => {
-                alert("දෝෂයක්: " + error.message);
-                console.error(error);
-            });
+            }).catch(e => alert("Database Connection Error: " + e.message));
         }
 
-        function saveUserSetup() {
+        function saveUser() {
             const id = document.getElementById('partner-id').value;
             const pass = document.getElementById('new-pass').value;
             const pKey = document.getElementById('personal-key').value;
 
-            if(!pass || !pKey) return alert("සියලුම විස්තර පුරවන්න.");
+            if(!pass || !pKey) return alert("Please fill all fields!");
 
             db.ref('users/' + id).set({
                 password: pass,
                 personalKey: pKey
-            }).then(() => {
-                alert("සාර්ථකව සේව් වුණා!");
-                showScreen('chat-screen');
-            }).catch(e => alert(e.message));
+            }).then(() => startChat(id));
+        }
+
+        function sendMessage() {
+            const id = document.getElementById('partner-id').value;
+            const text = document.getElementById('chat-input').value;
+            if(!text) return;
+
+            db.ref('chats/' + id).push({
+                text: text,
+                sender: 'me',
+                time: Date.now()
+            });
+            document.getElementById('chat-input').value = "";
+        }
+
+        function startChat(id) {
+            showScreen('chat-screen');
+            db.ref('chats/' + id).on('child_added', snap => {
+                const m = snap.val();
+                const div = document.createElement('div');
+                div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
+                div.innerText = m.text;
+                document.getElementById('chat-window').appendChild(div);
+                document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+            });
         }
 
         function showScreen(sid) {
