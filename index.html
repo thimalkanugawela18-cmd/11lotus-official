@@ -13,12 +13,12 @@
         :root { --gold: #d4af37; --dark: #050505; }
         body, html { margin: 0; padding: 0; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
         .screen { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .active { display: flex; }
-        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; }
+        .active { display: flex !important; }
+        .container { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); padding: 35px; border-radius: 20px; border: 1px solid rgba(212, 175, 55, 0.3); width: 85%; max-width: 380px; box-shadow: 0 0 20px rgba(212,175,55,0.2); }
         h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 8px; margin-bottom: 25px; }
         input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; color: #fff; box-sizing: border-box; outline: none; }
         .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        .btn:hover { box-shadow: 0 0 20px var(--gold); }
+        .btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -42,13 +42,13 @@
     </div>
 
     <div id="chat-screen" class="screen">
-        <h2 style="color:var(--gold);">WELCOME TO SANCTUARY</h2>
-        <div id="chat-box" style="height: 300px; overflow-y: auto; width: 100%; border: 1px solid #333; margin: 20px 0; padding: 10px;"></div>
-        <input type="text" id="msg-input" placeholder="Type a message...">
-        <button class="btn" onclick="sendMsg()">SEND</button>
+        <h2 style="color:var(--gold);">SANCTUARY ACTIVE</h2>
+        <p>ඔබ සාර්ථකව සම්බන්ධ විය.</p>
+        <button class="btn" onclick="location.reload()">LOGOUT</button>
     </div>
 
     <script>
+        // ඔයාගේම Firebase Config එක
         const firebaseConfig = {
             apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
             authDomain: "lotus-official-4c28b.firebaseapp.com",
@@ -58,15 +58,17 @@
             appId: "1:584674732018:web:b6e5fa13708eac51512d6b"
         };
 
-        // Firebase Initialize කරන කොට වැරැද්දක් වුණොත් දැනගන්න
+        // Firebase එක ලෝඩ් වුණාද කියලා චෙක් කරනවා
+        let db;
         try {
             firebase.initializeApp(firebaseConfig);
-            var db = firebase.database();
-            console.log("Firebase Connected Successfully!");
+            db = firebase.database();
+            console.log("Firebase initialized.");
         } catch (e) {
-            alert("Firebase Error: " + e.message);
+            console.error("Firebase error:", e);
         }
 
+        // URL එකෙන් ID එක ගන්නවා
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -76,27 +78,49 @@
         function authAction() {
             const id = document.getElementById('partner-id').value;
             const pass = document.getElementById('password').value;
-            if(!id || !pass) return alert("Please fill all fields");
 
+            if(!id || !pass) {
+                alert("ID සහ Password ඇතුළත් කරන්න.");
+                return;
+            }
+
+            if(!db) {
+                alert("Firebase තවමත් සම්බන්ධ වෙමින් පවතී. තත්පරයකින් නැවත උත්සාහ කරන්න.");
+                return;
+            }
+
+            // Database එකෙන් දත්ත සොයනවා
             db.ref('users/' + id).once('value').then(snapshot => {
                 const data = snapshot.val();
                 if(!data) {
+                    // ID එක පද්ධතියේ නැත්නම් Setup එකට යනවා
                     showScreen('setup-screen');
                 } else if(data.password === pass) {
+                    // පාස්වර්ඩ් එක හරි නම් චැට් එකට යනවා
                     showScreen('chat-screen');
                 } else {
-                    alert("Incorrect Password!");
+                    alert("වැරදි මුරපදයක්! (Incorrect Password)");
                 }
-            }).catch(e => alert("Database Error: " + e.message));
+            }).catch(error => {
+                alert("දෝෂයක්: " + error.message);
+                console.error(error);
+            });
         }
 
         function saveUserSetup() {
             const id = document.getElementById('partner-id').value;
             const pass = document.getElementById('new-pass').value;
             const pKey = document.getElementById('personal-key').value;
-            db.ref('users/' + id).set({ password: pass, personalKey: pKey })
-              .then(() => showScreen('chat-screen'))
-              .catch(e => alert(e.message));
+
+            if(!pass || !pKey) return alert("සියලුම විස්තර පුරවන්න.");
+
+            db.ref('users/' + id).set({
+                password: pass,
+                personalKey: pKey
+            }).then(() => {
+                alert("සාර්ථකව සේව් වුණා!");
+                showScreen('chat-screen');
+            }).catch(e => alert(e.message));
         }
 
         function showScreen(sid) {
