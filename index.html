@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>11LOTUS | Souls Sanctuary PRO</title>
+    <title>11LOTUS | Souls Sanctuary ULTIMATE</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -11,96 +11,147 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
-        
         :root { --gold: #d4af37; --dark: #0b0b0b; --bubble-me: #d4af37; --bubble-you: #202020; }
         
-        body, html { 
-            margin: 0; padding: 0; background: var(--dark); color: #fff; 
-            font-family: 'Rajdhani', sans-serif; height: 100%; width: 100%;
-            overflow: hidden; /* Phone එකේ scroll වීම පාලනයට */
-        }
-
-        /* Main Chat Container */
+        body, html { margin: 0; padding: 0; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; width: 100vw; overflow: hidden; }
         .screen { display: none; width: 100%; height: 100vh; flex-direction: column; }
         .active { display: flex !important; }
 
-        header { 
-            width: 100%; padding: 15px; background: #111; 
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
-        }
+        /* Login Screen */
+        #login-screen { justify-content: center; align-items: center; text-align: center; }
+        .container { background: rgba(20, 20, 20, 0.8); padding: 35px; border-radius: 20px; border: 1px solid var(--gold); width: 85%; max-width: 380px; }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--gold); letter-spacing: 8px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; border-radius: 8px; color: #fff; outline: none; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* Chat Window Area */
-        #chat-window { 
-            flex: 1; overflow-y: auto; padding: 15px; 
-            display: flex; flex-direction: column; gap: 10px;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* WhatsApp Wallpaper */
-            background-blend-mode: overlay; background-color: var(--dark);
-        }
-
-        /* Message Bubbles - WhatsApp Style */
-        .msg { 
-            max-width: 75%; padding: 8px 12px; border-radius: 12px; 
-            font-size: 15px; position: relative; word-wrap: break-word;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
+        /* Chat Layout */
+        header { width: 100%; padding: 15px; background: #111; border-bottom: 1px solid rgba(212, 175, 55, 0.3); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; background-color: var(--dark); }
         
-        /* Computer එකේදී මැසේජ් පේන විදිහ */
-        @media (min-width: 768px) {
-            .msg { max-width: 40%; } /* Computer එකේදී පින්තූර ඕනෑවට වඩා ලොකු වෙන්නේ නැහැ */
-        }
+        /* WhatsApp Style Bubbles */
+        .msg { max-width: 75%; padding: 10px 14px; border-radius: 15px; font-size: 15px; position: relative; word-wrap: break-word; line-height: 1.4; }
+        @media (min-width: 768px) { .msg { max-width: 40%; } }
+        .sent { align-self: flex-end; background: var(--bubble-me); color: #000; border-bottom-right-radius: 2px; }
+        .rec { align-self: flex-start; background: var(--bubble-you); color: #fff; border-bottom-left-radius: 2px; }
 
-        .sent { align-self: flex-end; background: var(--bubble-me); color: #000; border-top-right-radius: 2px; }
-        .rec { align-self: flex-start; background: var(--bubble-you); color: #fff; border-top-left-radius: 2px; }
+        img, video { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
+        audio { width: 100%; max-width: 240px; margin-top: 5px; }
 
-        /* Images and Videos WhatsApp style */
-        .msg img, .msg video { 
-            max-width: 100%; border-radius: 8px; display: block; 
-            margin-top: 5px; object-fit: contain;
-        }
+        /* Input Area */
+        .input-area { width: 100%; padding: 10px 15px; background: #181818; display: flex; align-items: center; gap: 12px; box-sizing: border-box; }
+        #chat-input { flex: 1; padding: 12px 18px; background: #2a2a2a; border: none; border-radius: 25px; color: #fff; outline: none; font-size: 16px; }
+        .icon-btn { color: var(--gold); font-size: 24px; cursor: pointer; }
 
-        /* Input Area - Fixed at Bottom */
-        .input-area { 
-            width: 100%; padding: 10px 15px; background: #181818; 
-            display: flex; align-items: center; gap: 10px; box-sizing: border-box;
-            padding-bottom: env(safe-area-inset-bottom); /* iPhone notch protection */
-        }
-
-        #chat-input { 
-            flex: 1; padding: 10px 15px; background: #2a2a2a; border: none; 
-            border-radius: 25px; color: #fff; outline: none; font-size: 16px;
-        }
-
-        .icon-btn { color: var(--gold); font-size: 22px; cursor: pointer; }
-
-        /* Nuclear Explosion scene */
-        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:80%; z-index:201; }
+        /* Nuke Animation */
+        #nuke-gif { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:300px; z-index:999; }
     </style>
 </head>
 <body>
 
+    <div id="login-screen" class="screen active">
+        <div class="container">
+            <h1>11LOTUS</h1>
+            <input type="text" id="partner-id" placeholder="PARTNER ID">
+            <input type="password" id="password" placeholder="PASSWORD">
+            <button class="btn" onclick="handleAuth()">UNLOCK SANCTUARY</button>
+        </div>
+    </div>
+
     <div id="chat-screen" class="screen">
         <header>
-            <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px;">11LOTUS PRO</div>
-            <button class="icon-btn" style="background:none; border:none;" onclick="triggerNuclearBomb()">💣</button>
+            <div style="color:var(--gold); font-family:'Orbitron'; font-size:14px; letter-spacing:2px;">SANCTUARY</div>
+            <span class="icon-btn" onclick="triggerNuclearBomb()">💣</span>
         </header>
-
         <div id="chat-window"></div>
-
         <div class="input-area">
             <label class="icon-btn">📎<input type="file" id="file-in" hidden onchange="uploadMedia(this)"></label>
             <span class="icon-btn" id="mic-btn" onmousedown="startVoice()" onmouseup="stopVoice()">🎙️</span>
-            <input type="text" id="chat-input" placeholder="Whisper something..." onkeypress="if(event.key==='Enter') sendMsg()">
-            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:40px; height:40px; border-radius:50%; font-weight:bold;">></button>
+            <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <button onclick="sendMsg()" style="background:var(--gold); border:none; width:45px; height:45px; border-radius:50%; font-weight:bold;">></button>
         </div>
     </div>
 
     <img id="nuke-gif" src="https://i.ibb.co/L5kR2Q0/explosion.gif">
 
     <script>
-        // Firebase Config and Chat Logic (කලින් තිබුණු විදිහටම තියෙන්න දෙන්න)
-        // හැබැයි pushToDB එකේදී type එක 'img' නම්, display කරද්දී 'max-width: 100%' පාවිච්චි වෙනවා
-        
+        // --- 修正された Firebase Config (ඔයාගේ ස්ක්‍රීන්ෂොට් එකට අනුව) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
+            authDomain: "lotus-official-4c28b.firebaseapp.com",
+            databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lotus-official-4c28b",
+            storageBucket: "lotus-official-4c28b.appspot.com", // මෙන්න මේකයි හරිම එක!
+            messagingSenderId: "584674732018",
+            appId: "1:584674732018:web:b6e5fa13708eac51512d6b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const storage = firebase.storage();
+        let myPartnerID = "";
+        let mediaRec;
+        let audioChunks = [];
+
+        function handleAuth() {
+            myPartnerID = document.getElementById('partner-id').value;
+            const p = document.getElementById('password').value;
+            db.ref('users/'+myPartnerID).once('value', snap => {
+                if(snap.val() && snap.val().password === p) {
+                    document.getElementById('login-screen').classList.remove('active');
+                    document.getElementById('chat-screen').classList.add('active');
+                    loadMessages();
+                } else alert("Denied!");
+            });
+        }
+
+        function triggerNuclearBomb() {
+            if(confirm("💣 Hide all your messages?")) {
+                new Audio('https://www.soundjay.com/explosions/explosion-02.mp3').play();
+                document.getElementById('nuke-gif').style.display = 'block';
+                setTimeout(() => document.getElementById('nuke-gif').style.display = 'none', 2000);
+                db.ref('chats/'+myPartnerID).once('value', snap => {
+                    snap.forEach(c => { if(c.val().sender==='me') db.ref(`chats/${myPartnerID}/${c.key}`).update({status:'nuked'}); });
+                });
+            }
+        }
+
+        function sendMsg() {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            pushToDB(input.value, 'text');
+            input.value = "";
+        }
+
+        function pushToDB(content, type) {
+            db.ref('chats/'+myPartnerID).push({ content, type, sender:'me', time:Date.now(), status:'active' });
+        }
+
+        function uploadMedia(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const ref = storage.ref(`media/${myPartnerID}/${Date.now()}_${file.name}`);
+            ref.put(file).then(s => s.ref.getDownloadURL()).then(url => {
+                pushToDB(url, file.type.startsWith('image') ? 'img' : 'vid');
+            }).catch(e => alert("Storage Error: " + e.message));
+        }
+
+        async function startVoice() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRec = new MediaRecorder(stream); mediaRec.start();
+            audioChunks = []; document.getElementById('mic-btn').style.color = 'red';
+            mediaRec.ondataavailable = e => audioChunks.push(e.data);
+        }
+
+        function stopVoice() {
+            if(!mediaRec) return; mediaRec.stop();
+            document.getElementById('mic-btn').style.color = 'var(--gold)';
+            mediaRec.onstop = () => {
+                const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                storage.ref(`voice/${myPartnerID}/${Date.now()}.webm`).put(blob)
+                .then(s => s.ref.getDownloadURL()).then(url => pushToDB(url, 'voice'));
+            };
+        }
+
         function loadMessages() {
             db.ref('chats/'+myPartnerID).on('value', snap => {
                 const win = document.getElementById('chat-window');
@@ -110,14 +161,10 @@
                     if(m.status !== 'nuked') {
                         const div = document.createElement('div');
                         div.className = "msg " + (m.sender === 'me' ? 'sent' : 'rec');
-                        
-                        let html = "";
-                        if(m.type === 'text') html += m.content;
-                        else if(m.type === 'img') html += `<img src="${m.content}" style="max-height:300px;">`;
-                        else if(m.type === 'vid') html += `<video src="${m.content}" controls style="max-height:300px;"></video>`;
-                        else if(m.type === 'voice') html += `<audio src="${m.content}" controls style="width:100%;"></audio>`;
-
-                        div.innerHTML = html;
+                        if(m.type === 'text') div.innerText = m.content;
+                        else if(m.type === 'img') div.innerHTML = `<img src="${m.content}" onclick="window.open(this.src)">`;
+                        else if(m.type === 'vid') div.innerHTML = `<video src="${m.content}" controls></video>`;
+                        else if(m.type === 'voice') div.innerHTML = `<audio src="${m.content}" controls></audio>`;
                         win.appendChild(div);
                     }
                 });
