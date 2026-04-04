@@ -20,17 +20,13 @@
         header { padding: 10px 15px; background: #000; border-bottom: 1px solid rgba(212,175,55,0.2); display: flex; justify-content: space-between; align-items: center; }
         #win { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
         
-        /* --- PHOTO SIZE 100PX LIMIT FIXED --- */
+        /* 100PX LIMIT & SPINNER STYLE */
         .msg { max-width: 70%; padding: 8px 12px; border-radius: 12px; font-size: 14px; position: relative; word-wrap: break-word; }
-        .msg img { 
-            width: 100px !important; 
-            height: 100px !important; 
-            object-fit: cover; 
-            border-radius: 8px; 
-            display: block; 
-            margin: 4px 0; 
-            border: 1px solid var(--g);
-        }
+        .img-wrap { position: relative; width: 100px; height: 100px; margin: 4px 0; }
+        .msg img { width: 100px !important; height: 100px !important; object-fit: cover; border-radius: 8px; border: 1px solid var(--g); }
+        
+        .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 3px solid #333; border-top: 3px solid var(--g); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
         .sent { align-self: flex-end; background: var(--g); color: #000; border-bottom-right-radius: 2px; }
         .rec { align-self: flex-start; background: var(--y); color: #fff; border-bottom-left-radius: 2px; }
@@ -68,21 +64,4 @@
         firebase.initializeApp(cfg); const db = firebase.database(), st = firebase.storage(); let pid = "", file = null;
         const pkr = new EmojiButton({ theme: 'dark' }); pkr.on('emoji', e => document.getElementById('in').value += e.emoji);
         document.getElementById('e-btn').onclick = () => pkr.togglePicker(document.getElementById('e-btn'));
-        function auth() { pid = document.getElementById('p-id').value.trim(); const pw = document.getElementById('p-pw').value; db.ref('users/'+pid).once('value', s => { const u = s.val(); if(!u) sw('s-s'); else if(u.password === pw) { sw('c-s'); load(); } else alert("Wrong"); }); }
-        function setup() { db.ref('users/'+pid).set({password:document.getElementById('n-pw').value, key:document.getElementById('n-k').value, blocked:false}).then(() => { sw('c-s'); load(); }); }
-        function load() {
-            db.ref('users/'+pid+'/blocked').on('value', s => { document.getElementById('i-bar').style.display = s.val() ? "none" : "flex"; document.getElementById('b-msg').style.display = s.val() ? "block" : "none"; document.getElementById('b-btn').innerText = s.val() ? "UNBLOCK" : "BLOCK"; });
-            db.ref('chats/'+pid).on('value', s => { const w = document.getElementById('win'); w.innerHTML = ""; let lt = 0; s.forEach(c => { const m = c.val(); if(m.sender !== 'me' && !m.seen) db.ref(`chats/${pid}/${c.key}`).update({seen:true}); const d = document.createElement('div'); d.className = "msg " + (m.sender==='me'?'sent':'rec'); d.onclick = (e) => mnu(e, c.key, m.sender); let h = m.type==='img' ? `<img src="${m.content}">${m.caption?`<div style="font-size:11px;">${m.caption}</div>`:''}` : m.content; if(m.sender==='me') h += `<span class="tk ${m.seen?'bl':''}">${m.seen?'✓✓':'✓'}</span>`; d.innerHTML = h; w.appendChild(d); lt = m.time; }); w.scrollTop = w.scrollHeight; if(lt > 0 && (Date.now()-lt > 345600000)) db.ref('chats/'+pid).push({content:"Check-in ❤️", sender:'11LOTUS', time:Date.now()}); });
-        }
-        function send() { const i = document.getElementById('in'); if(!i.value) return; db.ref('chats/'+pid).push({content:i.value, type:'text', sender:'me', time:Date.now(), seen:false}); i.value = ""; }
-        function pre(i) { file = i.files[0]; document.getElementById('p-b').innerHTML = `<img src="${URL.createObjectURL(file)}" style="width:100px;height:100px;object-fit:cover;">`; document.getElementById('p-m').style.display="flex"; }
-        function cPr() { document.getElementById('p-m').style.display="none"; }
-        function up() { const b = document.getElementById('u-b'); b.disabled = true; st.ref().child(`media/${pid}/${Date.now()}`).put(file).then(s => s.ref.getDownloadURL()).then(u => { db.ref('chats/'+pid).push({content:u, caption:document.getElementById('c-i').value, type:'img', sender:'me', time:Date.now(), seen:false}); b.disabled = false; cPr(); }).catch(e => alert("Storage Error! Check Rules.")); }
-        function mnu(e, id, s) { const m = document.getElementById('ctx'); m.style.display='flex'; m.style.top=e.pageY+'px'; m.style.left=e.pageX+'px'; document.getElementById('d-m').onclick = () => { db.ref(`chats/${pid}/${id}`).remove(); m.style.display='none'; }; const de = document.getElementById('d-e'); de.style.display = s==='me'?'block':'none'; de.onclick = () => { db.ref(`chats/${pid}/${id}`).remove(); m.style.display='none'; }; }
-        function tBlk() { db.ref('users/'+pid+'/blocked').once('value', s => db.ref('users/'+pid).update({blocked:!s.val()})); }
-        function nk() { if(confirm("Nuke?")) db.ref('chats/'+pid).remove(); }
-        function sw(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-        window.onclick = () => document.getElementById('ctx').style.display='none';
-    </script>
-</body>
-</html>
+        function auth() { pid = document.getElementById('p-id').value.trim(); const pw =
