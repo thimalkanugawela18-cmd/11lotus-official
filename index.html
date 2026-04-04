@@ -3,153 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11LOTUS Souls Sanctuary - Original</title>
+    <title>11LOTUS | Souls Sanctuary Premium</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0b141a; display: flex; justify-content: center; align-items: center; height: 100vh; color: white; }
+        /* 15KB UI Styling */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0b141a; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
 
-        .chat-container {
-            background: #111b21;
-            width: 380px;
-            height: 90vh;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #333;
-            overflow: hidden;
+        .main-app {
+            width: 400px; height: 90vh; background: #111b21;
+            border-radius: 20px; border: 1px solid #333;
+            display: flex; flex-direction: column; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden;
         }
 
-        /* Header Area (4-Day Status) */
-        .header {
-            background: #202c33;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Login Screen */
+        #login-screen {
+            position: absolute; width: 100%; height: 100%; background: #111b21;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 100; padding: 40px;
         }
-        .user-info b { display: block; font-size: 16px; }
-        .user-info span { color: #ff4b2b; font-size: 11px; font-weight: bold; } /* Active 4 days ago */
+        .logo { width: 80px; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: none; background: #2a3942; color: white; outline: none; }
+        .p-btn { width: 100%; padding: 15px; background: #00a884; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
 
-        /* Chat Area */
-        .chat-window {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-        }
+        /* Chat Header */
+        header { background: #202c33; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3942; }
+        .user-meta b { display: block; font-size: 16px; color: #e9edef; }
+        .user-meta span { color: #ff3b30; font-size: 12px; font-weight: bold; } /* 4 DAY STATUS */
 
-        .msg {
-            background: #005c4b;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            max-width: 85%;
-            font-size: 14px;
-            position: relative;
-        }
-        
-        /* Delete Link Style */
-        .del-link {
-            color: #ffb1b1;
-            font-size: 10px;
-            text-decoration: underline;
-            cursor: pointer;
-            display: block;
-            margin-top: 5px;
-        }
+        /* Chat Body */
+        .chat-body { flex: 1; padding: 20px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; }
+        .msg { background: #005c4b; padding: 12px; border-radius: 10px; margin-bottom: 15px; max-width: 85%; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .msg.deleted { background: #1d282f !important; color: #8696a0 !important; font-style: italic; border: 1px solid #333; }
+        .del-action { color: #ffb1b1; font-size: 10px; cursor: pointer; margin-top: 8px; display: block; text-decoration: underline; }
+
+        /* Media Preview */
+        .media-box img { max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #444; }
 
         /* Footer Input Area */
-        .footer {
-            background: #202c33;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .footer input {
-            flex: 1;
-            background: #2a3942;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            color: white;
-            outline: none;
-        }
+        footer { background: #202c33; padding: 10px 15px; display: flex; align-items: center; gap: 10px; }
+        .input-box { flex: 1; background: #2a3942; border-radius: 25px; padding: 10px 15px; display: flex; align-items: center; }
+        .input-box input { flex: 1; background: transparent; border: none; color: white; outline: none; margin: 0 10px; }
+        .icon { font-size: 22px; color: #8696a0; cursor: pointer; }
 
-        /* Control Buttons */
-        .btn-group {
-            padding: 10px;
-            background: #111b21;
-            display: flex;
-            gap: 5px;
-        }
-        .btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-        }
+        /* Toxic Controls */
+        .toxic-controls { padding: 10px; background: #111b21; display: flex; gap: 10px; }
+        .t-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
         .nuke { background: #ff3b30; color: white; }
-        .block { background: #3b3b3b; color: white; }
+        .block { background: #333; color: white; }
+
+        /* Animation Overlay (Nuke/Block) */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 50; }
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="header">
-        <div class="user-info">
+<div class="main-app">
+    <div id="login-screen">
+        <h2 style="color:#00a884; margin-bottom:10px;">11LOTUS</h2>
+        <p style="color:grey; font-size:12px; margin-bottom:30px;">Souls Sanctuary Login</p>
+        <input type="text" placeholder="Username (admin)">
+        <input type="password" placeholder="Password (1234)">
+        <button class="p-btn" onclick="login()">Enter Sanctuary</button>
+    </div>
+
+    <div id="overlay" class="overlay">
+        <h2 id="overlay-text" style="color:#00a884;">Processing...</h2>
+    </div>
+
+    <header>
+        <div class="user-meta">
             <b>11LOTUS Soul</b>
-            <span>Active: 4 days ago</span>
+            <span>Last seen: 4 days ago</span>
         </div>
         <div style="font-size: 20px;">😊 📎</div>
-    </div>
+    </header>
 
-    <div class="chat-window" id="chat">
-        <div class="msg" id="msg1">
-            <span id="text1">Meka delete karapan hutto!</span>
-            <span class="del-link" onclick="deleteEveryone('msg1')">Delete for Everyone</span>
+    <div class="chat-body" id="chat">
+        <div class="msg" id="m1">
+            <span>Welcome back. I have been watching over you for 4 days.</span>
+            <a class="del-action" onclick="deleteEveryone('m1')">Delete for Everyone</a>
         </div>
     </div>
 
-    <div class="btn-group">
-        <button class="btn block" id="blockBtn" onclick="toggleBlock()">Block</button>
-        <button class="btn nuke" onclick="nukeBomb()">NUKE BOMB 💣</button>
+    <div class="toxic-controls">
+        <button id="blockBtn" class="t-btn block" onclick="handleBlock()">Block User</button>
+        <button class="t-btn nuke" onclick="handleNuke()">NUKE BOMB ☢️</button>
     </div>
 
-    <div class="footer">
-        <input type="text" placeholder="Type a message...">
-        <span style="color: #00a884; cursor: pointer; font-size: 20px;">➤</span>
-    </div>
+    <footer>
+        <div class="input-box">
+            <span class="icon" onclick="document.getElementById('fIn').click()">📎</span>
+            <input type="file" id="fIn" hidden onchange="uploadMedia(this)">
+            <input type="text" id="mInput" placeholder="Message your soul...">
+        </div>
+        <span class="icon" style="color:#00a884" onclick="sendMsg()">➤</span>
+    </footer>
 </div>
 
 <script>
-    // 1. Delete for Everyone Logic
-    function deleteEveryone(id) {
-        let msg = document.getElementById(id);
-        msg.innerHTML = "<i style='color:#8696a0'>🚫 You deleted this message</i>";
-        msg.style.background = "#1d282f";
-        msg.style.border = "1px solid #333";
+    let isBlocked = false;
+
+    function login() {
+        document.getElementById('login-screen').style.display = 'none';
     }
 
-    // 2. Block/Unblock Logic
-    function toggleBlock() {
-        let btn = document.getElementById('blockBtn');
-        if(btn.innerText === "Block") {
-            btn.innerText = "Unblock";
-            btn.style.background = "#00a884";
-        } else {
-            btn.innerText = "Block";
-            btn.style.background = "#3b3b3b";
+    function showOverlay(txt) {
+        document.getElementById('overlay').style.display = 'flex';
+        document.getElementById('overlay-text').innerText = txt;
+    }
+
+    function hideOverlay() {
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    // DELETE FOR EVERYONE
+    function deleteEveryone(id) {
+        showOverlay("Deleting for Everyone...");
+        setTimeout(() => {
+            let m = document.getElementById(id);
+            m.innerHTML = "🚫 This message was deleted";
+            m.classList.add('deleted');
+            hideOverlay();
+        }, 1200);
+    }
+
+    // BLOCK SYSTEM
+    function handleBlock() {
+        showOverlay(isBlocked ? "Unblocking..." : "Blocking User...");
+        setTimeout(() => {
+            isBlocked = !isBlocked;
+            let btn = document.getElementById('blockBtn');
+            btn.innerText = isBlocked ? "Unblock" : "Block User";
+            btn.style.background = isBlocked ? "#00a884" : "#333";
+            hideOverlay();
+        }, 1000);
+    }
+
+    // NUKE BOMB
+    function handleNuke() {
+        if(confirm("Confirm Nuclear Deployment? සියලුම දත්ත විනාශ වනු ඇත!")) {
+            showOverlay("DEPLOYING NUKE... 💣");
+            setTimeout(() => {
+                document.getElementById('chat').innerHTML = "<p style='text-align:center; color:grey; margin-top:50px;'>Chat History Wiped Permanently.</p>";
+                hideOverlay();
+            }, 2500);
         }
     }
 
-    // 3. Nuke Bomb Logic
-    function nukeBomb() {
-        if(confirm("Okkomath ekka Nuke karannada?")) {
-            document.getElementById('chat').innerHTML = "<p style='text-align:center; color:grey; margin-top:20px;'>Sanctuary Cleared ☢️</p>";
+    // MEDIA & SEND
+    function uploadMedia(input) {
+        if(input.files[0]) {
+            showOverlay("Uploading Media...");
+            setTimeout(() => {
+                let url = URL.createObjectURL(input.files[0]);
+                let chat = document.getElementById('chat');
+                chat.innerHTML += `<div class="msg media-box"><img src="${url}"></div>`;
+                hideOverlay();
+            }, 1500);
+        }
+    }
+
+    function sendMsg() {
+        let input = document.getElementById('mInput');
+        if(input.value.trim() !== "") {
+            document.getElementById('chat').innerHTML += `<div class="msg">${input.value}</div>`;
+            input.value = "";
+            let chat = document.getElementById('chat');
+            chat.scrollTop = chat.scrollHeight;
         }
     }
 </script>
