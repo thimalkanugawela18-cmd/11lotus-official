@@ -2,178 +2,899 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11LOTUS | Souls Sanctuary Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>11LOTUS | Souls Sanctuary PRO</title>
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
+
     <style>
-        /* 15KB UI Styling */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #0b141a; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
 
-        .main-app {
-            width: 400px; height: 90vh; background: #111b21;
-            border-radius: 20px; border: 1px solid #333;
-            display: flex; flex-direction: column; position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); overflow: hidden;
+        :root {
+            --gold: #d4af37;
+            --dark: #0b0b0b;
+            --bubble-me: #d4af37;
+            --bubble-you: #202020;
+            --blue: #4fc3f7;
         }
 
-        /* Login Screen */
-        #login-screen {
-            position: absolute; width: 100%; height: 100%; background: #111b21;
-            display: flex; flex-direction: column; justify-content: center;
-            align-items: center; z-index: 100; padding: 40px;
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: var(--dark);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
-        .logo { width: 80px; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: none; background: #2a3942; color: white; outline: none; }
-        .p-btn { width: 100%; padding: 15px; background: #00a884; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
 
-        /* Chat Header */
-        header { background: #202c33; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3942; }
-        .user-meta b { display: block; font-size: 16px; color: #e9edef; }
-        .user-meta span { color: #ff3b30; font-size: 12px; font-weight: bold; } /* 4 DAY STATUS */
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-        /* Chat Body */
-        .chat-body { flex: 1; padding: 20px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; }
-        .msg { background: #005c4b; padding: 12px; border-radius: 10px; margin-bottom: 15px; max-width: 85%; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .msg.deleted { background: #1d282f !important; color: #8696a0 !important; font-style: italic; border: 1px solid #333; }
-        .del-action { color: #ffb1b1; font-size: 10px; cursor: pointer; margin-top: 8px; display: block; text-decoration: underline; }
+        .active { display: flex !important; }
 
-        /* Media Preview */
-        .media-box img { max-width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #444; }
+        .container {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            width: 85%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
 
-        /* Footer Input Area */
-        footer { background: #202c33; padding: 10px 15px; display: flex; align-items: center; gap: 10px; }
-        .input-box { flex: 1; background: #2a3942; border-radius: 25px; padding: 10px 15px; display: flex; align-items: center; }
-        .input-box input { flex: 1; background: transparent; border: none; color: white; outline: none; margin: 0 10px; }
-        .icon { font-size: 22px; color: #8696a0; cursor: pointer; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            font-size: 16px;
+        }
 
-        /* Toxic Controls */
-        .toxic-controls { padding: 10px; background: #111b21; display: flex; gap: 10px; }
-        .t-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
-        .nuke { background: #ff3b30; color: white; }
-        .block { background: #333; color: white; }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gold);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            margin-top: 10px;
+        }
 
-        /* Animation Overlay (Nuke/Block) */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; flex-direction: column; z-index: 50; }
+        #chat-screen {
+            justify-content: flex-start;
+            align-items: stretch;
+        }
+
+        header {
+            width: 100%;
+            padding: 12px 15px;
+            background: #111;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-blend-mode: overlay;
+            background-color: var(--dark);
+        }
+
+        .msg-wrap {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            position: relative;
+            touch-action: pan-y;
+        }
+
+        .msg {
+            max-width: 76%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .msg img {
+            max-width: 220px !important;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 5px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 480px) {
+            .msg img { max-width: 180px !important; }
+        }
+
+        .sent {
+            align-self: flex-end;
+            background: var(--bubble-me);
+            color: #000;
+            border-bottom-right-radius: 2px;
+        }
+
+        .rec {
+            align-self: flex-start;
+            background: var(--bubble-you);
+            color: #fff;
+            border-bottom-left-radius: 2px;
+        }
+
+        .status-tick {
+            font-size: 11px;
+            margin-left: 5px;
+            float: right;
+            margin-top: 4px;
+            opacity: 0.6;
+        }
+
+        .seen-tick {
+            color: var(--blue);
+            opacity: 1;
+        }
+
+        .reply-ctx {
+            background: rgba(0,0,0,0.15);
+            border-left: 3px solid var(--gold);
+            padding: 4px 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        #reply-bar {
+            display: none;
+            background: #1a1a1a;
+            padding: 8px 15px;
+            border-top: 1px solid rgba(212,175,55,0.4);
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-area {
+            width: 100%;
+            padding: 10px 15px;
+            background: #181818;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 12px;
+            background: #2a2a2a;
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            outline: none;
+            margin: 0;
+        }
+
+        .icon-btn {
+            color: var(--gold);
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .send-btn {
+            background: var(--gold);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        #preview-body img {
+            max-height: 70vh;
+            max-width: 90vw;
+            border-radius: 10px;
+        }
+
+        .care-btn {
+            border: 1px solid var(--gold);
+            background: none;
+            color: var(--gold);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        #emoji-panel {
+            display: none;
+            position: absolute;
+            bottom: 68px;
+            left: 12px;
+            width: 260px;
+            background: #171717;
+            border: 1px solid rgba(212,175,55,0.35);
+            border-radius: 14px;
+            padding: 10px;
+            z-index: 50;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .emoji-item {
+            background: #242424;
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            padding: 8px 0;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        #action-sheet .sheet-box {
+            width: 90%;
+            max-width: 340px;
+            background: #161616;
+            border: 1px solid rgba(212,175,55,0.35);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .sheet-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sheet-btn:last-child {
+            border-bottom: none;
+        }
+
+        .sheet-btn.danger { color: #ff5b5b; }
+        .sheet-btn.gold { color: var(--gold); }
+
+        .deleted-msg {
+            font-style: italic;
+            opacity: 0.75;
+        }
     </style>
 </head>
 <body>
 
-<div class="main-app">
-    <div id="login-screen">
-        <h2 style="color:#00a884; margin-bottom:10px;">11LOTUS</h2>
-        <p style="color:grey; font-size:12px; margin-bottom:30px;">Souls Sanctuary Login</p>
-        <input type="text" placeholder="Username (admin)">
-        <input type="password" placeholder="Password (1234)">
-        <button class="p-btn" onclick="login()">Enter Sanctuary</button>
-    </div>
-
-    <div id="overlay" class="overlay">
-        <h2 id="overlay-text" style="color:#00a884;">Processing...</h2>
-    </div>
-
-    <header>
-        <div class="user-meta">
-            <b>11LOTUS Soul</b>
-            <span>Last seen: 4 days ago</span>
-        </div>
-        <div style="font-size: 20px;">😊 📎</div>
-    </header>
-
-    <div class="chat-body" id="chat">
-        <div class="msg" id="m1">
-            <span>Welcome back. I have been watching over you for 4 days.</span>
-            <a class="del-action" onclick="deleteEveryone('m1')">Delete for Everyone</a>
+    <div id="login-screen" class="screen active">
+        <div class="container">
+            <h1 style="font-family:'Orbitron'; color:var(--gold); letter-spacing:5px;">11LOTUS</h1>
+            <input type="text" id="partner-id" placeholder="PARTNER ID">
+            <input type="password" id="password" placeholder="PASSWORD">
+            <button class="btn" onclick="handleAuth()">UNLOCK</button>
+            <p onclick="showRecovery()" style="color:var(--gold); font-size:12px; cursor:pointer; margin-top:15px; text-decoration:underline;">Forgot Password?</p>
         </div>
     </div>
 
-    <div class="toxic-controls">
-        <button id="blockBtn" class="t-btn block" onclick="handleBlock()">Block User</button>
-        <button class="t-btn nuke" onclick="handleNuke()">NUKE BOMB ☢️</button>
+    <div id="setup-screen" class="screen">
+        <div class="container">
+            <h2 style="color:var(--gold);">INITIALIZE</h2>
+            <input type="password" id="new-pass" placeholder="Create Password">
+            <input type="text" id="personal-key" placeholder="Recovery Key (Secret)">
+            <button class="btn" onclick="saveUser()">START</button>
+        </div>
     </div>
 
-    <footer>
-        <div class="input-box">
-            <span class="icon" onclick="document.getElementById('fIn').click()">📎</span>
-            <input type="file" id="fIn" hidden onchange="uploadMedia(this)">
-            <input type="text" id="mInput" placeholder="Message your soul...">
+    <div id="chat-screen" class="screen">
+        <header>
+            <div style="color:var(--gold); font-family:'Orbitron';">11LOTUS PRO</div>
+            <button class="icon-btn" onclick="triggerNuclearBomb()">💣</button>
+        </header>
+
+        <div id="chat-window"></div>
+
+        <div id="reply-bar">
+            <span id="reply-txt" style="flex:1; font-size:12px; color:#aaa;">Replying...</span>
+            <button onclick="cancelReply()" style="background:none; border:none; color:#f44; cursor:pointer;">X</button>
         </div>
-        <span class="icon" style="color:#00a884" onclick="sendMsg()">➤</span>
-    </footer>
-</div>
 
-<script>
-    let isBlocked = false;
+        <div class="input-area">
+            <div id="emoji-panel">
+                <div class="emoji-grid" id="emoji-grid"></div>
+            </div>
 
-    function login() {
-        document.getElementById('login-screen').style.display = 'none';
-    }
+            <button class="icon-btn" id="emoji-btn" type="button">😊</button>
+            <label class="icon-btn" style="display:flex; align-items:center;">
+                📎
+                <input type="file" id="file-in" accept="image/*" hidden onchange="openPreview(this)">
+            </label>
+            <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <button class="send-btn" onclick="sendMsg()">></button>
+        </div>
+    </div>
 
-    function showOverlay(txt) {
-        document.getElementById('overlay').style.display = 'flex';
-        document.getElementById('overlay-text').innerText = txt;
-    }
+    <div id="media-preview" class="modal">
+        <div style="position:absolute; top:20px; left:20px;">
+            <button onclick="closePreview()" style="color:#fff; background:none; border:none; font-size:24px; cursor:pointer;">X</button>
+        </div>
+        <div id="preview-body" style="flex:1; display:flex; align-items:center; justify-content:center; padding:20px;"></div>
+        <div style="width:100%; padding:20px; background:rgba(0,0,0,0.8); display:flex; gap:10px;">
+            <input type="text" id="caption-input" style="flex:1; padding:12px; border-radius:25px; border:none; background:#333; color:#fff; margin:0;" placeholder="Add a caption...">
+            <button onclick="uploadWithCaption()" id="upload-btn" class="send-btn">></button>
+        </div>
+    </div>
 
-    function hideOverlay() {
-        document.getElementById('overlay').style.display = 'none';
-    }
+    <div id="recovery-modal" class="modal">
+        <div class="container">
+            <h3 style="color:var(--gold);">RECOVERY</h3>
+            <input type="text" id="recover-key-input" placeholder="ENTER SECRET KEY">
+            <input type="password" id="new-password-input" placeholder="NEW PASSWORD" style="display:none;">
+            <button class="btn" id="recovery-btn" onclick="verifyRecoveryKey()">VERIFY KEY</button>
+            <button class="btn" style="background:none; color:#888;" onclick="closeRecovery()">Cancel</button>
+        </div>
+    </div>
 
-    // DELETE FOR EVERYONE
-    function deleteEveryone(id) {
-        showOverlay("Deleting for Everyone...");
-        setTimeout(() => {
-            let m = document.getElementById(id);
-            m.innerHTML = "🚫 This message was deleted";
-            m.classList.add('deleted');
-            hideOverlay();
-        }, 1200);
-    }
+    <div id="action-sheet" class="modal">
+        <div class="sheet-box">
+            <button class="sheet-btn gold" onclick="deleteForMe()">Delete for Me</button>
+            <button class="sheet-btn danger" onclick="deleteForEveryone()">Delete for Everyone</button>
+            <button class="sheet-btn" onclick="setReplyFromAction()">Reply</button>
+            <button class="sheet-btn" onclick="closeActionSheet()">Cancel</button>
+        </div>
+    </div>
 
-    // BLOCK SYSTEM
-    function handleBlock() {
-        showOverlay(isBlocked ? "Unblocking..." : "Blocking User...");
-        setTimeout(() => {
-            isBlocked = !isBlocked;
-            let btn = document.getElementById('blockBtn');
-            btn.innerText = isBlocked ? "Unblock" : "Block User";
-            btn.style.background = isBlocked ? "#00a884" : "#333";
-            hideOverlay();
-        }, 1000);
-    }
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ",
+            authDomain: "lotus-official-4c28b.firebaseapp.com",
+            databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lotus-official-4c28b",
+            storageBucket: "lotus-official-4c28b.firebasestorage.app",
+            messagingSenderId: "584674732018",
+            appId: "1:584674732018:web:b6e5fa13708eac51512d6b"
+        };
 
-    // NUKE BOMB
-    function handleNuke() {
-        if(confirm("Confirm Nuclear Deployment? සියලුම දත්ත විනාශ වනු ඇත!")) {
-            showOverlay("DEPLOYING NUKE... 💣");
-            setTimeout(() => {
-                document.getElementById('chat').innerHTML = "<p style='text-align:center; color:grey; margin-top:50px;'>Chat History Wiped Permanently.</p>";
-                hideOverlay();
-            }, 2500);
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const storage = firebase.storage();
+
+        let myPartnerID = "";
+        let selectedFile = null;
+        let chatRef = null;
+        let authReady = false;
+
+        let replyMessageId = null;
+        let replyPreviewText = "";
+
+        let activeActionMessageId = null;
+        let activeActionMessage = null;
+
+        const deletedLocalPrefix = "deleted_local_11lotus_";
+
+        const EMOJIS = [
+            "😀","😁","😂","🤣","😊","😍",
+            "🥰","😘","😎","🥺","😭","😡",
+            "🤗","🤍","❤️","💛","💫","✨",
+            "🔥","🫂","👍","👌","🙏","🎀",
+            "🌸","🐰","🧸","💌","🌙","⭐"
+        ];
+
+        auth.signInAnonymously()
+            .then(() => {
+                authReady = true;
+                console.log("Anonymous auth success");
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Firebase Auth Error: " + err.message);
+            });
+
+        function sanitizeKey(value) {
+            return (value || "").replace(/[.#$[\]/]/g, "_");
         }
-    }
 
-    // MEDIA & SEND
-    function uploadMedia(input) {
-        if(input.files[0]) {
-            showOverlay("Uploading Media...");
-            setTimeout(() => {
-                let url = URL.createObjectURL(input.files[0]);
-                let chat = document.getElementById('chat');
-                chat.innerHTML += `<div class="msg media-box"><img src="${url}"></div>`;
-                hideOverlay();
-            }, 1500);
+        function esc(str) {
+            const d = document.createElement("div");
+            d.textContent = str || "";
+            return d.innerHTML;
         }
-    }
 
-    function sendMsg() {
-        let input = document.getElementById('mInput');
-        if(input.value.trim() !== "") {
-            document.getElementById('chat').innerHTML += `<div class="msg">${input.value}</div>`;
-            input.value = "";
-            let chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
-    }
-</script>
 
+        function getLocalDeleteMap() {
+            try {
+                return JSON.parse(localStorage.getItem(deletedLocalPrefix + myPartnerID) || "{}");
+            } catch {
+                return {};
+            }
+        }
+
+        function setLocalDeleted(messageId) {
+            const map = getLocalDeleteMap();
+            map[messageId] = true;
+            localStorage.setItem(deletedLocalPrefix + myPartnerID, JSON.stringify(map));
+        }
+
+        function isLocallyDeleted(messageId) {
+            const map = getLocalDeleteMap();
+            return !!map[messageId];
+        }
+
+        function buildEmojiPanel() {
+            const grid = document.getElementById("emoji-grid");
+            grid.innerHTML = "";
+            EMOJIS.forEach(e => {
+                const btn = document.createElement("button");
+                btn.className = "emoji-item";
+                btn.type = "button";
+                btn.textContent = e;
+                btn.onclick = () => {
+                    document.getElementById("chat-input").value += e;
+                };
+                grid.appendChild(btn);
+            });
+        }
+
+        document.getElementById("emoji-btn").addEventListener("click", () => {
+            const panel = document.getElementById("emoji-panel");
+            panel.style.display = panel.style.display === "block" ? "none" : "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            const panel = document.getElementById("emoji-panel");
+            const emojiBtn = document.getElementById("emoji-btn");
+            if (!panel.contains(e.target) && e.target !== emojiBtn) {
+                panel.style.display = "none";
+            }
+        });
+
+        buildEmojiPanel();
+
+        function handleAuth() {
+            const rawId = document.getElementById('partner-id').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!rawId) return alert("Enter Partner ID");
+            if (!password) return alert("Enter Password");
+
+            myPartnerID = sanitizeKey(rawId);
+
+            db.ref('users/' + myPartnerID).once('value')
+                .then(snap => {
+                    const u = snap.val();
+                    if (!u) {
+                        showScreen('setup-screen');
+                    } else if (u.password === password) {
+                        showScreen('chat-screen');
+                        loadMessages();
+                    } else {
+                        alert("Wrong Password");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Login error: " + err.message);
+                });
+        }
+
+        function saveUser() {
+            const p = document.getElementById('new-pass').value.trim();
+            const k = document.getElementById('personal-key').value.trim();
+
+            if (!myPartnerID) return alert("Enter Partner ID first");
+            if (!p || !k) return alert("Fill all fields");
+
+            db.ref('users/' + myPartnerID).set({ password: p, key: k })
+                .then(() => {
+                    showScreen('chat-screen');
+                    loadMessages();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Save user error: " + err.message);
+                });
+        }
+
+        function showRecovery() {
+            document.getElementById('recovery-modal').style.display = 'flex';
+        }
+
+        function closeRecovery() {
+            document.getElementById('recovery-modal').style.display = 'none';
+            document.getElementById('recover-key-input').style.display = 'block';
+            document.getElementById('new-password-input').style.display = 'none';
+            document.getElementById('recover-key-input').value = '';
+            document.getElementById('new-password-input').value = '';
+            const btn = document.getElementById('recovery-btn');
+            btn.innerText = "VERIFY KEY";
+            btn.onclick = verifyRecoveryKey;
+        }
+
+        function verifyRecoveryKey() {
+            const id = sanitizeKey(document.getElementById('partner-id').value.trim());
+            const key = document.getElementById('recover-key-input').value.trim();
+
+            if (!id) return alert("Enter Partner ID first");
+            if (!key) return alert("Enter Recovery Key");
+
+            db.ref('users/' + id).once('value')
+                .then(s => {
+                    if (s.val() && s.val().key === key) {
+                        document.getElementById('recover-key-input').style.display = 'none';
+                        document.getElementById('new-password-input').style.display = 'block';
+                        document.getElementById('recovery-btn').innerText = "RESET PASSWORD";
+                        document.getElementById('recovery-btn').onclick = resetPassword;
+                    } else {
+                        alert("Invalid Key");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Recovery error: " + err.message);
+                });
+        }
+
+        function resetPassword() {
+            const id = sanitizeKey(document.getElementById('partner-id').value.trim());
+            const np = document.getElementById('new-password-input').value.trim();
+
+            if (!id || !np) return alert("Missing fields");
+
+            db.ref('users/' + id).update({ password: np })
+                .then(() => {
+                    alert("Password reset successful");
+                    location.reload();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Reset error: " + err.message);
+                });
+        }
+
+        function setReply(text, id) {
+            replyMessageId = id;
+            replyPreviewText = text;
+            document.getElementById('reply-bar').style.display = 'flex';
+            document.getElementById('reply-txt').innerText = "Replying: " + text;
+        }
+
+        function cancelReply() {
+            replyMessageId = null;
+            replyPreviewText = "";
+            document.getElementById('reply-bar').style.display = 'none';
+            document.getElementById('reply-txt').innerText = "Replying...";
+        }
+
+        function loadMessages() {
+            const win = document.getElementById('chat-window');
+
+            if (chatRef) chatRef.off();
+
+            chatRef = db.ref('chats/' + myPartnerID);
+
+            chatRef.on('value', snap => {
+                win.innerHTML = "";
+                let lastT = 0;
+                let hasCareCheck = false;
+
+                snap.forEach(child => {
+                    const m = child.val();
+                    const msgId = child.key;
+
+                    if (!m) return;
+                    if (isLocallyDeleted(msgId)) return;
+
+                    if (m.sender !== 'me' && !m.seen && !m.deletedForEveryone) {
+                        db.ref(`chats/${myPartnerID}/${msgId}`).update({ seen: true });
+                    }
+
+                    const wrap = document.createElement('div');
+                    wrap.className = 'msg-wrap';
+
+                    let startX = 0;
+                    wrap.addEventListener('touchstart', e => {
+                        startX = e.changedTouches[0].clientX;
+                    });
+
+                    wrap.addEventListener('touchend', e => {
+                        const endX = e.changedTouches[0].clientX;
+                        if (endX - startX > 70 && !m.deletedForEveryone) {
+                            const txt = m.type === 'img' ? (m.caption || 'Photo') : (m.content || 'Message');
+                            setReply(txt, msgId);
+                        }
+                    });
+
+                    const div = document.createElement('div');
+                    div.className = 'msg ' + (m.sender === 'me' ? 'sent' : 'rec');
+
+                    div.onclick = () => {
+                        activeActionMessageId = msgId;
+                        activeActionMessage = m;
+                        openActionSheet();
+                    };
+
+                    let html = "";
+
+                    if (m.replyToText) {
+                        html += `<div class="reply-ctx">${esc(m.replyToText)}</div>`;
+                    }
+
+                    if (m.deletedForEveryone) {
+                        html += `<div class="deleted-msg">This message was deleted</div>`;
+                    } else if (m.type === 'img') {
+                        html += `<img src="${esc(m.content)}" alt="image">`;
+                        if (m.caption) {
+                            html += `<div style="font-size:13px; margin-top:5px;">${esc(m.caption)}</div>`;
+                        }
+                    } else if (m.type === 'care_check') {
+                        html += `<div>${esc(m.content)}</div>`;
+                        html += `<button class="care-btn" onclick="replyCare(event, 'I am good! 😊')">I'm Good</button>`;
+                    } else {
+                        html += esc(m.content);
+                    }
+
+                    if (m.sender === 'me' && !m.deletedForEveryone) {
+                        html += `<span class="status-tick ${m.seen ? 'seen-tick' : ''}">${m.seen ? '✓✓' : '✓'}</span>`;
+                    }
+
+                    div.innerHTML = html;
+                    wrap.appendChild(div);
+                    win.appendChild(wrap);
+
+                    if (m.type === 'care_check') hasCareCheck = true;
+                    if (typeof m.time === "number" && m.time > lastT) lastT = m.time;
+                });
+
+                win.scrollTop = win.scrollHeight;
+
+                if (lastT > 0 && (Date.now() - lastT > 4 * 24 * 60 * 60 * 1000) && !hasCareCheck) {
+                    db.ref('chats/' + myPartnerID).push({
+                        content: "It's been a bit quiet here... ❤️",
+                        type: 'care_check',
+                        sender: '11LOTUS',
+                        time: Date.now(),
+                        seen: false
+                    });
+                }
+            });
+        }
+
+        function sendMsg() {
+            const i = document.getElementById('chat-input');
+            const text = i.value.trim();
+
+            if (!text) return;
+            if (!myPartnerID) return alert("Login first");
+
+            db.ref('chats/' + myPartnerID).push({
+                content: text,
+                type: 'text',
+                sender: 'me',
+                time: Date.now(),
+                seen: false,
+                replyTo: replyMessageId || null,
+                replyToText: replyPreviewText || null,
+                deletedForEveryone: false
+            }).then(() => {
+                i.value = "";
+                cancelReply();
+            }).catch(err => {
+                console.error(err);
+                alert("Send error: " + err.message);
+            });
+        }
+
+        function openPreview(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith("image/")) {
+                alert("Please select an image file");
+                input.value = "";
+                return;
+            }
+
+            selectedFile = file;
+            const url = URL.createObjectURL(file);
+            document.getElementById('preview-body').innerHTML = `<img src="${url}" alt="preview">`;
+            document.getElementById('media-preview').style.display = 'flex';
+        }
+
+        function closePreview() {
+            document.getElementById('media-preview').style.display = 'none';
+            document.getElementById('preview-body').innerHTML = '';
+            document.getElementById('caption-input').value = '';
+            document.getElementById('file-in').value = '';
+            selectedFile = null;
+        }
+
+        function uploadWithCaption() {
+            if (!authReady) return alert("Please wait a moment");
+            if (!myPartnerID) return alert("Login first");
+            if (!selectedFile) return alert("Choose an image first");
+
+            const btn = document.getElementById('upload-btn');
+            const cap = document.getElementById('caption-input').value.trim();
+            const safeName = selectedFile.name.replace(/[^\w.\-]/g, "_");
+            const path = `media/${myPartnerID}/${Date.now()}_${safeName}`;
+            const ref = storage.ref().child(path);
+
+            btn.disabled = true;
+            btn.innerText = "...";
+
+            ref.put(selectedFile)
+                .then(s => s.ref.getDownloadURL())
+                .then(url => {
+                    return db.ref('chats/' + myPartnerID).push({
+                        content: url,
+                        caption: cap,
+                        type: 'img',
+                        sender: 'me',
+                        time: Date.now(),
+                        seen: false,
+                        replyTo: replyMessageId || null,
+                        replyToText: replyPreviewText || null,
+                        deletedForEveryone: false
+                    });
+                })
+                .then(() => {
+                    btn.disabled = false;
+                    btn.innerText = ">";
+                    closePreview();
+                    cancelReply();
+                })
+                .catch(e => {
+                    console.error(e);
+                    alert("Upload failed: " + e.message);
+                    btn.disabled = false;
+                    btn.innerText = ">";
+                });
+        }
+
+        function openActionSheet() {
+            document.getElementById('action-sheet').style.display = 'flex';
+        }
+
+        function closeActionSheet() {
+            document.getElementById('action-sheet').style.display = 'none';
+            activeActionMessageId = null;
+            activeActionMessage = null;
+        }
+
+        function deleteForMe() {
+            if (!activeActionMessageId) return;
+            setLocalDeleted(activeActionMessageId);
+            closeActionSheet();
+            loadMessages();
+        }
+
+        function deleteForEveryone() {
+            if (!activeActionMessageId || !myPartnerID) return;
+
+            db.ref(`chats/${myPartnerID}/${activeActionMessageId}`).update({
+                deletedForEveryone: true,
+                content: "",
+                caption: "",
+                type: "text"
+            }).then(() => {
+                closeActionSheet();
+            }).catch(err => {
+                console.error(err);
+                alert("Delete failed: " + err.message);
+            });
+        }
+
+        function setReplyFromAction() {
+            if (!activeActionMessage) return;
+
+            let txt = "Message";
+            if (activeActionMessage.deletedForEveryone) {
+                txt = "Deleted message";
+            } else if (activeActionMessage.type === 'img') {
+                txt = activeActionMessage.caption || "Photo";
+            } else {
+                txt = activeActionMessage.content || "Message";
+            }
+
+            setReply(txt, activeActionMessageId);
+            closeActionSheet();
+        }
+
+        function replyCare(ev, t) {
+            ev.stopPropagation();
+            db.ref('chats/' + myPartnerID).push({
+                content: t,
+                type: 'text',
+                sender: 'me',
+                time: Date.now(),
+                seen: false,
+                deletedForEveryone: false
+            });
+        }
+
+        function triggerNuclearBomb() {
+            if (!myPartnerID) return alert("Login first");
+            if (!confirm("Delete all your sent messages for everyone?")) return;
+
+            db.ref('chats/' + myPartnerID).once('value')
+                .then(snap => {
+                    const updates = {};
+                    snap.forEach(c => {
+                        const v = c.val();
+                        if (v && v.sender === 'me') {
+                            updates[c.key + '/deletedForEveryone'] = true;
+                            updates[c.key + '/content'] = "";
+                            updates[c.key + '/caption'] = "";
+                            updates[c.key + '/type'] = "text";
+                        }
+                    });
+                    return db.ref('chats/' + myPartnerID).update(updates);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Nuclear delete failed: " + err.message);
+                });
+        }
+    </script>
 </body>
 </html>
