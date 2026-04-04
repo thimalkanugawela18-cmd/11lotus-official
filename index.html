@@ -10,6 +10,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
 
+    <!-- Emoji Mart browser build -->
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap');
 
@@ -19,6 +22,7 @@
             --bubble-me: #d4af37;
             --bubble-you: #202020;
             --blue: #4fc3f7;
+            --soft-line: rgba(255,255,255,0.08);
         }
 
         * { box-sizing: border-box; }
@@ -90,10 +94,17 @@
             width: 100%;
             padding: 12px 15px;
             background: #111;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         #chat-window {
@@ -117,9 +128,9 @@
         }
 
         .msg {
-            max-width: 76%;
-            padding: 8px 12px;
-            border-radius: 12px;
+            max-width: 78%;
+            padding: 8px 12px 6px 12px;
+            border-radius: 14px;
             font-size: 15px;
             position: relative;
             word-wrap: break-word;
@@ -128,39 +139,50 @@
         }
 
         .msg img {
-            max-width: 220px !important;
+            max-width: 230px !important;
             width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: 10px;
             display: block;
-            margin: 5px 0;
-            border: 1px solid rgba(255,255,255,0.1);
+            margin: 4px 0;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         @media (max-width: 480px) {
-            .msg img { max-width: 180px !important; }
+            .msg img { max-width: 190px !important; }
         }
 
         .sent {
             align-self: flex-end;
             background: var(--bubble-me);
             color: #000;
-            border-bottom-right-radius: 2px;
+            border-bottom-right-radius: 3px;
         }
 
         .rec {
             align-self: flex-start;
             background: var(--bubble-you);
             color: #fff;
-            border-bottom-left-radius: 2px;
+            border-bottom-left-radius: 3px;
+        }
+
+        .msg-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            min-height: 14px;
+        }
+
+        .msg-time {
+            font-size: 11px;
+            opacity: 0.75;
         }
 
         .status-tick {
             font-size: 11px;
-            margin-left: 5px;
-            float: right;
-            margin-top: 4px;
-            opacity: 0.6;
+            opacity: 0.75;
         }
 
         .seen-tick {
@@ -175,7 +197,7 @@
             margin-bottom: 6px;
             border-radius: 4px;
             font-size: 12px;
-            opacity: 0.85;
+            opacity: 0.9;
         }
 
         #reply-bar {
@@ -185,6 +207,40 @@
             border-top: 1px solid rgba(212,175,55,0.4);
             align-items: center;
             gap: 10px;
+        }
+
+        .rabbit-bar {
+            width: 100%;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            overflow-x: auto;
+            padding: 8px 12px;
+            background: #141414;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .rabbit-pill {
+            border: 1px solid rgba(212,175,55,0.35);
+            background: #202020;
+            color: #fff;
+            border-radius: 999px;
+            padding: 6px 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 18px;
+        }
+
+        .blocked-banner {
+            display: none;
+            background: rgba(255,91,91,0.12);
+            color: #ff9a9a;
+            border-top: 1px solid rgba(255,91,91,0.2);
+            border-bottom: 1px solid rgba(255,91,91,0.2);
+            padding: 10px 14px;
+            font-size: 14px;
+            text-align: center;
         }
 
         .input-area {
@@ -210,7 +266,7 @@
 
         .icon-btn {
             color: var(--gold);
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             background: none;
             border: none;
@@ -226,23 +282,29 @@
             cursor: pointer;
         }
 
+        .send-btn:disabled, .icon-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
         .modal {
             display: none;
             position: fixed;
             inset: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.38);
             z-index: 9000;
             align-items: center;
             justify-content: center;
             flex-direction: column;
         }
 
-        #preview-body img {
-            max-height: 70vh;
-            max-width: 90vw;
-            border-radius: 10px;
+        #preview-body img,
+        #image-viewer-img {
+            max-height: 78vh;
+            max-width: 92vw;
+            border-radius: 12px;
         }
 
         .care-btn {
@@ -261,61 +323,167 @@
             position: absolute;
             bottom: 68px;
             left: 12px;
-            width: 260px;
+            width: 340px;
+            max-width: calc(100vw - 24px);
             background: #171717;
-            border: 1px solid rgba(212,175,55,0.35);
-            border-radius: 14px;
-            padding: 10px;
-            z-index: 50;
+            border: 1px solid rgba(212,175,55,0.25);
+            border-radius: 16px;
+            padding: 6px;
+            z-index: 60;
             box-shadow: 0 10px 25px rgba(0,0,0,0.35);
         }
 
-        .emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-        }
-
-        .emoji-item {
-            background: #242424;
-            border: none;
-            color: #fff;
-            border-radius: 10px;
-            padding: 8px 0;
-            cursor: pointer;
-            font-size: 20px;
+        #emoji-mart-host {
+            width: 100%;
         }
 
         #action-sheet .sheet-box {
-            width: 90%;
-            max-width: 340px;
-            background: #161616;
-            border: 1px solid rgba(212,175,55,0.35);
-            border-radius: 18px;
+            width: 92%;
+            max-width: 320px;
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
         }
 
         .sheet-btn {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             border: none;
-            background: transparent;
+            background: #111;
             color: #fff;
             font-size: 16px;
             cursor: pointer;
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
-        .sheet-btn:last-child {
-            border-bottom: none;
-        }
-
+        .sheet-btn:last-child { border-bottom: none; }
+        .sheet-btn.gold { color: #f5c84c; }
         .sheet-btn.danger { color: #ff5b5b; }
-        .sheet-btn.gold { color: var(--gold); }
+        .sheet-btn:hover { background: #1b1b1b; }
 
         .deleted-msg {
             font-style: italic;
-            opacity: 0.75;
+            opacity: 0.78;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .deleted-msg::before {
+            content: "🚫";
+            font-style: normal;
+            opacity: 0.85;
+        }
+
+        .deleted-bubble-me {
+            background: #ccb96f !important;
+            color: rgba(0,0,0,0.8) !important;
+        }
+
+        .deleted-bubble-other {
+            background: #2a2a2a !important;
+            color: rgba(255,255,255,0.8) !important;
+        }
+
+        .img-box {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .upload-preview-bubble {
+            opacity: 0.98;
+        }
+
+        .upload-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .circle-wrap {
+            width: 68px;
+            height: 68px;
+            position: relative;
+            background: rgba(0,0,0,0.42);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .circle-svg {
+            width: 68px;
+            height: 68px;
+            transform: rotate(-90deg);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.25);
+            stroke-width: 6;
+        }
+
+        .circle-progress {
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 188.5;
+            stroke-dashoffset: 188.5;
+            transition: stroke-dashoffset 0.2s linear;
+        }
+
+        .circle-text {
+            position: relative;
+            z-index: 2;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .tiny-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.16);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .tiny-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--gold);
+            transition: width 0.2s linear;
+        }
+
+        .tiny-upload-info {
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .msg-link {
+            color: inherit;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+
+        .menu-dot {
+            font-size: 18px;
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -343,7 +511,10 @@
     <div id="chat-screen" class="screen">
         <header>
             <div style="color:var(--gold); font-family:'Orbitron';">11LOTUS PRO</div>
-            <button class="icon-btn" onclick="triggerNuclearBomb()">💣</button>
+            <div class="header-actions">
+                <button class="icon-btn" id="block-btn" onclick="toggleBlockState()" title="Block / Unblock">🚫</button>
+                <button class="icon-btn" onclick="triggerNuclearBomb()" title="Delete my messages">💣</button>
+            </div>
         </header>
 
         <div id="chat-window"></div>
@@ -353,9 +524,26 @@
             <button onclick="cancelReply()" style="background:none; border:none; color:#f44; cursor:pointer;">X</button>
         </div>
 
+        <div class="rabbit-bar" id="rabbit-bar">
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🐰')">🐰</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🐇')">🐇</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🩷🐰')">🩷🐰</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('✨🐰')">✨🐰</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🎀🐰')">🎀🐰</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🧸🐰')">🧸🐰</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🌸🐰')">🌸🐰</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('💖')">💖</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🫂')">🫂</button>
+            <button class="rabbit-pill" onclick="insertQuickEmoji('🥹')">🥹</button>
+        </div>
+
+        <div class="blocked-banner" id="blocked-banner">
+            This chat is blocked. Unblock to send messages or photos.
+        </div>
+
         <div class="input-area">
             <div id="emoji-panel">
-                <div class="emoji-grid" id="emoji-grid"></div>
+                <div id="emoji-mart-host"></div>
             </div>
 
             <button class="icon-btn" id="emoji-btn" type="button">😊</button>
@@ -364,7 +552,7 @@
                 <input type="file" id="file-in" accept="image/*" hidden onchange="openPreview(this)">
             </label>
             <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendMsg()">
-            <button class="send-btn" onclick="sendMsg()">></button>
+            <button class="send-btn" id="send-btn" onclick="sendMsg()">></button>
         </div>
     </div>
 
@@ -391,11 +579,18 @@
 
     <div id="action-sheet" class="modal">
         <div class="sheet-box">
-            <button class="sheet-btn gold" onclick="deleteForMe()">Delete for Me</button>
-            <button class="sheet-btn danger" onclick="deleteForEveryone()">Delete for Everyone</button>
-            <button class="sheet-btn" onclick="setReplyFromAction()">Reply</button>
+            <button class="sheet-btn gold" id="delete-me-btn" onclick="deleteForMe()">Delete for Me</button>
+            <button class="sheet-btn danger" id="delete-everyone-btn" onclick="deleteForEveryone()">Delete for Everyone</button>
+            <button class="sheet-btn" id="reply-btn" onclick="setReplyFromAction()">Reply</button>
             <button class="sheet-btn" onclick="closeActionSheet()">Cancel</button>
         </div>
+    </div>
+
+    <div id="image-viewer" class="modal" onclick="closeImageViewer()">
+        <div style="position:absolute; top:20px; right:20px;">
+            <button onclick="closeImageViewer()" style="color:#fff; background:none; border:none; font-size:24px; cursor:pointer;">X</button>
+        </div>
+        <img id="image-viewer-img" src="" alt="full image">
     </div>
 
     <script>
@@ -418,6 +613,7 @@
         let myPartnerID = "";
         let selectedFile = null;
         let chatRef = null;
+        let settingsRef = null;
         let authReady = false;
 
         let replyMessageId = null;
@@ -426,15 +622,10 @@
         let activeActionMessageId = null;
         let activeActionMessage = null;
 
-        const deletedLocalPrefix = "deleted_local_11lotus_";
+        let isBlocked = false;
 
-        const EMOJIS = [
-            "😀","😁","😂","🤣","😊","😍",
-            "🥰","😘","😎","🥺","😭","😡",
-            "🤗","🤍","❤️","💛","💫","✨",
-            "🔥","🫂","👍","👌","🙏","🎀",
-            "🌸","🐰","🧸","💌","🌙","⭐"
-        ];
+        const deletedLocalPrefix = "deleted_local_11lotus_";
+        const uploadsById = {};
 
         auth.signInAnonymously()
             .then(() => {
@@ -461,6 +652,31 @@
             document.getElementById(id).classList.add('active');
         }
 
+        function formatTime(ts) {
+            if (!ts) return "";
+            const d = new Date(ts);
+            let h = d.getHours();
+            const m = String(d.getMinutes()).padStart(2, "0");
+            const ampm = h >= 12 ? "PM" : "AM";
+            h = h % 12;
+            h = h ? h : 12;
+            return `${h}:${m} ${ampm}`;
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes && bytes !== 0) return "";
+            if (bytes === 0) return "0 Bytes";
+            const sizes = ["Bytes", "KB", "MB", "GB"];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            const value = bytes / Math.pow(1024, i);
+            return value.toFixed(i === 0 ? 0 : 2) + " " + sizes[i];
+        }
+
+        function getTickMarkup(seen, delivered = true) {
+            if (!delivered) return `<span class="status-tick">🕓</span>`;
+            return `<span class="status-tick ${seen ? 'seen-tick' : ''}">${seen ? '✓✓' : '✓'}</span>`;
+        }
+
         function getLocalDeleteMap() {
             try {
                 return JSON.parse(localStorage.getItem(deletedLocalPrefix + myPartnerID) || "{}");
@@ -480,24 +696,58 @@
             return !!map[messageId];
         }
 
-        function buildEmojiPanel() {
-            const grid = document.getElementById("emoji-grid");
-            grid.innerHTML = "";
-            EMOJIS.forEach(e => {
-                const btn = document.createElement("button");
-                btn.className = "emoji-item";
-                btn.type = "button";
-                btn.textContent = e;
-                btn.onclick = () => {
-                    document.getElementById("chat-input").value += e;
-                };
-                grid.appendChild(btn);
-            });
+        function linkify(text) {
+            const safe = esc(text || "");
+            return safe.replace(
+                /(https?:\/\/[^\s<]+)/g,
+                '<a class="msg-link" href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+            );
         }
 
-        document.getElementById("emoji-btn").addEventListener("click", () => {
+        function insertQuickEmoji(value) {
+            const input = document.getElementById("chat-input");
+            input.value += value + " ";
+            input.focus();
+        }
+
+        async function initEmojiMart() {
+            const host = document.getElementById("emoji-mart-host");
+            host.innerHTML = "";
+
+            try {
+                const picker = new EmojiMart.Picker({
+                    data: async () => {
+                        const response = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data');
+                        return response.json();
+                    },
+                    theme: 'dark',
+                    previewPosition: 'none',
+                    navPosition: 'top',
+                    searchPosition: 'sticky',
+                    set: 'native',
+                    perLine: 8,
+                    emojiButtonSize: 38,
+                    emojiSize: 24,
+                    maxFrequentRows: 2,
+                    locale: 'en',
+                    onEmojiSelect: (emoji) => {
+                        document.getElementById('chat-input').value += emoji.native;
+                    }
+                });
+
+                host.appendChild(picker);
+            } catch (e) {
+                console.error("Emoji Mart init failed:", e);
+            }
+        }
+
+        document.getElementById("emoji-btn").addEventListener("click", async () => {
             const panel = document.getElementById("emoji-panel");
-            panel.style.display = panel.style.display === "block" ? "none" : "block";
+            const willOpen = panel.style.display !== "block";
+            panel.style.display = willOpen ? "block" : "none";
+            if (willOpen && !document.getElementById("emoji-mart-host").children.length) {
+                await initEmojiMart();
+            }
         });
 
         document.addEventListener("click", (e) => {
@@ -507,8 +757,6 @@
                 panel.style.display = "none";
             }
         });
-
-        buildEmojiPanel();
 
         function handleAuth() {
             const rawId = document.getElementById('partner-id').value.trim();
@@ -526,6 +774,7 @@
                         showScreen('setup-screen');
                     } else if (u.password === password) {
                         showScreen('chat-screen');
+                        bindSettings();
                         loadMessages();
                     } else {
                         alert("Wrong Password");
@@ -544,15 +793,18 @@
             if (!myPartnerID) return alert("Enter Partner ID first");
             if (!p || !k) return alert("Fill all fields");
 
-            db.ref('users/' + myPartnerID).set({ password: p, key: k })
-                .then(() => {
-                    showScreen('chat-screen');
-                    loadMessages();
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Save user error: " + err.message);
-                });
+            db.ref('users/' + myPartnerID).set({
+                password: p,
+                key: k,
+                blocked: false
+            }).then(() => {
+                showScreen('chat-screen');
+                bindSettings();
+                loadMessages();
+            }).catch(err => {
+                console.error(err);
+                alert("Save user error: " + err.message);
+            });
         }
 
         function showRecovery() {
@@ -611,6 +863,41 @@
                 });
         }
 
+        function bindSettings() {
+            if (!myPartnerID) return;
+
+            if (settingsRef) settingsRef.off();
+
+            settingsRef = db.ref('users/' + myPartnerID);
+            settingsRef.on('value', snap => {
+                const data = snap.val() || {};
+                isBlocked = !!data.blocked;
+                applyBlockUI();
+            });
+        }
+
+        function applyBlockUI() {
+            const input = document.getElementById("chat-input");
+            const sendBtn = document.getElementById("send-btn");
+            const fileInput = document.getElementById("file-in");
+            const blockBtn = document.getElementById("block-btn");
+            const banner = document.getElementById("blocked-banner");
+
+            input.disabled = isBlocked;
+            sendBtn.disabled = isBlocked;
+            fileInput.disabled = isBlocked;
+            blockBtn.innerText = isBlocked ? "✅" : "🚫";
+            blockBtn.title = isBlocked ? "Unblock chat" : "Block chat";
+            banner.style.display = isBlocked ? "block" : "none";
+        }
+
+        function toggleBlockState() {
+            if (!myPartnerID) return;
+            db.ref('users/' + myPartnerID).update({
+                blocked: !isBlocked
+            });
+        }
+
         function setReply(text, id) {
             replyMessageId = id;
             replyPreviewText = text;
@@ -623,6 +910,76 @@
             replyPreviewText = "";
             document.getElementById('reply-bar').style.display = 'none';
             document.getElementById('reply-txt').innerText = "Replying...";
+        }
+
+        function openImageViewer(url) {
+            const viewer = document.getElementById("image-viewer");
+            const img = document.getElementById("image-viewer-img");
+            img.src = url;
+            viewer.style.display = "flex";
+        }
+
+        function closeImageViewer() {
+            document.getElementById("image-viewer").style.display = "none";
+            document.getElementById("image-viewer-img").src = "";
+        }
+
+        function renderUploadingMessages(win) {
+            const uploadEntries = Object.values(uploadsById).sort((a, b) => a.startTime - b.startTime);
+
+            uploadEntries.forEach(item => {
+                const wrap = document.createElement("div");
+                wrap.className = "msg-wrap";
+
+                const div = document.createElement("div");
+                div.className = "msg sent upload-preview-bubble";
+
+                const circumference = 188.5;
+                const offset = circumference - (item.progress / 100) * circumference;
+
+                let html = "";
+
+                if (item.replyToText) {
+                    html += `<div class="reply-ctx">${esc(item.replyToText)}</div>`;
+                }
+
+                html += `
+                    <div class="img-box">
+                        <img src="${item.localURL}" alt="upload preview">
+                        <div class="upload-overlay">
+                            <div class="circle-wrap">
+                                <svg class="circle-svg" viewBox="0 0 68 68">
+                                    <circle class="circle-bg" cx="34" cy="34" r="30"></circle>
+                                    <circle class="circle-progress" cx="34" cy="34" r="30" style="stroke-dashoffset:${offset};"></circle>
+                                </svg>
+                                <div class="circle-text">${item.progress}%</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (item.caption) {
+                    html += `<div style="font-size:13px; margin-top:6px;">${esc(item.caption)}</div>`;
+                }
+
+                html += `
+                    <div class="tiny-progress">
+                        <div class="tiny-progress-fill" style="width:${item.progress}%;"></div>
+                    </div>
+                    <div class="tiny-upload-info">
+                        <span>${formatBytes(item.bytesTransferred)} / ${formatBytes(item.totalBytes || item.fileSize)}</span>
+                        <span>Sending...</span>
+                    </div>
+                    <div class="msg-footer">
+                        <span class="msg-time">${formatTime(item.startTime)}</span>
+                        ${getTickMarkup(false, false)}
+                    </div>
+                `;
+
+                div.innerHTML = html;
+                wrap.appendChild(div);
+                win.appendChild(wrap);
+            });
         }
 
         function loadMessages() {
@@ -667,9 +1024,28 @@
                     const div = document.createElement('div');
                     div.className = 'msg ' + (m.sender === 'me' ? 'sent' : 'rec');
 
+                    if (m.deletedForEveryone) {
+                        div.classList.add(m.sender === 'me' ? 'deleted-bubble-me' : 'deleted-bubble-other');
+                    }
+
                     div.onclick = () => {
                         activeActionMessageId = msgId;
                         activeActionMessage = m;
+
+                        const deleteMeBtn = document.getElementById("delete-me-btn");
+                        const deleteEveryoneBtn = document.getElementById("delete-everyone-btn");
+                        const replyBtn = document.getElementById("reply-btn");
+
+                        if (m.deletedForEveryone) {
+                            deleteEveryoneBtn.style.display = "none";
+                            replyBtn.style.display = "none";
+                            deleteMeBtn.style.display = "block";
+                        } else {
+                            deleteMeBtn.style.display = "block";
+                            deleteEveryoneBtn.style.display = "block";
+                            replyBtn.style.display = "block";
+                        }
+
                         openActionSheet();
                     };
 
@@ -680,9 +1056,14 @@
                     }
 
                     if (m.deletedForEveryone) {
-                        html += `<div class="deleted-msg">This message was deleted</div>`;
+                        const deletedText = m.deletedText || (m.sender === 'me' ? "You deleted this message" : "This message was deleted");
+                        html += `<div class="deleted-msg">${esc(deletedText)}</div>`;
                     } else if (m.type === 'img') {
-                        html += `<img src="${esc(m.content)}" alt="image">`;
+                        html += `
+                            <div class="img-box">
+                                <img src="${esc(m.content)}" alt="image" data-open-image="1">
+                            </div>
+                        `;
                         if (m.caption) {
                             html += `<div style="font-size:13px; margin-top:5px;">${esc(m.caption)}</div>`;
                         }
@@ -690,20 +1071,42 @@
                         html += `<div>${esc(m.content)}</div>`;
                         html += `<button class="care-btn" onclick="replyCare(event, 'I am good! 😊')">I'm Good</button>`;
                     } else {
-                        html += esc(m.content);
+                        html += linkify(m.content);
                     }
 
-                    if (m.sender === 'me' && !m.deletedForEveryone) {
-                        html += `<span class="status-tick ${m.seen ? 'seen-tick' : ''}">${m.seen ? '✓✓' : '✓'}</span>`;
+                    if (!m.deletedForEveryone) {
+                        html += `
+                            <div class="msg-footer">
+                                <span class="msg-time">${formatTime(m.time)}</span>
+                                ${m.sender === 'me' ? getTickMarkup(!!m.seen, true) : ''}
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="msg-footer">
+                                <span class="msg-time">${formatTime(m.deletedAt || m.time)}</span>
+                            </div>
+                        `;
                     }
 
                     div.innerHTML = html;
+
+                    const imgEl = div.querySelector('img[data-open-image="1"]');
+                    if (imgEl) {
+                        imgEl.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            openImageViewer(m.content);
+                        });
+                    }
+
                     wrap.appendChild(div);
                     win.appendChild(wrap);
 
                     if (m.type === 'care_check') hasCareCheck = true;
                     if (typeof m.time === "number" && m.time > lastT) lastT = m.time;
                 });
+
+                renderUploadingMessages(win);
 
                 win.scrollTop = win.scrollHeight;
 
@@ -723,6 +1126,7 @@
             const i = document.getElementById('chat-input');
             const text = i.value.trim();
 
+            if (isBlocked) return alert("This chat is blocked");
             if (!text) return;
             if (!myPartnerID) return alert("Login first");
 
@@ -732,6 +1136,7 @@
                 sender: 'me',
                 time: Date.now(),
                 seen: false,
+                delivered: true,
                 replyTo: replyMessageId || null,
                 replyToText: replyPreviewText || null,
                 deletedForEveryone: false
@@ -745,6 +1150,12 @@
         }
 
         function openPreview(input) {
+            if (isBlocked) {
+                alert("This chat is blocked");
+                input.value = "";
+                return;
+            }
+
             const file = input.files[0];
             if (!file) return;
 
@@ -769,6 +1180,7 @@
         }
 
         function uploadWithCaption() {
+            if (isBlocked) return alert("This chat is blocked");
             if (!authReady) return alert("Please wait a moment");
             if (!myPartnerID) return alert("Login first");
             if (!selectedFile) return alert("Choose an image first");
@@ -778,37 +1190,83 @@
             const safeName = selectedFile.name.replace(/[^\w.\-]/g, "_");
             const path = `media/${myPartnerID}/${Date.now()}_${safeName}`;
             const ref = storage.ref().child(path);
+            const localURL = URL.createObjectURL(selectedFile);
+            const localUploadId = "upload_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+            uploadsById[localUploadId] = {
+                id: localUploadId,
+                localURL,
+                caption: cap,
+                fileSize: selectedFile.size,
+                progress: 0,
+                bytesTransferred: 0,
+                totalBytes: selectedFile.size,
+                startTime: Date.now(),
+                replyToText: replyPreviewText || null
+            };
+
+            loadMessages();
 
             btn.disabled = true;
             btn.innerText = "...";
 
-            ref.put(selectedFile)
-                .then(s => s.ref.getDownloadURL())
-                .then(url => {
-                    return db.ref('chats/' + myPartnerID).push({
-                        content: url,
-                        caption: cap,
-                        type: 'img',
-                        sender: 'me',
-                        time: Date.now(),
-                        seen: false,
-                        replyTo: replyMessageId || null,
-                        replyToText: replyPreviewText || null,
-                        deletedForEveryone: false
-                    });
-                })
-                .then(() => {
+            const uploadTask = ref.put(selectedFile);
+
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    if (uploadsById[localUploadId]) {
+                        uploadsById[localUploadId].progress = percent;
+                        uploadsById[localUploadId].bytesTransferred = snapshot.bytesTransferred;
+                        uploadsById[localUploadId].totalBytes = snapshot.totalBytes;
+                        loadMessages();
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                    delete uploadsById[localUploadId];
+                    loadMessages();
+                    alert("Upload failed: " + error.message);
                     btn.disabled = false;
                     btn.innerText = ">";
-                    closePreview();
-                    cancelReply();
-                })
-                .catch(e => {
-                    console.error(e);
-                    alert("Upload failed: " + e.message);
-                    btn.disabled = false;
-                    btn.innerText = ">";
-                });
+                },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL()
+                        .then((url) => {
+                            return db.ref('chats/' + myPartnerID).push({
+                                content: url,
+                                caption: cap,
+                                type: 'img',
+                                sender: 'me',
+                                time: Date.now(),
+                                seen: false,
+                                delivered: true,
+                                replyTo: replyMessageId || null,
+                                replyToText: replyPreviewText || null,
+                                deletedForEveryone: false,
+                                fileSize: selectedFile.size,
+                                fileName: selectedFile.name
+                            });
+                        })
+                        .then(() => {
+                            delete uploadsById[localUploadId];
+                            loadMessages();
+                            btn.disabled = false;
+                            btn.innerText = ">";
+                            closePreview();
+                            cancelReply();
+                        })
+                        .catch((e) => {
+                            console.error(e);
+                            delete uploadsById[localUploadId];
+                            loadMessages();
+                            alert("Send failed: " + e.message);
+                            btn.disabled = false;
+                            btn.innerText = ">";
+                        });
+                }
+            );
         }
 
         function openActionSheet() {
@@ -831,11 +1289,12 @@
         function deleteForEveryone() {
             if (!activeActionMessageId || !myPartnerID) return;
 
+            const isMine = activeActionMessage && activeActionMessage.sender === 'me';
+
             db.ref(`chats/${myPartnerID}/${activeActionMessageId}`).update({
                 deletedForEveryone: true,
-                content: "",
-                caption: "",
-                type: "text"
+                deletedText: isMine ? "You deleted this message" : "This message was deleted",
+                deletedAt: Date.now()
             }).then(() => {
                 closeActionSheet();
             }).catch(err => {
@@ -862,12 +1321,15 @@
 
         function replyCare(ev, t) {
             ev.stopPropagation();
+            if (isBlocked) return alert("This chat is blocked");
+
             db.ref('chats/' + myPartnerID).push({
                 content: t,
                 type: 'text',
                 sender: 'me',
                 time: Date.now(),
                 seen: false,
+                delivered: true,
                 deletedForEveryone: false
             });
         }
@@ -883,9 +1345,8 @@
                         const v = c.val();
                         if (v && v.sender === 'me') {
                             updates[c.key + '/deletedForEveryone'] = true;
-                            updates[c.key + '/content'] = "";
-                            updates[c.key + '/caption'] = "";
-                            updates[c.key + '/type'] = "text";
+                            updates[c.key + '/deletedText'] = "You deleted this message";
+                            updates[c.key + '/deletedAt'] = Date.now();
                         }
                     });
                     return db.ref('chats/' + myPartnerID).update(updates);
