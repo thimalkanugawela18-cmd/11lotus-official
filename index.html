@@ -3,123 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Original Login with Toxic Features</title>
+    <title>11LOTUS | Souls Sanctuary</title>
     <style>
-        /* Kalin styles tika original basic structure ekata */
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f2f5; margin: 0; }
-        .login-card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        
-        /* Message Area styles */
-        .msg-box { border: 1px solid #ddd; padding: 10px; margin-top: 15px; border-radius: 5px; text-align: left; background: #fafafa; }
-        .deleted-msg { color: #8696a0; font-style: italic; font-size: 14px; } /* Delete Status Style */
-        .status-msg { color: #ff4b2b; font-size: 11px; margin-bottom: 5px; display: block; font-weight: bold; } /* 4 Day Log Status Style */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0b141a; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
 
-        /* Original Button Styles */
-        button { width: 100%; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; border: none; margin-top: 10px; }
-        #loginBtn { background: #007bff; color: white; }
-        #nukeBtn { background: #dc3545; color: white; display: none; } /* Nuke Bomb Button */
-        #blockBtn { background: #6c757d; color: white; display: none; } /* Block Button */
-
-        /* LOADING SPINNER STYLE (Original Basic One) */
-        .spinner {
-            width: 30px; height: 30px; border: 4px solid rgba(0,0,0,0.1);
-            border-top: 4px solid #007bff; border-radius: 50%;
-            animation: spin 0.8s linear infinite; display: none; /* Initially hidden */
-            margin: 15px auto;
+        /* Main Container */
+        .chat-card {
+            width: 350px; height: 85vh; background: #111b21;
+            border-radius: 15px; border: 1px solid #333;
+            display: flex; flex-direction: column; position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Header Area */
+        .header { background: #202c33; padding: 15px; border-radius: 15px 15px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .user-info b { display: block; font-size: 16px; color: #e9edef; }
+        .user-info span { color: #ff4b2b; font-size: 11px; font-weight: bold; } /* 4 DAY STATUS */
+
+        /* Chat Area */
+        .chat-window { flex: 1; padding: 20px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); }
         
-        /* Media & Emoji Icons (Original Basic Style) */
-        .icons-grp { display: none; margin-top: 10px; gap: 15px; justify-content: center; font-size: 20px; color: #555; }
-        .icons-grp span { cursor: pointer; }
+        .msg { background: #005c4b; padding: 12px; border-radius: 8px; margin-bottom: 15px; max-width: 85%; position: relative; font-size: 14px; }
+        .msg.deleted { background: #1d282f !important; color: #8696a0 !important; font-style: italic; border: 1px solid #333; }
+        .del-link { color: #ffb1b1; font-size: 10px; cursor: pointer; text-decoration: underline; display: block; margin-top: 8px; }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 35px; height: 35px; border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #00a884; border-radius: 50%;
+            animation: spin 1s linear infinite; display: none; margin: 15px auto;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Buttons */
+        .btn-group { padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+        button { padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .nuke-btn { background: #ff3b30; color: white; }
+        .block-btn { background: #3b3b3b; color: white; }
+
+        /* Footer Icons */
+        .footer { background: #202c33; padding: 10px; text-align: center; font-size: 20px; color: #8696a0; }
     </style>
 </head>
 <body>
 
-<div class="login-card">
-    <div id="userInfo">
-        <span class="status-msg">Last seen: 4 days ago</span> <h2 style="margin: 0 0 20px;">11LOTUS Soul</h2>
+<div class="chat-card">
+    <div class="header">
+        <div class="user-info">
+            <b>11LOTUS Soul</b>
+            <span>Active: 4 days ago</span>
+        </div>
     </div>
 
-    <div id="loginForm">
-        <input type="text" id="username" placeholder="Username" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
-        <button id="loginBtn" onclick="handleLogin()">Login</button>
+    <div class="chat-window" id="chat">
+        <div class="msg" id="m1">
+            <span id="txt1">Meka delete karapan hutto!</span>
+            <span class="del-link" id="link1" onclick="deleteEveryone('m1')">Delete for Everyone</span>
+        </div>
     </div>
 
     <div id="loader" class="spinner"></div>
 
-    <div id="chatActions" style="display:none;">
-        <div class="msg-box" id="msg1">
-            <span class="txt">Kaling code ekata toxic features damma!</span><br>
-            <a onclick="deleteEveryone('msg1')" style="color:#007bff; font-size:11px; cursor:pointer; text-decoration:underline;">Delete for Everyone</a> </div>
+    <div class="btn-group">
+        <button id="blockBtn" class="block-btn" onclick="toggleBlock()">Block User</button>
+        <button class="nuke-btn" onclick="nukeBomb()">NUKE BOMB 💣</button>
+    </div>
 
-        <button id="blockBtn" onclick="appAction('block')">Block</button> <button id="nukeBtn" onclick="appAction('nuke')">NUKE BOMB 💣</button> <div class="icons-grp" id="appIcons">
-            <span>😊</span> <span onclick="document.getElementById('mediaInput').click()">📎</span> </div>
-        <input type="file" id="mediaInput" hidden onchange="appAction('media')">
+    <div class="footer">
+        😊 &nbsp;&nbsp; 📎
     </div>
 </div>
 
 <script>
-    let blocked = false;
+    const loader = document.getElementById('loader');
 
-    // 1. Original Login Logic (Kaling Code Structure)
-    function handleLogin() {
-        startLoader();
-        document.getElementById('loginForm').style.display = 'none';
+    function showLoader() { loader.style.display = "block"; }
+    function hideLoader() { loader.style.display = "none"; }
 
+    // 1. Delete for Everyone Logic
+    function deleteEveryone(id) {
+        showLoader();
+        const msg = document.getElementById(id);
+        const link = msg.querySelector('.del-link');
+        
         setTimeout(() => {
-            stopLoader();
-            document.getElementById('chatActions').style.display = 'block';
-            document.getElementById('blockBtn').style.display = 'block';
-            document.getElementById('nukeBtn').style.display = 'block';
-            document.getElementById('appIcons').style.display = 'flex';
+            msg.innerHTML = "🚫 This message was deleted";
+            msg.classList.add('deleted');
+            hideLoader();
         }, 1500);
     }
 
-    // 2. Delete for Everyone Logic (Spinner eka ekka)
-    function deleteEveryone(id) {
-        startLoader();
+    // 2. Block/Unblock Logic
+    function toggleBlock() {
+        showLoader();
+        const btn = document.getElementById('blockBtn');
         setTimeout(() => {
-            let msg = document.getElementById(id);
-            msg.innerHTML = "🚫 This message was deleted";
-            msg.classList.add('deleted-msg');
-            stopLoader();
+            if(btn.innerText === "Block User") {
+                btn.innerText = "Unblock";
+                btn.style.background = "#00a884";
+            } else {
+                btn.innerText = "Block User";
+                btn.style.background = "#3b3b3b";
+            }
+            hideLoader();
         }, 1200);
     }
 
-    // 3. General Actions (Nuke, Block, Media upload)
-    function appAction(type) {
-        if(type === 'nuke') {
-            if(confirm("Deployment confirm karන්නද? සියලුම දත්ත విනාశ වනු ඇත!")) {
-                startLoader();
-                setTimeout(() => {
-                    document.body.innerHTML = "<h1 style='color:red; text-align:center;'>☢️ 11LOTUS WipedPermanently ☢️</h1>";
-                }, 2500);
-            }
-        } else if(type === 'block') {
-            startLoader();
+    // 3. Nuke Bomb Logic
+    function nukeBomb() {
+        if(confirm("Confirm Nuke? Okkoma clear wei!")) {
+            showLoader();
             setTimeout(() => {
-                blocked = !blocked;
-                document.getElementById('blockBtn').innerText = blocked ? "Unblock" : "Block";
-                document.getElementById('blockBtn').style.background = blocked ? "#28a745" : "#6c757d";
-                stopLoader();
-            }, 1000);
-        } else if(type === 'media') {
-            startLoader();
-            setTimeout(() => {
-                stopLoader();
-                alert("Media attached successfully!");
-            }, 1800);
+                document.getElementById('chat').innerHTML = "<p style='text-align:center; color:grey; margin-top:20px;'>Sanctuary Cleared ☢️</p>";
+                hideLoader();
+            }, 2500);
         }
-    }
-
-    // Spinner Controls (Original)
-    function startLoader() {
-        document.getElementById('loader').style.display = 'block';
-    }
-    function stopLoader() {
-        document.getElementById('loader').style.display = 'none';
     }
 </script>
 
