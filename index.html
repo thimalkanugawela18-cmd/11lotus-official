@@ -2,66 +2,196 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>11LOTUS PRO</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@joypixels/emoji-button@4.6.2/dist/index.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11LOTUS | Souls Sanctuary</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap');
-        :root { --g: #d4af37; --bg: #050505; --y: #1a1a1a; --b: #4fc3f7; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
-        .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
-        .active { display: flex !important; }
-        .box { background: #0f0f0f; padding: 25px; border-radius: 15px; border: 1px solid var(--g); width: 85%; max-width: 320px; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 8px 0; background: #111; border: 1px solid #333; border-radius: 5px; color: #fff; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; background: var(--g); color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; }
-        header { padding: 10px 15px; background: #000; border-bottom: 1px solid rgba(212,175,55,0.2); display: flex; justify-content: space-between; align-items: center; }
-        #win { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        
-        /* 100PX LIMIT & SPINNER STYLE */
-        .msg { max-width: 70%; padding: 8px 12px; border-radius: 12px; font-size: 14px; position: relative; word-wrap: break-word; }
-        .img-wrap { position: relative; width: 100px; height: 100px; margin: 4px 0; }
-        .msg img { width: 100px !important; height: 100px !important; object-fit: cover; border-radius: 8px; border: 1px solid var(--g); }
-        
-        .loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 3px solid #333; border-top: 3px solid var(--g); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        :root {
+            --bg-color: #0b141a;
+            --header-color: #202c33;
+            --my-msg: #005c4b;
+            --text-white: #e9edef;
+            --accent-green: #00a884;
+            --danger: #ff3b30;
+        }
 
-        .sent { align-self: flex-end; background: var(--g); color: #000; border-bottom-right-radius: 2px; }
-        .rec { align-self: flex-start; background: var(--y); color: #fff; border-bottom-left-radius: 2px; }
-        .tk { font-size: 10px; margin-left: 5px; float: right; opacity: 0.7; }
-        .bl { color: var(--b); opacity: 1; }
-        .menu { display:none; position:fixed; background:#111; border:1px solid var(--g); border-radius:5px; z-index:99; flex-direction:column; }
-        .mi { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #222; }
-        .bar { padding: 10px; background: #000; display: flex; align-items: center; gap: 8px; border-top: 1px solid #111; }
-        #in { flex: 1; padding: 10px; background: #111; border: 1px solid #222; border-radius: 20px; color: #fff; outline: none; }
-        .i-btn { color: var(--g); cursor: pointer; font-size: 20px; background: none; border: none; }
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:100; flex-direction:column; align-items:center; justify-content:center; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { background-color: #121212; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+        /* Main Website Container */
+        .web-container {
+            width: 100%;
+            max-width: 500px;
+            height: 95vh;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        /* 1. Global Loading Spinner Overlay */
+        .loader-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+        }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #222;
+            border-top: 5px solid var(--accent-green); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* 2. Header Area (Status & Controls) */
+        header {
+            background: var(--header-color);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a3942;
+        }
+        .user-info b { display: block; color: var(--text-white); font-size: 17px; }
+        .user-info span { color: var(--danger); font-size: 12px; font-weight: bold; } /* 4 Day Log Status */
+
+        .btn-grp button {
+            padding: 7px 12px; border-radius: 6px; border: none; font-size: 11px;
+            font-weight: bold; cursor: pointer; margin-left: 5px; transition: 0.3s;
+        }
+        .nuke-btn { background: var(--danger); color: white; }
+        .block-btn { background: #3b3b3b; color: white; }
+
+        /* 3. Chat Area */
+        .chat-box {
+            flex: 1; padding: 20px; overflow-y: auto;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-blend-mode: overlay;
+        }
+        .msg {
+            background: var(--my-msg); color: var(--text-white);
+            padding: 10px 15px; border-radius: 10px; margin-bottom: 15px;
+            max-width: 85%; align-self: flex-end; position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .msg.deleted { background: #1d282f !important; color: #8696a0 !important; font-style: italic; border: 1px solid #333; }
+        .delete-link {
+            display: block; font-size: 10px; color: #ffb1b1; 
+            margin-top: 8px; cursor: pointer; text-decoration: none;
+        }
+
+        /* 4. Footer Input Bar */
+        footer {
+            background: var(--header-color);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .input-wrap { flex: 1; background: #2a3942; border-radius: 25px; padding: 10px 15px; display: flex; align-items: center; }
+        .input-wrap input { flex: 1; background: transparent; border: none; color: white; outline: none; margin: 0 10px; }
+        .icon { font-size: 22px; color: #8696a0; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="l-s" class="screen active">
-        <div class="box"><h2 style="font-family:'Orbitron'; color:var(--g);">11LOTUS</h2>
-            <input type="text" id="p-id" placeholder="ID"><input type="password" id="p-pw" placeholder="PASSWORD">
-            <button class="btn" onclick="auth()">UNLOCK</button><p onclick="sw('r-m')" style="color:var(--g); font-size:11px; cursor:pointer;">Forgot Password?</p>
+
+<div class="web-container">
+    <div id="loader" class="loader-overlay">
+        <div class="spinner"></div>
+        <p id="loader-status" style="color: #00a884; margin-top: 20px; font-size: 14px;">Action in progress...</p>
+    </div>
+
+    <header>
+        <div class="user-info">
+            <b>11LOTUS Souls Sanctuary</b>
+            <span>Active: 4 days ago</span> </div>
+        <div class="btn-grp">
+            <button id="blockBtn" class="block-btn" onclick="triggerAction('block')">Block</button>
+            <button class="nuke-btn" onclick="triggerAction('nuke')">NUKE 💣</button>
+        </div>
+    </header>
+
+    <div class="chat-box" id="chatWindow">
+        <div class="msg" id="msg1">
+            <span>Welcome back to your Sanctuary. I've been waiting.</span>
+            <a class="delete-link" onclick="deleteEveryone('msg1')">Delete for Everyone</a>
         </div>
     </div>
-    <div id="s-s" class="screen">
-        <div class="box"><h3 style="color:var(--g);">SETUP</h3><input type="password" id="n-pw" placeholder="New Pass"><input type="text" id="n-k" placeholder="Recovery Key"><button class="btn" onclick="setup()">START</button></div>
-    </div>
-    <div id="c-s" class="screen" style="flex-direction:column; align-items:stretch;">
-        <header><span onclick="tBlk()" id="b-btn" style="font-size:10px; border:1px solid var(--g); padding:3px 8px; border-radius:3px;">BLOCK</span><div style="color:var(--g); font-family:'Orbitron';">11LOTUS PRO</div><span onclick="nk()">💣</span></header>
-        <div id="win"></div><div id="b-msg" style="display:none; text-align:center; color:red; padding:10px;">BLOCKED</div>
-        <div class="bar" id="i-bar"><button class="i-btn" id="e-btn">😊</button><label class="i-btn">📎<input type="file" id="f-i" hidden onchange="pre(this)"></label>
-            <input type="text" id="in" placeholder="Message..." onkeypress="if(event.key==='Enter') send()"><button onclick="send()" class="i-btn" style="background:var(--g); color:#000; width:35px; height:35px; border-radius:50%;">➤</button>
+
+    <footer>
+        <span class="icon">😊</span> <div class="input-wrap">
+            <span class="icon" onclick="document.getElementById('fileIn').click()">📎</span> <input type="file" id="fileIn" hidden onchange="triggerAction('media')">
+            <input type="text" id="msgText" placeholder="Message your soul...">
         </div>
-    </div>
-    <div id="p-m" class="modal"><div id="p-b"></div><div class="bar" style="width:85%;"><input type="text" id="c-i" placeholder="Caption..." style="flex:1; background:none; border:none; color:#fff;"><button onclick="up()" id="u-b" class="i-btn">➤</button><button onclick="cPr()" style="color:red;">X</button></div></div>
-    <div id="ctx" class="menu"><div class="mi" id="d-e">Delete Everyone</div><div class="mi" id="d-m">Delete for Me</div></div>
-    <script>
-        const cfg = { apiKey: "AIzaSyAj1BdBnNkVUhW7Cn6muBm6hmGG59l_RsQ", authDomain: "lotus-official-4c28b.firebaseapp.com", databaseURL: "https://lotus-official-4c28b-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "lotus-official-4c28b", storageBucket: "lotus-official-4c28b.firebasestorage.app", messagingSenderId: "584674732018", appId: "1:584674732018:web:b6e5fa13708eac51512d6b" };
-        firebase.initializeApp(cfg); const db = firebase.database(), st = firebase.storage(); let pid = "", file = null;
-        const pkr = new EmojiButton({ theme: 'dark' }); pkr.on('emoji', e => document.getElementById('in').value += e.emoji);
-        document.getElementById('e-btn').onclick = () => pkr.togglePicker(document.getElementById('e-btn'));
-        function auth() { pid = document.getElementById('p-id').value.trim(); const pw =
+        <span class="icon" style="color: var(--accent-green);" onclick="sendMsg()">➤</span>
+    </footer>
+</div>
+
+<script>
+    let blocked = false;
+
+    // Loader Function
+    function startLoader(txt) {
+        document.getElementById('loader').style.display = 'flex';
+        document.getElementById('loader-status').innerText = txt;
+    }
+    function stopLoader() {
+        document.getElementById('loader').style.display = 'none';
+    }
+
+    // Delete for Everyone Logic
+    function deleteEveryone(id) {
+        startLoader("Deleting for everyone...");
+        setTimeout(() => {
+            let msg = document.getElementById(id);
+            msg.innerHTML = "🚫 This message was deleted";
+            msg.classList.add('deleted');
+            stopLoader();
+        }, 1300);
+    }
+
+    // General Actions (Block, Nuke, Media)
+    function triggerAction(type) {
+        if(type === 'block') {
+            startLoader(blocked ? "Unblocking..." : "Blocking User...");
+            setTimeout(() => {
+                blocked = !blocked;
+                document.getElementById('blockBtn').innerText = blocked ? "Unblock" : "Block";
+                document.getElementById('blockBtn').style.background = blocked ? "#00a884" : "#3b3b3b";
+                stopLoader();
+            }, 1200);
+        } else if(type === 'nuke') {
+            if(confirm("Confirm Nuclear Deployment? සියලුම දත්ත විනාශ වනු ඇත!")) {
+                startLoader("NUCLEAR BOMB DEPLOYING... ☢️");
+                setTimeout(() => {
+                    document.getElementById('chatWindow').innerHTML = "<p style='text-align:center; color:#8696a0; margin-top:50px;'>Chat History Wiped.</p>";
+                    stopLoader();
+                }, 2500);
+            }
+        } else if(type === 'media') {
+            startLoader("Processing Media File...");
+            setTimeout(() => {
+                stopLoader();
+                alert("Media attached successfully!");
+            }, 2000);
+        }
+    }
+
+    // Send Message Logic
+    function sendMsg() {
+        let input = document.getElementById('msgText');
+        if(input.value.trim() !== "") {
+            let chat = document.getElementById('chatWindow');
+            let div = document.createElement('div');
+            div.className = 'msg';
+            div.innerText = input.value;
+            chat.appendChild(div);
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
+        }
+    }
+</script>
+
+</body>
+</html>
